@@ -1,0 +1,30 @@
+def inc (int -- int)
+	1 +
+end
+
+def dec (int -- int)
+	1 -
+end
+
+def max (int int -- int)
+	over over
+	< if
+		swap
+	end
+	drop
+end
+
+def loopTest(int int --)
+	loop
+		over over
+		>= if
+			drop drop
+			break
+		end
+
+		swap
+		dup .
+		1 +
+		swap
+	end
+end

@@ -1,0 +1,139 @@
+<project name="ANTLR" default="build" basedir=".">
+
+	<property name="generated" value="src-antlr-grammar4-generated"/>
+	<property name="antlr.jar" value="lib/antlr-4.7.2-complete.jar"/>
+
+	<macrodef name="antlrLexerTokens">
+		<attribute name="name"/>
+		<attribute name="package-name"/>
+		<attribute name="example-file"/>
+		<attribute name="package"  default="de.regnis.antlr.@{package-name}"/>
+		<attribute name="dir"      default="de/regnis/antlr/@{package-name}"/>
+
+		<sequential>
+			<echo>
+				Testing @{name} on @{example-file} ...
+			</echo>
+			<java jar="${antlr.jar}" fork="true" failonerror="true">
+				<arg value="-o"/>
+				<arg value="${generated}/@{dir}"/>
+				<arg value="-package"/>
+				<arg value="@{package}"/>
+				<arg value="-visitor"/>
+				<arg value="grammar/@{name}.g4"/>
+			</java>
+
+			<delete>
+				<fileset dir="${generated}/@{dir}" excludes="*.java"/>
+			</delete>
+
+			<!-- testing ............................................. -->
+
+			<delete dir=".classes"/>
+			<mkdir dir=".classes"/>
+			<java jar="${antlr.jar}" fork="true" failonerror="true">
+				<arg value="-o"/>
+				<arg value=".classes"/>
+				<arg value="grammar/@{name}.g4"/>
+			</java>
+
+			<javac classpath="lib/antlr-runtime-4.7.2.jar" srcdir=".classes" includeantruntime="false">
+			</javac>
+
+			<java classname="org.antlr.v4.gui.TestRig" fork="true" failonerror="true" dir=".classes" output="${basedir}/examples/@{example-file}.lexed" logerror="true">
+				<classpath>
+					<pathelement location="${antlr.jar}"/>
+					<pathelement location=".classes"/>
+				</classpath>
+				<arg value="@{name}"/>
+				<arg value="tokens"/>
+				<arg value="-tokens"/>
+				<arg value="${basedir}/examples/@{example-file}"/>
+			</java>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="antlrParserGraph">
+		<attribute name="name"/>
+		<attribute name="package-name"/>
+		<attribute name="example-file"/>
+		<attribute name="package"  default="de.regnis.antlr.@{package-name}"/>
+		<attribute name="dir"      default="de/regnis/antlr/@{package-name}"/>
+
+		<sequential>
+			<echo>
+				Testing @{name} on @{example-file} ...
+			</echo>
+			<java jar="${antlr.jar}" fork="true" failonerror="true">
+				<arg value="-o"/>
+				<arg value="${generated}/@{dir}"/>
+				<arg value="-package"/>
+				<arg value="grammar/@{name}.g4"/>
+			</java>
+
+			<delete>
+				<fileset dir="${generated}/@{dir}" excludes="*.java"/>
+			</delete>
+
+			<delete dir=".classes"/>
+			<mkdir dir=".classes"/>
+			<java jar="${antlr.jar}" fork="true" failonerror="true">
+				<arg value="-o"/>
+				<arg value=".classes"/>
+				<arg value="grammar/@{name}.g4"/>
+			</java>
+
+			<javac classpath="lib/antlr-runtime-4.7.2.jar" srcdir=".classes" includeantruntime="false">
+			</javac>
+
+			<java classname="org.antlr.v4.gui.TestRig" fork="true" failonerror="true" dir=".classes" logerror="true">
+				<classpath>
+					<pathelement location="${antlr.jar}"/>
+					<pathelement location=".classes"/>
+				</classpath>
+				<arg value="@{name}"/>
+				<arg value="root"/>
+				<arg value="-gui"/>
+				<arg value="${basedir}/examples/@{example-file}"/>
+			</java>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="antlrCompile">
+		<attribute name="name"/>
+		<attribute name="package-name"/>
+		<attribute name="package"  default="de.regnis.antlr.@{package-name}"/>
+		<attribute name="dir"      default="de/regnis/antlr/@{package-name}"/>
+
+		<sequential>
+			<mkdir dir="${generated}/@{dir}"/>
+			<delete>
+				<fileset dir="${generated}/@{dir}"/>
+			</delete>
+
+			<echo>
+				Generating @{package-name}...
+			</echo>
+			<java jar="${antlr.jar}" fork="true" failonerror="true">
+				<arg value="-o"/>
+				<arg value="${generated}/@{dir}"/>
+				<arg value="-package"/>
+				<arg value="@{package}"/>
+				<arg value="grammar/@{name}.g4"/>
+			</java>
+
+			<delete>
+				<fileset dir="${generated}/@{dir}" excludes="*.java"/>
+			</delete>
+		</sequential>
+	</macrodef>
+
+	<target name="build">
+		<antlrCompile     name="TS4th" package-name="ts4th"/>
+		<antlrLexerTokens name="TS4th" package-name="ts4th" example-file="test.ts4"/>
+	</target>
+
+	<target name="showParserGraph">
+		<antlrParserGraph name="TS4th" package-name="ts4th" example-file="test.ts4"/>
+	</target>
+</project>
