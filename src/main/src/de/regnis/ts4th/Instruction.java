@@ -26,7 +26,11 @@ public class Instruction {
 	}
 
 	public static Instruction command(String name) {
-		return new Instruction(Kind.command, name, null, 0);
+		return new Instruction(Kind.command, name, Location.DUMMY, 0);
+	}
+
+	public static Instruction command(String name, Location location) {
+		return new Instruction(Kind.command, name, location, 0);
 	}
 
 	public static Instruction jump(String target) {
@@ -42,20 +46,20 @@ public class Instruction {
 	}
 
 	private final Kind kind;
-	private final String s1;
-	private final String s2;
+	private final String s;
+	private final Object o;
 	private final int value;
 
-	private Instruction(Kind kind, String s1, String s2, int value) {
+	private Instruction(Kind kind, String s, Object o, int value) {
 		this.kind = kind;
-		this.s1 = s1;
-		this.s2 = s2;
+		this.s = s;
+		this.o = o;
 		this.value = value;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(kind, s1, s2, value);
+		return Objects.hash(kind, s, o, value);
 	}
 
 	@Override
@@ -67,19 +71,19 @@ public class Instruction {
 			return false;
 		}
 		Instruction that = (Instruction) o;
-		return value == that.value && kind == that.kind && Objects.equals(s1, that.s1) && Objects.equals(s2, that.s2);
+		return value == that.value && kind == that.kind && Objects.equals(s, that.s) && Objects.equals(this.o, that.o);
 	}
 
 	@Override
 	public String toString() {
 		return switch (kind) {
-			case label -> s1 + ":";
+			case label -> s + ":";
 			case intLiteral -> String.valueOf(value);
 			case boolLiteral -> String.valueOf(value != 0);
-			case stringLiteral -> "\"" + s1 + "\"";
-			case command -> s1;
-			case jump -> "jump " + s1;
-			case branch -> "branch " + s1 + ", " + s2;
+			case stringLiteral -> "\"" + s + "\"";
+			case command -> s;
+			case jump -> "jump " + s;
+			case branch -> "branch " + s + ", " + o;
 			case ret -> "ret";
 		};
 	}
@@ -91,7 +95,7 @@ public class Instruction {
 	@Nullable
 	public String getLabel() {
 		return kind == Kind.label
-				? s1 : null;
+				? s : null;
 	}
 
 	public boolean isJump() {
@@ -104,8 +108,8 @@ public class Instruction {
 
 	public List<String> getTargets() {
 		return switch (kind) {
-			case jump -> List.of(s1);
-			case branch -> List.of(s1, s2);
+			case jump -> List.of(s);
+			case branch -> List.of(s, (String)o);
 			default -> List.of();
 		};
 	}
@@ -117,18 +121,18 @@ public class Instruction {
 
 	@Nullable
 	public String getCommand() {
-		return kind == Kind.command ? s1 : null;
+		return kind == Kind.command ? s : null;
 	}
 
 	public <T> T visit(Visitor<T> visitor) {
 		return switch (kind) {
-			case label -> visitor.label(s1);
+			case label -> visitor.label(s);
 			case intLiteral -> visitor.literal(value);
 			case boolLiteral -> visitor.literal(value != 0);
-			case stringLiteral -> visitor.literal(s1);
-			case command -> visitor.command(s1);
-			case jump -> visitor.jump(s1);
-			case branch -> visitor.branch(s1, s2);
+			case stringLiteral -> visitor.literal(s);
+			case command -> visitor.command(s, (Location)o);
+			case jump -> visitor.jump(s);
+			case branch -> visitor.branch(s, (String)o);
 			case ret -> visitor.ret();
 		};
 	}
@@ -147,7 +151,7 @@ public class Instruction {
 
 		T literal(String text);
 
-		T command(String name);
+		T command(String name, Location location);
 
 		T jump(String target);
 

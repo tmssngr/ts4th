@@ -140,7 +140,8 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public List<Instruction> visitIdentifier(TS4thParser.IdentifierContext ctx) {
-		return List.of(Instruction.command(ctx.getText()));
+		final Token token = ctx.Identifier().getSymbol();
+		return List.of(Instruction.command(ctx.getText(), new Location(token.getLine(), token.getCharPositionInLine())));
 	}
 
 	@Override

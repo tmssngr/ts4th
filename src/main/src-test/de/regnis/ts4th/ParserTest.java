@@ -13,7 +13,7 @@ public final class ParserTest {
 
 	@Test
 	public void testBasic() {
-		Assert.assertEquals(List.of(
+		TestUtils.assertFunctionsEquals(List.of(
 				new Function("inc", TypeList.INT, TypeList.INT,
 				             false, List.of(
 						             Instruction.literal(1),
@@ -64,7 +64,7 @@ public final class ParserTest {
 
 	@Test
 	public void testWhileDoEnd() {
-		Assert.assertEquals(List.of(
+		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.EMPTY, TypeList.EMPTY,
 				             false, List.of(
 						             Instruction.literal(0),
@@ -96,7 +96,7 @@ public final class ParserTest {
 						end"""
 		));
 
-		Assert.assertEquals(List.of(
+		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.INT2, TypeList.EMPTY,
 				             false, List.of(
 						             Instruction.label("while_1"),
@@ -144,7 +144,7 @@ public final class ParserTest {
 						end"""
 		));
 
-		Assert.assertEquals(List.of(
+		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.EMPTY, TypeList.EMPTY,
 				             false, List.of(
 						             Instruction.literal(0),
@@ -191,7 +191,7 @@ public final class ParserTest {
 						end"""
 		));
 
-		Assert.assertEquals(List.of(
+		TestUtils.assertFunctionsEquals(List.of(
 				new Function("gcd", TypeList.INT2, TypeList.INT,
 				             false, List.of(
 						             Instruction.label("while_1"),

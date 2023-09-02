@@ -102,22 +102,22 @@ public class TypeCheckerImpl implements TypeChecker {
 			}
 
 			@Override
-			public TypeList command(String name) {
+			public TypeList command(String name, Location location) {
 				final TypesInOut types = nameToDef.get(name);
 				if (types != null) {
 					final TypeList output = input.transform(types.in(), types.out());
 					if (output == null) {
-						throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
+						throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
 					}
 					return output;
 				}
 
 				final BuiltinCommands.Command command = BuiltinCommands.get(name);
 				if (command == null) {
-					throw new InvalidTypeException("Unknown command " + name);
+					throw new InvalidTypeException(location, "Unknown command " + name);
 				}
 
-				return command.process(name, input);
+				return command.process(name, location, input);
 			}
 
 			@Override

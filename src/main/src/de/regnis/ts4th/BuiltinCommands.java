@@ -58,9 +58,9 @@ public class BuiltinCommands {
 	static {
 		nameToCommand.put(DROP, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException("drop (a --) can't operate on empty stack");
+					throw new InvalidTypeException(location, "drop (a --) can't operate on empty stack");
 				}
 				return input.prev();
 			}
@@ -73,9 +73,9 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(DUP, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException("dup (a -- a a) can't operate on empty stack");
+					throw new InvalidTypeException(location, "dup (a -- a a) can't operate on empty stack");
 				}
 				return input.append(input.type());
 			}
@@ -90,9 +90,9 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(DUP2, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException("dup2 (a b -- a b a b) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, "dup2 (a b -- a b a b) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -115,9 +115,9 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(SWAP, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException("swap (a b -- b a) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, "swap (a b -- b a) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -138,9 +138,9 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(OVER, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException("over (a, b -- a, b, a) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, "over (a, b -- a, b, a) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -161,9 +161,9 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(ROT, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 3) {
-					throw new InvalidTypeException("rot (a b c -- b c a) requires 3 elements on the stack");
+					throw new InvalidTypeException(location, "rot (a b c -- b c a) requires 3 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -190,7 +190,7 @@ public class BuiltinCommands {
 
 		nameToCommand.put(ADD, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				TypeList output = input.transform(TypeList.INT2, TypeList.INT);
 				if (output != null) {
 					return output;
@@ -208,7 +208,7 @@ public class BuiltinCommands {
 					return output;
 				}
 
-				throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + TypeList.INT2 + ", " + ptrInt + " or " + intPtr + " but got " + input);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + ", " + ptrInt + " or " + intPtr + " but got " + input);
 			}
 
 			@Override
@@ -250,7 +250,7 @@ public class BuiltinCommands {
 
 		nameToCommand.put(MEM, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				return input.append(Type.Ptr);
 			}
 
@@ -263,10 +263,10 @@ public class BuiltinCommands {
 
 		nameToCommand.put(LOAD8, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				final TypeList output = input.transform(TypeList.PTR, TypeList.INT);
 				if (output == null) {
-					throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + TypeList.PTR + " but got " + input);
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.PTR + " but got " + input);
 				}
 
 				return output;
@@ -282,7 +282,7 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(STORE8, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				TypeList expected = TypeList.INT.append(Type.Ptr);
 				TypeList output = input.transform(expected, TypeList.EMPTY);
 				if (output != null) {
@@ -292,7 +292,7 @@ public class BuiltinCommands {
 				expected = TypeList.PTR.append(Type.Int);
 				output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
-					throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + expected + " but got " + input);
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
 				}
 
 				return output;
@@ -315,14 +315,14 @@ public class BuiltinCommands {
 		nameToCommand.put(PRINT_ASCII, new DefaultCommand(TypeList.INT, TypeList.EMPTY));
 		nameToCommand.put(PRINT, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException("print (a --) can't operate on empty stack");
+					throw new InvalidTypeException(location, "print (a --) can't operate on empty stack");
 				}
 
 				final Type type = input.type();
 				if (type != Type.Int && type != Type.Ptr) {
-					throw new InvalidTypeException("print (a --) only can work on `int` and `ptr`");
+					throw new InvalidTypeException(location, "print (a --) only can work on `int` and `ptr`");
 				}
 
 				return input.prev();
@@ -337,7 +337,7 @@ public class BuiltinCommands {
 		});
 		nameToCommand.put(PRINT_STRING, new Command() {
 			@Override
-			public TypeList process(String name, TypeList input) {
+			public TypeList process(String name, Location location, TypeList input) {
 				TypeList expected = TypeList.INT.append(Type.Ptr);
 				TypeList output = input.transform(expected, TypeList.EMPTY);
 				if (output != null) {
@@ -347,7 +347,7 @@ public class BuiltinCommands {
 				expected = TypeList.PTR.append(Type.Int);
 				output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
-					throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + expected + " but got " + input);
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
 				}
 
 				return output;
@@ -453,7 +453,7 @@ public class BuiltinCommands {
 		protected Command() {
 		}
 
-		public TypeList process(String name, TypeList input) {
+		public TypeList process(String name, Location location, TypeList input) {
 			throw new IllegalStateException("not implemented yet");
 		}
 
@@ -469,10 +469,10 @@ public class BuiltinCommands {
 			this.typesInOut = new TypesInOut(in, out);
 		}
 
-		public TypeList process(String name, TypeList input) {
+		public TypeList process(String name, Location location, TypeList input) {
 			final TypeList output = input.transform(typesInOut.in(), typesInOut.out());
 			if (output == null) {
-				throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + typesInOut.in() + " but got " + input);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesInOut.in() + " but got " + input);
 			}
 
 			return output;
@@ -498,10 +498,10 @@ public class BuiltinCommands {
 			output.accept(AsmIR.push(REG_0, 2));
 		}
 
-		public TypeList process(String name, TypeList input) {
+		public TypeList process(String name, Location location, TypeList input) {
 			final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
 			if (output == null) {
-				throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
 			}
 
 			return output;
@@ -523,10 +523,10 @@ public class BuiltinCommands {
 			output.accept(AsmIR.push(REG_0, 1));
 		}
 
-		public TypeList process(String name, TypeList input) {
+		public TypeList process(String name, Location location, TypeList input) {
 			final TypeList output = input.transform(TypeList.INT2, TypeList.BOOL);
 			if (output == null) {
-				throw new InvalidTypeException("Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
 			}
 
 			return output;

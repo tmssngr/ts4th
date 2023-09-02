@@ -124,7 +124,7 @@ public class AsmIRConverter implements Instruction.Visitor<Object> {
 	}
 
 	@Override
-	public Object command(String name) {
+	public Object command(String name, Location location) {
 		final BuiltinCommands.Command command = BuiltinCommands.get(name);
 		if (command != null) {
 			command.toIR(types, output);
