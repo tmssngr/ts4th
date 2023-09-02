@@ -14,6 +14,9 @@ def foo (int ptr -- ptr)
   ...
 end
 ```
+## Types
+TS4th supports the types `int` (16 bit), `bool` and `ptr`.
+While in classic Forth each int could also be used as input for a boolean operation, this would be rejected by TS4th.
 
 ## Inspiring Resources
 Back in 2000 Stephan Becher already started a similar project with [StrongForth](https://www.stephan-becher.de/strongforth/).
