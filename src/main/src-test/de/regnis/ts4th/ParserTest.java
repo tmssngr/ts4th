@@ -1,10 +1,12 @@
 package de.regnis.ts4th;
 
+import java.util.*;
+import java.util.function.*;
+
 import org.antlr.v4.runtime.misc.*;
 import org.junit.*;
 
-import java.util.*;
-import java.util.function.*;
+import static de.regnis.ts4th.InstructionFactory.*;
 
 /**
  * @author Thomas Singer
@@ -16,32 +18,32 @@ public final class ParserTest {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("inc", TypeList.INT, TypeList.INT,
 				             false, List.of(
-						             Instruction.literal(1),
-						             BuiltinCommands.add(),
-						             Instruction.ret()
-				             )
+						literal(1),
+						add(),
+						ret()
+				)
 				),
 				new Function("dec", TypeList.INT, TypeList.INT,
 				             false, List.of(
-						             Instruction.literal(1),
-						             BuiltinCommands.sub(),
-						             Instruction.ret()
-				             )
+						literal(1),
+						sub(),
+						ret()
+				)
 				),
 				new Function("max", TypeList.INT2, TypeList.INT,
 				             false, List.of(
-						             BuiltinCommands.dup2Int(),
-						             BuiltinCommands.isLT(),
-						             Instruction.branch("if_1", "endif_1"),
+						dup2Int(),
+						isLT(),
+						branch("if_1", "endif_1"),
 
-						             Instruction.label("if_1"),
-						             BuiltinCommands.swapInt(),
-						             Instruction.jump("endif_1"),
+						label("if_1"),
+						swapInt(),
+						jump("endif_1"),
 
-						             Instruction.label("endif_1"),
-						             BuiltinCommands.dropInt(),
-						             Instruction.ret()
-				             )
+						label("endif_1"),
+						dropInt(),
+						ret()
+				)
 				)
 		), Parser.parseString("""
 				                      def inc (int -- int)
@@ -67,24 +69,24 @@ public final class ParserTest {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.EMPTY, TypeList.EMPTY,
 				             false, List.of(
-						             Instruction.literal(0),
-						             Instruction.label("while_1"),
-						             BuiltinCommands.dup(),
-						             Instruction.literal(10),
-						             BuiltinCommands.isLT(),
-						             Instruction.branch("whilebody_1", "endwhile_1"),
+						literal(0),
+						label("while_1"),
+						dup(),
+						literal(10),
+						isLT(),
+						branch("whilebody_1", "endwhile_1"),
 
-						             Instruction.label("whilebody_1"),
-						             BuiltinCommands.dup(),
-						             Instruction.command("print"),
-						             Instruction.literal(1),
-						             BuiltinCommands.add(),
-						             Instruction.jump("while_1"),
+						label("whilebody_1"),
+						dup(),
+						command("print"),
+						literal(1),
+						add(),
+						jump("while_1"),
 
-						             Instruction.label("endwhile_1"),
-						             BuiltinCommands.dropInt(),
-						             Instruction.ret()
-				             )
+						label("endwhile_1"),
+						dropInt(),
+						ret()
+				)
 				)
 		), Parser.parseString(
 				"""
@@ -99,32 +101,32 @@ public final class ParserTest {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.INT2, TypeList.EMPTY,
 				             false, List.of(
-						             Instruction.label("while_1"),
-						             Instruction.literal(true),
-						             Instruction.branch("whilebody_1", "endwhile_1"),
+						label("while_1"),
+						literal(true),
+						branch("whilebody_1", "endwhile_1"),
 
-						             Instruction.label("whilebody_1"),
-						             BuiltinCommands.dup2Int(),
-						             BuiltinCommands.isGE(),
-						             Instruction.branch("if_2", "endif_2"),
+						label("whilebody_1"),
+						dup2Int(),
+						isGE(),
+						branch("if_2", "endif_2"),
 
-						             Instruction.label("if_2"),
-						             BuiltinCommands.dropInt(),
-						             BuiltinCommands.dropInt(),
-						             Instruction.jump("endwhile_1"),
+						label("if_2"),
+						dropInt(),
+						dropInt(),
+						jump("endwhile_1"),
 
-						             Instruction.label("endif_2"),
-						             BuiltinCommands.swapInt(),
-						             BuiltinCommands.dup(),
-						             Instruction.command("."),
-						             Instruction.literal(1),
-						             BuiltinCommands.add(),
-						             BuiltinCommands.swapInt(),
-						             Instruction.jump("while_1"),
+						label("endif_2"),
+						swapInt(),
+						dup(),
+						command("."),
+						literal(1),
+						add(),
+						swapInt(),
+						jump("while_1"),
 
-						             Instruction.label("endwhile_1"),
-						             Instruction.ret()
-				             )
+						label("endwhile_1"),
+						ret()
+				)
 				)
 		), Parser.parseString(
 				"""
@@ -147,34 +149,34 @@ public final class ParserTest {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.EMPTY, TypeList.EMPTY,
 				             false, List.of(
-						             Instruction.literal(0),
+						literal(0),
 
-						             Instruction.label("while_1"),
-						             Instruction.literal(true),
-						             Instruction.branch("whilebody_1", "endwhile_1"),
+						label("while_1"),
+						literal(true),
+						branch("whilebody_1", "endwhile_1"),
 
-						             Instruction.label("whilebody_1"),
-						             BuiltinCommands.dup(),
-						             Instruction.literal(10),
-						             BuiltinCommands.isLT(),
-						             Instruction.branch("if_2", "else_2"),
+						label("whilebody_1"),
+						dup(),
+						literal(10),
+						isLT(),
+						branch("if_2", "else_2"),
 
-						             Instruction.label("if_2"),
-						             BuiltinCommands.dup(),
-						             BuiltinCommands.print(),
-						             Instruction.literal(1),
-						             BuiltinCommands.add(),
-						             Instruction.jump("endif_2"),
+						label("if_2"),
+						dup(),
+						print(),
+						literal(1),
+						add(),
+						jump("endif_2"),
 
-						             Instruction.label("else_2"),
-						             Instruction.jump("endwhile_1"),
+						label("else_2"),
+						jump("endwhile_1"),
 
-						             Instruction.label("endif_2"),
-						             Instruction.jump("while_1"),
+						label("endif_2"),
+						jump("while_1"),
 
-						             Instruction.label("endwhile_1"),
-						             Instruction.ret()
-				             )
+						label("endwhile_1"),
+						ret()
+				)
 				)
 		), Parser.parseString(
 				"""
@@ -194,43 +196,43 @@ public final class ParserTest {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("gcd", TypeList.INT2, TypeList.INT,
 				             false, List.of(
-						             Instruction.label("while_1"),
-						             Instruction.literal(true),
-						             Instruction.branch("whilebody_1", "endwhile_1"),
+						label("while_1"),
+						literal(true),
+						branch("whilebody_1", "endwhile_1"),
 
-						             Instruction.label("whilebody_1"),
-						             BuiltinCommands.dup2Int(),
-						             BuiltinCommands.isLT(),
-						             Instruction.branch("if_2", "else_2"),
+						label("whilebody_1"),
+						dup2Int(),
+						isLT(),
+						branch("if_2", "else_2"),
 
-						             Instruction.label("if_2"),
-						             BuiltinCommands.overInt(),
-						             BuiltinCommands.sub(),
-						             Instruction.jump("endif_2"),
+						label("if_2"),
+						overInt(),
+						sub(),
+						jump("endif_2"),
 
-						             Instruction.label("else_2"),
-						             BuiltinCommands.dup2Int(),
-						             BuiltinCommands.isGT(),
-						             Instruction.branch("if_3", "else_3"),
+						label("else_2"),
+						dup2Int(),
+						isGT(),
+						branch("if_3", "else_3"),
 
-						             Instruction.label("if_3"),
-						             BuiltinCommands.swapInt(),
-						             BuiltinCommands.overInt(),
-						             BuiltinCommands.sub(),
-						             Instruction.jump("endif_3"),
+						label("if_3"),
+						swapInt(),
+						overInt(),
+						sub(),
+						jump("endif_3"),
 
-						             Instruction.label("else_3"),
-						             Instruction.jump("endwhile_1"),
+						label("else_3"),
+						jump("endwhile_1"),
 
-						             Instruction.label("endif_3"),
+						label("endif_3"),
 
-						             Instruction.label("endif_2"),
-						             Instruction.jump("while_1"),
+						label("endif_2"),
+						jump("while_1"),
 
-						             Instruction.label("endwhile_1"),
-						             BuiltinCommands.dropInt(),
-						             Instruction.ret()
-				             )
+						label("endwhile_1"),
+						dropInt(),
+						ret()
+				)
 				)
 		), Parser.parseString(
 				"""

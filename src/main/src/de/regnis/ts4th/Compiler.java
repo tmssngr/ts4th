@@ -55,13 +55,12 @@ public class Compiler {
 			usedFunctions.add(function);
 
 			for (Instruction instruction : function.instructions()) {
-				final String command = instruction.getCommand();
-				if (command == null || BuiltinCommands.get(command) != null) {
-					continue;
-				}
-
-				if (invoked.add(command)) {
-					pending.add(command);
+				if (instruction instanceof Instruction.Command c) {
+					final String command = c.name();
+					if (BuiltinCommands.get(command) == null
+					    && invoked.add(command)) {
+						pending.add(command);
+					}
 				}
 			}
 		}

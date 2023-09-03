@@ -4,6 +4,7 @@ import org.junit.*;
 
 import java.util.*;
 
+import static de.regnis.ts4th.InstructionFactory.*;
 import static org.junit.Assert.*;
 
 /**
@@ -14,133 +15,133 @@ public class CfgTest {
 	@Test
 	public void testSimple() {
 		final CfgFunction cfgFunction = new CfgFunction(new Function("inc", TypeList.INT, TypeList.INT, false, List.of(
-				Instruction.literal(1),
-				BuiltinCommands.add(),
-				Instruction.ret()
+				literal(1),
+				add(),
+				ret()
 		)));
 		assertEquals("inc", cfgFunction.getName());
 		assertEquals(new TypesInOut(TypeList.INT, TypeList.INT), cfgFunction.getTypesInOut());
 		assertEquals(List.of(
 				new CfgBlock("inc_0", List.of(
-						Instruction.literal(1),
-						BuiltinCommands.add(),
-						Instruction.ret()
+						literal(1),
+						add(),
+						ret()
 				))
 		), cfgFunction.getBlocks());
 		assertPredecessorsSuccessors(List.of(), List.of(), "inc_0", cfgFunction);
 		assertEquals(List.of(
-				Instruction.label("inc_0"),
-				Instruction.literal(1),
-				BuiltinCommands.add(),
-				Instruction.ret()
+				label("inc_0"),
+				literal(1),
+				add(),
+				ret()
 		), cfgFunction.flatten());
 	}
 
 	@Test
 	public void testIf() {
 		final CfgFunction cfgFunction = new CfgFunction(new Function("max", TypeList.INT2, TypeList.INT, false, List.of(
-				BuiltinCommands.dup2Int(),
-				BuiltinCommands.isLT(),
-				Instruction.branch("if-1", "endif-1"),
+				dup2Int(),
+				isLT(),
+				branch("if-1", "endif-1"),
 
-				Instruction.label("if-1"),
-				BuiltinCommands.swapInt(),
-				Instruction.jump("endif-1"),
+				label("if-1"),
+				swapInt(),
+				jump("endif-1"),
 
-				Instruction.label("endif-1"),
-				BuiltinCommands.dropInt(),
-				Instruction.ret()
+				label("endif-1"),
+				dropInt(),
+				ret()
 		)));
 		assertEquals("max", cfgFunction.getName());
 		assertEquals(new TypesInOut(TypeList.INT2, TypeList.INT), cfgFunction.getTypesInOut());
 		assertEquals(List.of(
 				new CfgBlock("max_0", List.of(
-						BuiltinCommands.dup2Int(),
-						BuiltinCommands.isLT(),
-						Instruction.branch("if-1", "endif-1")
+						dup2Int(),
+						isLT(),
+						branch("if-1", "endif-1")
 				)),
 				new CfgBlock("if-1", List.of(
-						BuiltinCommands.swapInt(),
-						Instruction.jump("endif-1")
+						swapInt(),
+						jump("endif-1")
 				)),
 				new CfgBlock("endif-1", List.of(
-						BuiltinCommands.dropInt(),
-						Instruction.ret()
+						dropInt(),
+						ret()
 				))
 		), cfgFunction.getBlocks());
 		assertPredecessorsSuccessors(List.of(), List.of("if-1", "endif-1"), "max_0", cfgFunction);
 		assertPredecessorsSuccessors(List.of("max_0"), List.of("endif-1"), "if-1", cfgFunction);
 		assertPredecessorsSuccessors(List.of("max_0", "if-1"), List.of(), "endif-1", cfgFunction);
 		assertEquals(List.of(
-				Instruction.label("max_0"),
-				BuiltinCommands.dup2Int(),
-				BuiltinCommands.isLT(),
-				Instruction.branch("if-1", "endif-1"),
+				label("max_0"),
+				dup2Int(),
+				isLT(),
+				branch("if-1", "endif-1"),
 
-				Instruction.label("if-1"),
-				BuiltinCommands.swapInt(),
-				Instruction.jump("endif-1"),
+				label("if-1"),
+				swapInt(),
+				jump("endif-1"),
 
-				Instruction.label("endif-1"),
-				BuiltinCommands.dropInt(),
-				Instruction.ret()
+				label("endif-1"),
+				dropInt(),
+				ret()
 		), cfgFunction.flatten());
 	}
 
 	@Test
 	public void testLoop() {
 		final CfgFunction cfgFunction = new CfgFunction(new Function("loopTest", TypeList.INT2, TypeList.EMPTY, false, List.of(
-				Instruction.label("loop-2"),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.isGE(),
-				Instruction.branch("if-3", "endif-3"),
+				label("loop-2"),
+				overInt(),
+				overInt(),
+				isGE(),
+				branch("if-3", "endif-3"),
 
-				Instruction.label("if-3"),
-				BuiltinCommands.dropInt(),
-				BuiltinCommands.dropInt(),
-				Instruction.jump("endloop-2"),
+				label("if-3"),
+				dropInt(),
+				dropInt(),
+				jump("endloop-2"),
 
-				Instruction.label("endif-3"),
-				BuiltinCommands.swapInt(),
-				BuiltinCommands.dup(),
-				Instruction.command("."),
-				Instruction.literal(1),
-				BuiltinCommands.add(),
-				BuiltinCommands.swapInt(),
-				Instruction.jump("loop-2"),
+				label("endif-3"),
+				swapInt(),
+				dup(),
+				command("."),
+				literal(1),
+				add(),
+				swapInt(),
+				jump("loop-2"),
 
-				Instruction.label("endloop-2"),
-				Instruction.ret()
+				label("endloop-2"),
+				ret()
 		)));
 		assertEquals("loopTest", cfgFunction.getName());
 		assertEquals(new TypesInOut(TypeList.INT2, TypeList.EMPTY), cfgFunction.getTypesInOut());
 		assertEquals(List.of(
 				new CfgBlock("loopTest_0", List.of(
-						Instruction.jump("loop-2")
+						jump("loop-2")
 				)),
 				new CfgBlock("loop-2", List.of(
-						BuiltinCommands.overInt(),
-						BuiltinCommands.overInt(),
-						BuiltinCommands.isGE(),
-						Instruction.branch("if-3", "endif-3")
+						overInt(),
+						overInt(),
+						isGE(),
+						branch("if-3", "endif-3")
 				)),
 				new CfgBlock("if-3", List.of(
-						BuiltinCommands.dropInt(),
-						BuiltinCommands.dropInt(),
-						Instruction.jump("endloop-2")
+						dropInt(),
+						dropInt(),
+						jump("endloop-2")
 				)),
 				new CfgBlock("endif-3", List.of(
-						BuiltinCommands.swapInt(),
-						BuiltinCommands.dup(),
-						Instruction.command("."),
-						Instruction.literal(1),
-						BuiltinCommands.add(),
-						BuiltinCommands.swapInt(),
-						Instruction.jump("loop-2")
+						swapInt(),
+						dup(),
+						command("."),
+						literal(1),
+						add(),
+						swapInt(),
+						jump("loop-2")
 				)),
 				new CfgBlock("endloop-2", List.of(
-						Instruction.ret()
+						ret()
 				))
 		), cfgFunction.getBlocks());
 		assertPredecessorsSuccessors(List.of(), List.of("loop-2"), "loopTest_0", cfgFunction);
@@ -153,86 +154,86 @@ public class CfgTest {
 	@Test
 	public void testLoop2() {
 		final CfgFunction cfgFunction = new CfgFunction(new Function("gcd", TypeList.INT2, TypeList.INT, false, List.of(
-				Instruction.label("while_1"),
-				Instruction.literal(true),
-				Instruction.branch("whilebody_1", "endwhile_1"),
+				label("while_1"),
+				literal(true),
+				branch("whilebody_1", "endwhile_1"),
 
-				Instruction.label("whilebody_1"),
-				BuiltinCommands.dup2Int(),
-				BuiltinCommands.isLT(),
-				Instruction.branch("if_2", "else_2"),
+				label("whilebody_1"),
+				dup2Int(),
+				isLT(),
+				branch("if_2", "else_2"),
 
-				Instruction.label("if_2"),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.sub(),
-				Instruction.jump("endif_2"),
+				label("if_2"),
+				overInt(),
+				sub(),
+				jump("endif_2"),
 
-				Instruction.label("else_2"),
-				BuiltinCommands.dup2Int(),
-				BuiltinCommands.isGT(),
-				Instruction.branch("if_3", "else_3"),
+				label("else_2"),
+				dup2Int(),
+				isGT(),
+				branch("if_3", "else_3"),
 
-				Instruction.label("if_3"),
-				BuiltinCommands.swapInt(),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.sub(),
-				Instruction.jump("endif_3"),
+				label("if_3"),
+				swapInt(),
+				overInt(),
+				sub(),
+				jump("endif_3"),
 
-				Instruction.label("else_3"),
-				Instruction.jump("endwhile_1"),
+				label("else_3"),
+				jump("endwhile_1"),
 
-				Instruction.label("endif_3"),
+				label("endif_3"),
 
-				Instruction.label("endif_2"),
-				Instruction.jump("while_1"),
+				label("endif_2"),
+				jump("while_1"),
 
-				Instruction.label("endwhile_1"),
-				BuiltinCommands.dropInt(),
-				Instruction.ret()
+				label("endwhile_1"),
+				dropInt(),
+				ret()
 		)));
 		assertEquals("gcd", cfgFunction.getName());
 		assertEquals(new TypesInOut(TypeList.INT2, TypeList.INT), cfgFunction.getTypesInOut());
 		assertEquals(List.of(
 				new CfgBlock("gcd_0", List.of(
-						Instruction.jump("while_1")
+						jump("while_1")
 				)),
 				new CfgBlock("while_1", List.of(
-						Instruction.literal(true),
-						Instruction.branch("whilebody_1", "endwhile_1")
+						literal(true),
+						branch("whilebody_1", "endwhile_1")
 				)),
 				new CfgBlock("whilebody_1", List.of(
-						BuiltinCommands.dup2Int(),
-						BuiltinCommands.isLT(),
-						Instruction.branch("if_2", "else_2")
+						dup2Int(),
+						isLT(),
+						branch("if_2", "else_2")
 				)),
 				new CfgBlock("if_2", List.of(
-						BuiltinCommands.overInt(),
-						BuiltinCommands.sub(),
-						Instruction.jump("endif_2")
+						overInt(),
+						sub(),
+						jump("endif_2")
 				)),
 				new CfgBlock("else_2", List.of(
-						BuiltinCommands.dup2Int(),
-						BuiltinCommands.isGT(),
-						Instruction.branch("if_3", "else_3")
+						dup2Int(),
+						isGT(),
+						branch("if_3", "else_3")
 				)),
 				new CfgBlock("if_3", List.of(
-						BuiltinCommands.swapInt(),
-						BuiltinCommands.overInt(),
-						BuiltinCommands.sub(),
-						Instruction.jump("endif_3")
+						swapInt(),
+						overInt(),
+						sub(),
+						jump("endif_3")
 				)),
 				new CfgBlock("else_3", List.of(
-						Instruction.jump("endwhile_1")
+						jump("endwhile_1")
 				)),
 				new CfgBlock("endif_3", List.of(
-						Instruction.jump("endif_2")
+						jump("endif_2")
 				)),
 				new CfgBlock("endif_2", List.of(
-						Instruction.jump("while_1")
+						jump("while_1")
 				)),
 				new CfgBlock("endwhile_1", List.of(
-						BuiltinCommands.dropInt(),
-						Instruction.ret()
+						dropInt(),
+						ret()
 				))
 		), cfgFunction.getBlocks());
 		assertPredecessorsSuccessors(List.of(), List.of("while_1"), "gcd_0", cfgFunction);

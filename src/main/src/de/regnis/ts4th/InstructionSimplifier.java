@@ -26,12 +26,10 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1.isJump() && i2.isLabel()) {
-					final List<String> targets = i1.getTargets();
-					final String label = i2.getLabel();
-					if (targets.contains(label)) {
-						remove();
-					}
+				if (i1 instanceof Instruction.Jump j
+				    && i2 instanceof Instruction.Label l
+				    && Objects.equals(j.target(), l.name())) {
+					remove();
 				}
 			}
 		}.process();
@@ -45,9 +43,10 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(instructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1.isLabel() && i2.isJump()) {
-					final String label = i1.getLabel();
-					final String target = i2.getTargets().get(0);
+				if (i1 instanceof Instruction.Label l
+				    && i2 instanceof Instruction.Jump j) {
+					final String label = l.name();
+					final String target = j.target();
 					if (!Objects.equals(label, target)) {
 						fromTo.put(label, target);
 					}
@@ -61,16 +60,15 @@ public class InstructionSimplifier {
 
 		final List<Instruction> newInstructions = new ArrayList<>();
 		for (Instruction instruction : instructions) {
-			if (instruction.isJump()) {
-				final String target = instruction.getTargets().get(0);
+			if (instruction instanceof Instruction.Jump j) {
+				final String target = j.target();
 				final String newTarget = getNewTarget(target, fromTo);
-				newInstructions.add(Instruction.jump(newTarget));
+				newInstructions.add(new Instruction.Jump(newTarget));
 			}
-			else if (instruction.isBranch()) {
-				final List<String> targets = instruction.getTargets();
-				final String ifTarget = getNewTarget(targets.get(0), fromTo);
-				final String elseTarget = getNewTarget(targets.get(1), fromTo);
-				newInstructions.add(Instruction.branch(ifTarget, elseTarget));
+			else if (instruction instanceof Instruction.Branch b) {
+				final String ifTarget = getNewTarget(b.ifTarget(), fromTo);
+				final String elseTarget = getNewTarget(b.elseTarget(), fromTo);
+				newInstructions.add(new Instruction.Branch(ifTarget, elseTarget));
 			}
 			else {
 				newInstructions.add(instruction);
@@ -95,7 +93,7 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1.isJump() && !i2.isLabel()) {
+				if (i1 instanceof Instruction.Jump && !(i2 instanceof Instruction.Label)) {
 					removeNext();
 					again();
 				}
@@ -111,10 +109,11 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				final Boolean boolLiteral = i1.getBoolLiteral();
-				if (boolLiteral != null && i2.isBranch()) {
-					final List<String> targets = i2.getTargets();
-					replace(Instruction.jump(targets.get(boolLiteral ? 0 : 1)));
+				if (i1 instanceof Instruction.BoolLiteral lit
+				    && i2 instanceof Instruction.Branch b) {
+					replace(new Instruction.Jump(lit.value()
+							                             ? b.ifTarget()
+							                             : b.elseTarget()));
 					removeNext();
 				}
 			}
@@ -125,20 +124,22 @@ public class InstructionSimplifier {
 
 	private static void removeUnusedLabels(List<Instruction> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
-		for (Iterator<Instruction> it = instructions.iterator(); it.hasNext(); ) {
-			final Instruction instruction = it.next();
-			final String label = instruction.getLabel();
-			if (label != null && !usedTargets.contains(label)) {
-				it.remove();
-			}
-		}
+		instructions.removeIf(instruction -> {
+			return instruction instanceof Instruction.Label label
+			       && !usedTargets.contains(label.name());
+		});
 	}
 
 	private static Set<String> getUsedTargets(List<Instruction> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (Instruction instruction : instructions) {
-			final List<String> targets = instruction.getTargets();
-			usedTargets.addAll(targets);
+			if (instruction instanceof Instruction.Jump j) {
+				usedTargets.add(j.target());
+			}
+			else if (instruction instanceof Instruction.Branch b) {
+				usedTargets.add(b.ifTarget());
+				usedTargets.add(b.elseTarget());
+			}
 		}
 		return usedTargets;
 	}

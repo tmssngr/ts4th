@@ -4,7 +4,7 @@ import org.junit.*;
 
 import java.util.*;
 
-import static de.regnis.ts4th.Instruction.*;
+import static de.regnis.ts4th.InstructionFactory.*;
 import static org.junit.Assert.*;
 
 /**

@@ -55,11 +55,11 @@ public class Inliner {
 		callStack.add(function.name());
 
 		for (Instruction instruction : function.instructions()) {
-			final String command = instruction.getCommand();
-			if (command == null) {
+			if (!(instruction instanceof Instruction.Command c)) {
 				continue;
 			}
 
+			final String command = c.name();
 			if (BuiltinCommands.get(command) != null) {
 				continue;
 			}
@@ -89,8 +89,8 @@ public class Inliner {
 	private void inline(Function function, Consumer<Instruction> consumer) {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
-			final String command = instruction.getCommand();
-			if (command != null) {
+			if (instruction instanceof Instruction.Command c) {
+				final String command = c.name();
 				if (BuiltinCommands.get(command) == null) {
 					final Function invokedFunction = Objects.requireNonNull(nameToFunction.get(command));
 					if (invokedFunction.isInline()) {

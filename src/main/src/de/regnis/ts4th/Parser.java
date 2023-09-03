@@ -78,7 +78,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final TypeList beforeTypes = visitTypeList(ctx.beforeTypes);
 		final TypeList afterTypes = visitTypeList(ctx.afterTypes);
 		final List<Instruction> commands = visitInstructions(ctx.instructions());
-		commands.add(Instruction.ret());
+		commands.add(new Instruction.Ret());
 		return new Function(name, beforeTypes, afterTypes, inline, commands);
 	}
 
@@ -135,13 +135,13 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		else {
 			value = Integer.parseInt(text);
 		}
-		return List.of(Instruction.literal(value));
+		return List.of(new Instruction.IntLiteral(value));
 	}
 
 	@Override
 	public Object visitString(TS4thParser.StringContext ctx) {
 		final String value = parseStringLiteral(ctx.String());
-		return List.of(Instruction.literal(value));
+		return List.of(new Instruction.StringLiteral(value));
 	}
 
 	private String parseStringLiteral(TerminalNode node) {
@@ -152,18 +152,20 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public List<Instruction> visitTrue(TS4thParser.TrueContext ctx) {
-		return List.of(Instruction.literal(true));
+		return List.of(new Instruction.BoolLiteral(true));
 	}
 
 	@Override
 	public List<Instruction> visitFalse(TS4thParser.FalseContext ctx) {
-		return List.of(Instruction.literal(false));
+		return List.of(new Instruction.BoolLiteral(false));
 	}
 
 	@Override
 	public List<Instruction> visitIdentifier(TS4thParser.IdentifierContext ctx) {
 		final Token token = ctx.Identifier().getSymbol();
-		return List.of(Instruction.command(ctx.getText(), new Location(token.getLine(), token.getCharPositionInLine())));
+		final String name = ctx.getText();
+		final Location location = new Location(token.getLine(), token.getCharPositionInLine());
+		return List.of(new Instruction.Command(name, location));
 	}
 
 	@Override
@@ -173,13 +175,13 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final String labelEnd = "endif_" + index;
 
 		final List<Instruction> instructions = new ArrayList<>();
-		instructions.add(Instruction.branch(labelIf, labelEnd));
+		instructions.add(new Instruction.Branch(labelIf, labelEnd));
 
-		instructions.add(Instruction.label(labelIf));
+		instructions.add(new Instruction.Label(labelIf));
 		instructions.addAll(visitInstructions(ctx.instructions()));
 		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(Instruction.label(labelEnd));
+		instructions.add(new Instruction.Label(labelEnd));
 		return instructions;
 	}
 
@@ -191,17 +193,17 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final String labelEnd = "endif_" + index;
 
 		final List<Instruction> instructions = new ArrayList<>();
-		instructions.add(Instruction.branch(labelIf, labelElse));
+		instructions.add(new Instruction.Branch(labelIf, labelElse));
 
-		instructions.add(Instruction.label(labelIf));
+		instructions.add(new Instruction.Label(labelIf));
 		instructions.addAll(visitInstructions(ctx.ifInstructions));
 		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(Instruction.label(labelElse));
+		instructions.add(new Instruction.Label(labelElse));
 		instructions.addAll(visitInstructions(ctx.elseInstructions));
 		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(Instruction.label(labelEnd));
+		instructions.add(new Instruction.Label(labelEnd));
 		return instructions;
 	}
 
@@ -216,23 +218,23 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		try {
 			final List<Instruction> instructions = new ArrayList<>();
-			instructions.add(Instruction.label(labelWhile));
+			instructions.add(new Instruction.Label(labelWhile));
 
 			breakLabel = null;
 			continueLabel = null;
 
 			instructions.addAll(visitInstructions(ctx.condition));
-			instructions.add(Instruction.branch(labelWhileBody, labelWhileEnd));
+			instructions.add(new Instruction.Branch(labelWhileBody, labelWhileEnd));
 
-			instructions.add(Instruction.label(labelWhileBody));
+			instructions.add(new Instruction.Label(labelWhileBody));
 
 			breakLabel = labelWhileEnd;
 			continueLabel = labelWhile;
 
 			instructions.addAll(visitInstructions(ctx.body));
-			instructions.add(Instruction.jump(labelWhile));
+			instructions.add(new Instruction.Jump(labelWhile));
 
-			instructions.add(Instruction.label(labelWhileEnd));
+			instructions.add(new Instruction.Label(labelWhileEnd));
 			return instructions;
 		}
 		finally {
@@ -247,7 +249,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			final Token token = ctx.Break().getSymbol();
 			throw new ParseCancellationException("%1$d:%2$d break only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
 		}
-		return List.of(Instruction.jump(breakLabel));
+		return List.of(new Instruction.Jump(breakLabel));
 	}
 
 	@Override
@@ -256,17 +258,17 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			final Token token = ctx.Continue().getSymbol();
 			throw new ParseCancellationException("%1$d:%2$d continue only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
 		}
-		return List.of(Instruction.jump(continueLabel));
+		return List.of(new Instruction.Jump(continueLabel));
 	}
 
 	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions) {
 		if (instructions.size() > 0) {
 			final Instruction lastInstruction = instructions.get(instructions.size() - 1);
-			if (lastInstruction.isJump() || lastInstruction.isLabel()) {
+			if (lastInstruction instanceof Instruction.Jump || lastInstruction instanceof Instruction.Label) {
 				return;
 			}
 		}
-		instructions.add(Instruction.jump(target));
+		instructions.add(new Instruction.Jump(target));
 	}
 
 	private static String unescape(String s) {

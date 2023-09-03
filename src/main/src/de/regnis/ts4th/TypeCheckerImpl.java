@@ -24,8 +24,14 @@ public class TypeCheckerImpl implements TypeChecker {
 			final Instruction instruction = instructions.get(index);
 			input = Objects.requireNonNull(types[index]);
 			final TypeList output = typeChecker.checkType(instruction, input);
-			final List<String> targets = instruction.getTargets();
-			if (targets.isEmpty()) {
+			final List<String> targets;
+			if (instruction instanceof Instruction.Jump j) {
+				targets = List.of(j.target());
+			}
+			else if (instruction instanceof Instruction.Branch b) {
+				targets = List.of(b.ifTarget(), b.elseTarget());
+			}
+			else {
 				if (index + 1 == types.length) {
 					continue;
 				}
@@ -80,70 +86,58 @@ public class TypeCheckerImpl implements TypeChecker {
 	}
 
 	public TypeList checkType(Instruction instruction, TypeList input) {
-		return instruction.visit(new Instruction.Visitor<>() {
-			@Override
-			public TypeList label(String name) {
-				return input;
-			}
+		if (instruction instanceof Instruction.Label
+		|| instruction instanceof Instruction.Jump
+		|| instruction instanceof Instruction.Ret) {
+			return input;
+		}
 
-			@Override
-			public TypeList literal(int value) {
-				return input.append(Type.Int);
-			}
+		if (instruction instanceof Instruction.IntLiteral) {
+			return input.append(Type.Int);
+		}
 
-			@Override
-			public TypeList literal(boolean value) {
-				return input.append(Type.Bool);
-			}
+		if (instruction instanceof Instruction.BoolLiteral) {
+			return input.append(Type.Bool);
+		}
 
-			@Override
-			public TypeList literal(String text) {
-				return input.append(Type.Ptr).append(Type.Int);
-			}
+		if (instruction instanceof Instruction.StringLiteral) {
+			return input.append(Type.Ptr).append(Type.Int);
+		}
 
-			@Override
-			public TypeList command(String name, Location location) {
-				final TypesInOut types = nameToDef.get(name);
-				if (types != null) {
-					final TypeList output = input.transform(types.in(), types.out());
-					if (output == null) {
-						throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
-					}
-					return output;
+		if (instruction instanceof Instruction.Branch) {
+			return input.transform(TypeList.BOOL, TypeList.EMPTY);
+		}
+
+		if (instruction instanceof Instruction.Command c) {
+			final String name = c.name();
+			final Location location = c.location();
+
+			final TypesInOut types = nameToDef.get(name);
+			if (types != null) {
+				final TypeList output = input.transform(types.in(), types.out());
+				if (output == null) {
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
 				}
-
-				final BuiltinCommands.Command command = BuiltinCommands.get(name);
-				if (command == null) {
-					throw new InvalidTypeException(location, "Unknown command " + name);
-				}
-
-				return command.process(name, location, input);
+				return output;
 			}
 
-			@Override
-			public TypeList jump(String target) {
-				return input;
+			final BuiltinCommands.Command command = BuiltinCommands.get(name);
+			if (command == null) {
+				throw new InvalidTypeException(location, "Unknown command " + name);
 			}
 
-			@Override
-			public TypeList branch(String ifTarget, String elseTarget) {
-				return input.transform(TypeList.BOOL, TypeList.EMPTY);
-			}
+			return command.process(name, location, input);
+		}
 
-			@Override
-			public TypeList ret() {
-				return input;
-			}
-		});
+		throw new IllegalStateException();
 	}
 
 	private static Map<String, Integer> determineJumpTargets(List<Instruction> instructions) {
 		final Map<String, Integer> labelToIndex = new HashMap<>();
 		for (int i = 0; i < instructions.size(); i++) {
 			final Instruction instruction = instructions.get(i);
-			final String label = instruction.getLabel();
-			if (label != null) {
-				labelToIndex.put(label, i);
+			if (instruction instanceof Instruction.Label l) {
+				labelToIndex.put(l.name(), i);
 			}
 		}
 

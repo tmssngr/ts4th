@@ -24,8 +24,8 @@ public class CfgFunction {
 		String blockName = name + "_" + 0;
 		List<Instruction> blockInstructions = new ArrayList<>();
 		for (Instruction instruction : instructions) {
-			final String label = instruction.getLabel();
-			if (label != null) {
+			if (instruction instanceof Instruction.Label l) {
+				final String label = l.name();
 				if (blockName != null) {
 					ensureLastInstructionIsJumpOrBranch(blockInstructions, label);
 					addBlock(blockName, blockInstructions);
@@ -41,12 +41,16 @@ public class CfgFunction {
 			}
 
 			blockInstructions.add(instruction);
-			if (instruction.isJump() || instruction.isBranch()) {
+			if (instruction instanceof Instruction.Jump j) {
 				addBlock(blockName, blockInstructions);
-				final List<String> targets = instruction.getTargets();
-				for (String target : targets) {
-					connectBlocks(blockName, target);
-				}
+				connectBlocks(blockName, j.target());
+				blockInstructions = new ArrayList<>();
+				blockName = null;
+			}
+			else if (instruction instanceof Instruction.Branch b) {
+				addBlock(blockName, blockInstructions);
+				connectBlocks(blockName, b.ifTarget());
+				connectBlocks(blockName, b.elseTarget());
 				blockInstructions = new ArrayList<>();
 				blockName = null;
 			}
@@ -88,7 +92,7 @@ public class CfgFunction {
 	public List<Instruction> flatten() {
 		final List<Instruction> instructions = new ArrayList<>();
 		for (CfgBlock block : blocks) {
-			instructions.add(Instruction.label(block.getName()));
+			instructions.add(new Instruction.Label(block.getName()));
 			instructions.addAll(block.getInstructions());
 		}
 		return instructions;
@@ -139,12 +143,12 @@ public class CfgFunction {
 	private void ensureLastInstructionIsJumpOrBranch(List<Instruction> blockInstructions, String label) {
 		final Instruction lastInstruction = Utils.getLastOrNull(blockInstructions);
 		if (lastInstruction != null) {
-			if (lastInstruction.isJump() || lastInstruction.isBranch()) {
+			if (lastInstruction instanceof Instruction.Jump || lastInstruction instanceof Instruction.Branch) {
 				return;
 			}
 		}
 
-		blockInstructions.add(Instruction.jump(label));
+		blockInstructions.add(new Instruction.Jump(label));
 	}
 
 	private void addBlock(String name, List<Instruction> blockInstructions) {

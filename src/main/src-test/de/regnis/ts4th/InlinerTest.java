@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.junit.*;
 
+import static de.regnis.ts4th.InstructionFactory.*;
 import static org.junit.Assert.*;
 
 /**
@@ -15,24 +16,24 @@ public class InlinerTest {
 	public void testInline() {
 		assertEquals(List.of(
 				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
-						             Instruction.literal(10),
-						             Instruction.literal(1),
-						             Instruction.command("+"),
-						             Instruction.literal(1),
-						             Instruction.command("+"),
-						             Instruction.command("print")
+						             literal(10),
+						             literal(1),
+						             command("+"),
+						             literal(1),
+						             command("+"),
+						             command("print")
 				             ))
 		             ),
 		             Inliner.process(List.of(
 				             new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
-						             Instruction.literal(1),
-						             Instruction.command("+")
+						             literal(1),
+						             command("+")
 				             )),
 				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
-						             Instruction.literal(10),
-						             Instruction.command("1+"),
-						             Instruction.command("1+"),
-						             Instruction.command("print")
+						             literal(10),
+						             command("1+"),
+						             command("1+"),
+						             command("print")
 				             ))
 		             )));
 	}
@@ -54,7 +55,7 @@ public class InlinerTest {
 		try {
 			Inliner.process(List.of(
 					new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
-							Instruction.command("1+")
+							command("1+")
 					)),
 					new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
 					))

@@ -8,7 +8,7 @@ import java.util.function.*;
 /**
  * @author Thomas Singer
  */
-public class AsmIRConverter implements Instruction.Visitor<Object> {
+public class AsmIRConverter {
 
 	public static final int REG_0 = 0;
 	public static final int REG_1 = 1;
@@ -73,69 +73,45 @@ public class AsmIRConverter implements Instruction.Visitor<Object> {
 		this.output = output;
 	}
 
-	@Override
-	public Object label(String name) {
-		output.accept(AsmIR.label(name));
-		return null;
-	}
-
-	@Override
-	public Object literal(int value) {
-		output.accept(AsmIR.literal(value));
-		output.accept(AsmIR.push(REG_0, 2));
-		return null;
-	}
-
-	@Override
-	public Object literal(boolean value) {
-		output.accept(AsmIR.literal(value));
-		output.accept(AsmIR.push(REG_0, 1));
-		return null;
-	}
-
-	@Override
-	public Object literal(String text) {
-		output.accept(AsmIR.stringLiteral(stringLiterals.getConstantIndex(text)));
-		output.accept(AsmIR.push(REG_0, PTR_SIZE));
-		output.accept(AsmIR.literal(stringLiterals.getLength(text)));
-		output.accept(AsmIR.push(REG_0, 2));
-		return null;
-	}
-
-	@Override
-	public Object jump(String target) {
-		output.accept(AsmIR.jump(target));
-		return null;
-	}
-
-	@Override
-	public Object branch(String ifTarget, String elseTarget) {
-		output.accept(AsmIR.pop(REG_0, 1));
-		output.accept(AsmIR.command(CMD_TEST, REG_0, REG_0));
-		output.accept(AsmIR.jump(AsmIR.Condition.z, elseTarget));
-		output.accept(AsmIR.jump(ifTarget));
-		return null;
-	}
-
-	@Override
-	public Object ret() {
-		output.accept(AsmIR.ret());
-		return null;
-	}
-
-	@Override
-	public Object command(String name, Location location) {
-		final BuiltinCommands.Command command = BuiltinCommands.get(name);
-		if (command != null) {
-			command.toIR(types, output);
-		}
-		else {
-			output.accept(AsmIR.command(name, 0, 0));
-		}
-		return null;
-	}
-
 	public void process(Instruction instruction) {
-		instruction.visit(this);
+		if (instruction instanceof Instruction.Label label) {
+			output.accept(AsmIR.label(label.name()));
+		}
+		else if (instruction instanceof Instruction.IntLiteral literal) {
+			output.accept(AsmIR.literal(literal.value()));
+			output.accept(AsmIR.push(REG_0, 2));
+		}
+		else if (instruction instanceof Instruction.BoolLiteral literal) {
+			output.accept(AsmIR.literal(literal.value()));
+			output.accept(AsmIR.push(REG_0, 1));
+		}
+		else if (instruction instanceof Instruction.StringLiteral literal) {
+			final String text = literal.value();
+			output.accept(AsmIR.stringLiteral(stringLiterals.getConstantIndex(text)));
+			output.accept(AsmIR.push(REG_0, PTR_SIZE));
+			output.accept(AsmIR.literal(stringLiterals.getLength(text)));
+			output.accept(AsmIR.push(REG_0, 2));
+		}
+		else if (instruction instanceof Instruction.Jump jump) {
+			output.accept(AsmIR.jump(jump.target()));
+		}
+		else if (instruction instanceof Instruction.Branch branch) {
+			output.accept(AsmIR.pop(REG_0, 1));
+			output.accept(AsmIR.command(CMD_TEST, REG_0, REG_0));
+			output.accept(AsmIR.jump(AsmIR.Condition.z, branch.elseTarget()));
+			output.accept(AsmIR.jump(branch.ifTarget()));
+		}
+		else if (instruction instanceof Instruction.Ret) {
+			output.accept(AsmIR.ret());
+		}
+		else if (instruction instanceof Instruction.Command c) {
+			final BuiltinCommands.Command command = BuiltinCommands.get(c.name());
+			if (command != null) {
+				command.toIR(types, output);
+			}
+			else {
+				output.accept(AsmIR.command(c.name(), 0, 0));
+			}
+		}
 	}
 }

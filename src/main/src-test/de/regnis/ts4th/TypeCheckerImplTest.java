@@ -4,6 +4,8 @@ import org.junit.*;
 
 import java.util.*;
 
+import static de.regnis.ts4th.InstructionFactory.*;
+
 /**
  * @author Thomas Singer
  */
@@ -13,13 +15,13 @@ public class TypeCheckerImplTest {
 	public void testSimple() {
 		final TypeChecker typeChecker = new TypeCheckerImpl();
 		new CfgFunction(new Function("inc", TypeList.INT, TypeList.INT, false, List.of(
-				Instruction.literal(1),
-				BuiltinCommands.add()
+				literal(1),
+				add()
 		))).checkTypes(typeChecker);
 
 		try {
 			new CfgFunction(new Function("inc", TypeList.INT, TypeList.INT, false, List.of(
-					Instruction.literal(1)
+					literal(1)
 			))).checkTypes(typeChecker);
 			Assert.fail();
 		}
@@ -28,7 +30,7 @@ public class TypeCheckerImplTest {
 
 		try {
 			new CfgFunction(new Function("inc", TypeList.INT, TypeList.INT, false, List.of(
-					BuiltinCommands.add()
+					add()
 			))).checkTypes(typeChecker);
 			Assert.fail();
 		}
@@ -40,8 +42,8 @@ public class TypeCheckerImplTest {
 	public void testOwnMethod() {
 		final String print = "ownprint";
 		final CfgFunction cfgFunction = new CfgFunction(new Function("printSum", TypeList.INT2, TypeList.EMPTY, false, List.of(
-				BuiltinCommands.add(),
-				Instruction.command(print)
+				add(),
+				command(print)
 		)));
 
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
@@ -61,28 +63,28 @@ public class TypeCheckerImplTest {
 	public void testIf() {
 		final TypeChecker typeChecker = new TypeCheckerImpl();
 		new CfgFunction(new Function("max", TypeList.INT2, TypeList.INT, false, List.of(
-				BuiltinCommands.dup2Int(),
-				BuiltinCommands.isLT(),
-				Instruction.branch("if-1", "endif-1"),
+				dup2Int(),
+				isLT(),
+				branch("if-1", "endif-1"),
 
-				Instruction.label("if-1"),
-				BuiltinCommands.swapInt(),
-				Instruction.jump("endif-1"),
+				label("if-1"),
+				swapInt(),
+				jump("endif-1"),
 
-				Instruction.label("endif-1"),
-				BuiltinCommands.dropInt()
+				label("endif-1"),
+				dropInt()
 		))).checkTypes(typeChecker);
 
 		try {
 			new CfgFunction(new Function("fails", TypeList.INT2, TypeList.INT, false, List.of(
-					BuiltinCommands.isLT(),
-					Instruction.branch("if-1", "endif-1"),
+					isLT(),
+					branch("if-1", "endif-1"),
 
-					Instruction.label("if-1"),
-					BuiltinCommands.dropInt(),
-					Instruction.jump("endif-1"),
+					label("if-1"),
+					dropInt(),
+					jump("endif-1"),
 
-					Instruction.label("endif-1")
+					label("endif-1")
 			))).checkTypes(typeChecker);
 		}
 		catch (InvalidTypeException ignored) {
@@ -94,27 +96,27 @@ public class TypeCheckerImplTest {
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
 		typeChecker.add(".", TypeList.INT, TypeList.EMPTY);
 		new CfgFunction(new Function("loopTest", TypeList.INT2, TypeList.EMPTY, false, List.of(
-				Instruction.label("loop-2"),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.overInt(),
-				BuiltinCommands.isGE(),
-				Instruction.branch("if-3", "endif-3"),
+				label("loop-2"),
+				overInt(),
+				overInt(),
+				isGE(),
+				branch("if-3", "endif-3"),
 
-				Instruction.label("if-3"),
-				BuiltinCommands.dropInt(),
-				BuiltinCommands.dropInt(),
-				Instruction.jump("endloop-2"),
+				label("if-3"),
+				dropInt(),
+				dropInt(),
+				jump("endloop-2"),
 
-				Instruction.label("endif-3"),
-				BuiltinCommands.swapInt(),
-				BuiltinCommands.dup(),
-				Instruction.command("."),
-				Instruction.literal(1),
-				BuiltinCommands.add(),
-				BuiltinCommands.swapInt(),
-				Instruction.jump("loop-2"),
+				label("endif-3"),
+				swapInt(),
+				dup(),
+				command("."),
+				literal(1),
+				add(),
+				swapInt(),
+				jump("loop-2"),
 
-				Instruction.label("endloop-2")
+				label("endloop-2")
 		))).checkTypes(typeChecker);
 	}
 
@@ -131,14 +133,14 @@ public class TypeCheckerImplTest {
 				                         TypeList.INT // end:
 		                         },
 		                         TypeCheckerImpl.determineTypes(List.of(
-				                         Instruction.label("start"),
-				                         Instruction.literal(1),
-				                         BuiltinCommands.add(),
-				                         BuiltinCommands.dup(),
-				                         Instruction.literal(10),
-				                         BuiltinCommands.isLT(),
-				                         Instruction.branch("start", "end"),
-				                         Instruction.label("end")
+				                         label("start"),
+				                         literal(1),
+				                         add(),
+				                         dup(),
+				                         literal(10),
+				                         isLT(),
+				                         branch("start", "end"),
+				                         label("end")
 		                         ), TypeList.INT, new TypeCheckerImpl()));
 
 		Assert.assertArrayEquals(new TypeList[]{
@@ -149,11 +151,11 @@ public class TypeCheckerImplTest {
 				                         TypeList.EMPTY // 3
 		                         },
 		                         TypeCheckerImpl.determineTypes(List.of(
-				                         Instruction.jump("skip"),
-				                         Instruction.literal(1),
-				                         BuiltinCommands.add(),
-				                         Instruction.label("skip"),
-				                         Instruction.literal(3)
+				                         jump("skip"),
+				                         literal(1),
+				                         add(),
+				                         label("skip"),
+				                         literal(3)
 		                         ), TypeList.EMPTY, new TypeCheckerImpl()));
 	}
 }
