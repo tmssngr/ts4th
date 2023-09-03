@@ -18,6 +18,26 @@ public interface TS4thListener extends ParseTreeListener {
 	 */
 	void exitRoot(TS4thParser.RootContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TS4thParser#rootItem}.
+	 * @param ctx the parse tree
+	 */
+	void enterRootItem(TS4thParser.RootItemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TS4thParser#rootItem}.
+	 * @param ctx the parse tree
+	 */
+	void exitRootItem(TS4thParser.RootItemContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TS4thParser#include}.
+	 * @param ctx the parse tree
+	 */
+	void enterInclude(TS4thParser.IncludeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TS4thParser#include}.
+	 * @param ctx the parse tree
+	 */
+	void exitInclude(TS4thParser.IncludeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TS4thParser#declaration}.
 	 * @param ctx the parse tree
 	 */

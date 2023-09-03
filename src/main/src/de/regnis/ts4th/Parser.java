@@ -15,29 +15,30 @@ import org.antlr.v4.runtime.tree.*;
  */
 public final class Parser extends TS4thBaseVisitor<Object> {
 
-	public static List<Function> parseFile(Path file) throws IOException {
-		if (false) {
-			try (InputStream stream = Files.newInputStream(file)) {
-				showLexerTokens(CharStreams.fromStream(stream));
-			}
-		}
-		try (InputStream stream = Files.newInputStream(file)) {
-			return parse(CharStreams.fromStream(stream));
-		}
+	public static List<Function> parseFile(Path file) throws ParseCancellationException {
+		final FileIncludeHandler rootIncludeHandler = new FileIncludeHandler(file.toAbsolutePath());
+		return rootIncludeHandler.parse();
 	}
 
 	public static List<Function> parseString(String s) {
+		return parseString(s, unused -> {
+			throw new ParseCancellationException("can't include");
+		});
+	}
+
+	public static List<Function> parseString(String s, IncludeHandler includeHandler) {
 		if (false) {
 			showLexerTokens(CharStreams.fromString(s));
 		}
-		return parse(CharStreams.fromString(s));
+		return parse(CharStreams.fromString(s), includeHandler);
 	}
 
+	private final IncludeHandler includeHandler;
 	private String continueLabel;
 	private String breakLabel;
 	private int index;
-
-	private Parser() {
+	private Parser(IncludeHandler includeHandler) {
+		this.includeHandler = includeHandler;
 	}
 
 	@Override
@@ -47,10 +48,27 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		continueLabel = null;
 
 		final List<Function> functions = new ArrayList<>();
-		for (TS4thParser.DeclarationContext declarationContext : ctx.declaration()) {
-			functions.add(visitDeclaration(declarationContext));
+		for (TS4thParser.RootItemContext rootItemContext : ctx.rootItem()) {
+			final List<Function> rootItemFunctions = visitRootItem(rootItemContext);
+			functions.addAll(rootItemFunctions);
 		}
 		return functions;
+	}
+
+	@Override
+	public List<Function> visitRootItem(TS4thParser.RootItemContext ctx) {
+		final TS4thParser.DeclarationContext declaration = ctx.declaration();
+		if (declaration != null) {
+			return List.of(visitDeclaration(declaration));
+		}
+
+		return visitInclude(ctx.include());
+	}
+
+	@Override
+	public List<Function> visitInclude(TS4thParser.IncludeContext ctx) {
+		final String path = parseStringLiteral(ctx.String());
+		return includeHandler.include(path);
 	}
 
 	@Override
@@ -122,10 +140,14 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public Object visitString(TS4thParser.StringContext ctx) {
-		final String text = ctx.String().getText();
-		final String raw = text.substring(1, text.length() - 1);
-		final String value = unescape(raw);
+		final String value = parseStringLiteral(ctx.String());
 		return List.of(Instruction.literal(value));
+	}
+
+	private String parseStringLiteral(TerminalNode node) {
+		final String text = node.getText();
+		final String raw = text.substring(1, text.length() - 1);
+		return unescape(raw);
 	}
 
 	@Override
@@ -273,7 +295,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		return buffer.toString();
 	}
 
-	private static List<Function> parse(CharStream charStream) {
+	private static List<Function> parse(CharStream charStream, IncludeHandler includeHandler) {
 		final TS4thLexer lexer = new TS4thLexer(charStream);
 		final TokenStream tokenStream = new CommonTokenStream(lexer);
 
@@ -286,7 +308,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		});
 
 		final TS4thParser.RootContext rootContext = parser.root();
-		final Parser astFactory = new Parser();
+		final Parser astFactory = new Parser(includeHandler);
 		return astFactory.visitRoot(rootContext);
 	}
 
@@ -300,6 +322,54 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 			final String name = TS4thLexer.VOCABULARY.getDisplayName(token.getType());
 			System.out.println(token.getLine() + ":" + token.getCharPositionInLine() + " " + name + ": " + token.getText());
+		}
+	}
+
+	public interface IncludeHandler {
+		List<Function> include(String fileString);
+	}
+
+	private static class FileIncludeHandler implements IncludeHandler {
+		private final Path file;
+		private final Set<Path> files;
+
+		public FileIncludeHandler(Path file) {
+			this.file = file;
+			files = new HashSet<>();
+			files.add(file);
+		}
+
+		private FileIncludeHandler(Path file, Set<Path> files) {
+			this.file = file;
+			this.files = files;
+		}
+
+		@Override
+		public List<Function> include(String fileString) {
+			final Path includeFile = file.resolveSibling(fileString);
+			if (!files.add(includeFile)) {
+				return List.of();
+			}
+
+			return new FileIncludeHandler(includeFile, files)
+					.parse();
+		}
+
+		public List<Function> parse() throws ParseCancellationException {
+			try {
+				if (false) {
+					try (InputStream stream = Files.newInputStream(file)) {
+						showLexerTokens(CharStreams.fromStream(stream));
+					}
+				}
+
+				try (InputStream stream = Files.newInputStream(file)) {
+					return Parser.parse(CharStreams.fromStream(stream), this);
+				}
+			}
+			catch (IOException ex) {
+				throw new ParseCancellationException("Failed to parse file " + file, ex);
+			}
 		}
 	}
 }

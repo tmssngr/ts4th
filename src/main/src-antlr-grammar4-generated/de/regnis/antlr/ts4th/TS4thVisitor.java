@@ -17,6 +17,18 @@ public interface TS4thVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRoot(TS4thParser.RootContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TS4thParser#rootItem}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRootItem(TS4thParser.RootItemContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TS4thParser#include}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInclude(TS4thParser.IncludeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TS4thParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
