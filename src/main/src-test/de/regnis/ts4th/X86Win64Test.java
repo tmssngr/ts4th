@@ -19,11 +19,11 @@ public class X86Win64Test extends AbstractFileTest {
 				final X86Win64 x86Win64 = new X86Win64(writer);
 				x86Win64.write(List.of(
 						new AsmIRFunction("main", stringLiterals, List.of(
-								AsmIR.command("subr", 0, 0),
-								AsmIR.ret()
+								AsmIRFactory.command("subr", 0, 0),
+								AsmIRFactory.ret()
 						)),
 						new AsmIRFunction("subr", stringLiterals, List.of(
-								AsmIR.ret()
+								AsmIRFactory.ret()
 						))
 				), stringLiterals);
 			}

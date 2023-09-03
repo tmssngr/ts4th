@@ -15,102 +15,102 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testRemoveIndirectLabel() {
 		testSimplify(List.of(
-				label("loop"),
-				command("foo", 0, 0),
-				jump(Condition.lt, "else"),
-				literal(0),
-				jump("loop"),
-				label("else"),
-				literal(1),
-				jump("loop")
+				AsmIRFactory.label("loop"),
+				AsmIRFactory.command("foo", 0, 0),
+				AsmIRFactory.jump(Condition.lt, "else"),
+				AsmIRFactory.literal(0),
+				AsmIRFactory.jump("loop"),
+				AsmIRFactory.label("else"),
+				AsmIRFactory.literal(1),
+				AsmIRFactory.jump("loop")
 		), List.of(
-				label("loop"),
-				command("foo", 0, 0),
-				jump(Condition.lt, "else"),
-				literal(0),
-				jump("end"),
-				label("else"),
-				literal(1),
-				label("end"),
-				jump("loop")
+				AsmIRFactory.label("loop"),
+				AsmIRFactory.command("foo", 0, 0),
+				AsmIRFactory.jump(Condition.lt, "else"),
+				AsmIRFactory.literal(0),
+				AsmIRFactory.jump("end"),
+				AsmIRFactory.label("else"),
+				AsmIRFactory.literal(1),
+				AsmIRFactory.label("end"),
+				AsmIRFactory.jump("loop")
 		));
 	}
 
 	@Test
 	public void testCommandAfterJump() {
 		testSimplify(List.of(
-				jump(Condition.nz, "else"),
-				jump("end"),
-				label("else"),
-				literal(0),
-				label("end")
+				AsmIRFactory.jump(Condition.nz, "else"),
+				AsmIRFactory.jump("end"),
+				AsmIRFactory.label("else"),
+				AsmIRFactory.literal(0),
+				AsmIRFactory.label("end")
 		), List.of(
-				jump(Condition.nz, "else"),
-				jump("end"),
-				literal(2),
-				literal(1),
-				label("else"),
-				literal(0),
-				label("end")
+				AsmIRFactory.jump(Condition.nz, "else"),
+				AsmIRFactory.jump("end"),
+				AsmIRFactory.literal(2),
+				AsmIRFactory.literal(1),
+				AsmIRFactory.label("else"),
+				AsmIRFactory.literal(0),
+				AsmIRFactory.label("end")
 		));
 	}
 
 	@Test
 	public void testJumpToNext() {
 		testSimplify(List.of(
-				literal(1)
+				AsmIRFactory.literal(1)
 		), List.of(
-				jump("next"),
-				label("next"),
-				literal(1)
+				AsmIRFactory.jump("next"),
+				AsmIRFactory.label("next"),
+				AsmIRFactory.literal(1)
 		));
 
 		testSimplify(List.of(
-				literal(1)
+				AsmIRFactory.literal(1)
 		), List.of(
-				jump(Condition.nz, "next"),
-				label("next"),
-				literal(1)
+				AsmIRFactory.jump(Condition.nz, "next"),
+				AsmIRFactory.label("next"),
+				AsmIRFactory.literal(1)
 		));
 	}
 
 	@Test
 	public void testRemoveUnusedLabels() {
 		testSimplify(List.of(
-				literal(1)
+				AsmIRFactory.literal(1)
 		), List.of(
-				label("start"),
-				literal(1)
+				AsmIRFactory.label("start"),
+				AsmIRFactory.literal(1)
 		));
 
 		testSimplifyExpectNoChange(List.of(
-				jump(Condition.z, "else"),
-				literal(1),
-				jump("end"),
-				label("else"),
-				literal(2),
-				label("end")
+				AsmIRFactory.jump(Condition.z, "else"),
+				AsmIRFactory.literal(1),
+				AsmIRFactory.jump("end"),
+				AsmIRFactory.label("else"),
+				AsmIRFactory.literal(2),
+				AsmIRFactory.label("end")
 		));
 	}
 
 	@Test
 	public void testPushPop() {
 		testSimplify(List.of(
-				literal(1),
-				command("print", 0, 0)
+				AsmIRFactory.literal(1),
+				AsmIRFactory.command("print", 0, 0)
 		), List.of(
-				literal(1),
-				push(1, 2),
-				pop(1, 2),
-				command("print", 0, 0)
+				AsmIRFactory.literal(1),
+				AsmIRFactory.push(1, 2),
+				AsmIRFactory.pop(1, 2),
+				AsmIRFactory.command("print", 0, 0)
 		));
 
 		try {
 			AsmIRSimplifier.simplify(List.of(
-					literal(1),
-					push(1, 2),
-					pop(1, 1),
-					command("print", 0, 0)
+					AsmIRFactory.literal(1),
+					AsmIRFactory.push(1, 2),
+					AsmIRFactory.pop(1, 1),
+					AsmIRFactory.command("print", 0, 0)
 			));
 			fail();
 		}

@@ -26,9 +26,9 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				final String target = i1.getTarget();
-				final String label = i2.getLabel();
-				if (target != null && target.equals(label)) {
+				if (i1 instanceof AsmIR.Jump j
+				    && i2 instanceof AsmIR.Label l
+				    && Objects.equals(j.target(), l.name())) {
 					remove();
 				}
 			}
@@ -43,10 +43,10 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(instructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				final String label = i1.getLabel();
-				final String target = i2.getTarget();
-				if (label != null && target != null && !label.equals(target)) {
-					fromTo.put(label, target);
+				if (i1 instanceof AsmIR.Label l
+				    && i2 instanceof AsmIR.Jump j
+				    && !Objects.equals(l.name(), j.target())) {
+					fromTo.put(l.name(), j.target());
 				}
 			}
 		}.process();
@@ -57,13 +57,12 @@ public class AsmIRSimplifier {
 
 		final List<AsmIR> newInstructions = new ArrayList<>();
 		for (AsmIR instruction : instructions) {
-			final String target = instruction.getTarget();
-			if (target != null) {
-				final String newTarget = getNewTarget(target, fromTo);
-				final AsmIR.Condition condition = instruction.getCondition();
+			if (instruction instanceof AsmIR.Jump j) {
+				final String newTarget = getNewTarget(j.target(), fromTo);
+				final AsmIR.Condition condition = j.condition();
 				newInstructions.add(condition != null
-						                    ? AsmIR.jump(condition, newTarget)
-						                    : AsmIR.jump(newTarget));
+						                    ? AsmIRFactory.jump(condition, newTarget)
+						                    : AsmIRFactory.jump(newTarget));
 			}
 			else {
 				newInstructions.add(instruction);
@@ -88,10 +87,9 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				final String target = i1.getTarget();
-				final AsmIR.Condition condition = i1.getCondition();
-				final String label = i2.getLabel();
-				if (target != null && condition == null && label == null) {
+				if (i1 instanceof AsmIR.Jump j
+				    && j.condition() == null
+				    && !(i2 instanceof AsmIR.Label)) {
 					removeNext();
 					again();
 				}
@@ -107,9 +105,10 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1.isPush() && i2.isPop()
-				    && i1.getPushPopReg() == i2.getPushPopReg()) {
-					Utils.assertTrue(i1.getPushPopSize() == i2.getPushPopSize());
+				if (i1 instanceof AsmIR.Push push
+				    && i2 instanceof AsmIR.Pop pop
+				    && push.reg() == pop.reg()) {
+					Utils.assertTrue(push.size() == pop.size());
 					removeNext();
 					remove();
 					again();
@@ -122,21 +121,14 @@ public class AsmIRSimplifier {
 
 	private static void removeUnusedLabels(List<AsmIR> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
-		for (Iterator<AsmIR> it = instructions.iterator(); it.hasNext(); ) {
-			final AsmIR instruction = it.next();
-			final String label = instruction.getLabel();
-			if (label != null && !usedTargets.contains(label)) {
-				it.remove();
-			}
-		}
+		instructions.removeIf(instruction -> instruction instanceof AsmIR.Label l && !usedTargets.contains(l.name()));
 	}
 
 	private static Set<String> getUsedTargets(List<AsmIR> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (AsmIR instruction : instructions) {
-			final String target = instruction.getTarget();
-			if (target != null) {
-				usedTargets.add(target);
+			if (instruction instanceof AsmIR.Jump j) {
+				usedTargets.add(j.target());
 			}
 		}
 		return usedTargets;

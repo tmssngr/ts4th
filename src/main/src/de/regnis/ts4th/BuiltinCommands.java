@@ -68,7 +68,7 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
-				output.accept(AsmIR.pop(REG_0, size));
+				output.accept(AsmIRFactory.pop(REG_0, size));
 			}
 		});
 		nameToCommand.put(DUP, new Command() {
@@ -83,9 +83,9 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
-				output.accept(AsmIR.pop(REG_0, size));
-				output.accept(AsmIR.push(REG_0, size));
-				output.accept(AsmIR.push(REG_0, size));
+				output.accept(AsmIRFactory.pop(REG_0, size));
+				output.accept(AsmIRFactory.push(REG_0, size));
+				output.accept(AsmIRFactory.push(REG_0, size));
 			}
 		});
 		nameToCommand.put(DUP2, new Command() {
@@ -105,12 +105,12 @@ public class BuiltinCommands {
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
-				output.accept(AsmIR.pop(REG_1, size1st));
-				output.accept(AsmIR.pop(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_1, size1st));
-				output.accept(AsmIR.push(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_1, size1st));
+				output.accept(AsmIRFactory.pop(REG_1, size1st));
+				output.accept(AsmIRFactory.pop(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_1, size1st));
+				output.accept(AsmIRFactory.push(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_1, size1st));
 			}
 		});
 		nameToCommand.put(SWAP, new Command() {
@@ -130,10 +130,10 @@ public class BuiltinCommands {
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
-				output.accept(AsmIR.pop(REG_1, size1st));
-				output.accept(AsmIR.pop(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_1, size1st));
-				output.accept(AsmIR.push(REG_0, size2nd));
+				output.accept(AsmIRFactory.pop(REG_1, size1st));
+				output.accept(AsmIRFactory.pop(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_1, size1st));
+				output.accept(AsmIRFactory.push(REG_0, size2nd));
 			}
 		});
 		nameToCommand.put(OVER, new Command() {
@@ -152,11 +152,11 @@ public class BuiltinCommands {
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
-				output.accept(AsmIR.pop(REG_1, size1st));
-				output.accept(AsmIR.pop(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_0, size2nd));
-				output.accept(AsmIR.push(REG_1, size1st));
-				output.accept(AsmIR.push(REG_0, size2nd));
+				output.accept(AsmIRFactory.pop(REG_1, size1st));
+				output.accept(AsmIRFactory.pop(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_0, size2nd));
+				output.accept(AsmIRFactory.push(REG_1, size1st));
+				output.accept(AsmIRFactory.push(REG_0, size2nd));
 			}
 		});
 		nameToCommand.put(ROT, new Command() {
@@ -179,12 +179,12 @@ public class BuiltinCommands {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
 				final int size3rd = size(types.prev().prev().type());
-				output.accept(AsmIR.pop(REG_2, size1st)); // c
-				output.accept(AsmIR.pop(REG_1, size2nd)); // b
-				output.accept(AsmIR.pop(REG_0, size3rd)); // a
-				output.accept(AsmIR.push(REG_1, size2nd));
-				output.accept(AsmIR.push(REG_2, size1st));
-				output.accept(AsmIR.push(REG_0, size3rd));
+				output.accept(AsmIRFactory.pop(REG_2, size1st)); // c
+				output.accept(AsmIRFactory.pop(REG_1, size2nd)); // b
+				output.accept(AsmIRFactory.pop(REG_0, size3rd)); // a
+				output.accept(AsmIRFactory.push(REG_1, size2nd));
+				output.accept(AsmIRFactory.push(REG_2, size1st));
+				output.accept(AsmIRFactory.push(REG_0, size3rd));
 			}
 		});
 
@@ -216,22 +216,22 @@ public class BuiltinCommands {
 				final Type type1 = types.type();
 				final Type type2 = types.prev().type();
 				if (type1 == Type.Int && type2 == Type.Int) {
-					output.accept(AsmIR.pop(REG_1, 2));
-					output.accept(AsmIR.pop(REG_0, 2));
-					output.accept(AsmIR.command(CMD_ADD, REG_0, REG_1));
-					output.accept(AsmIR.push(REG_0, 2));
+					output.accept(AsmIRFactory.pop(REG_1, 2));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
+					output.accept(AsmIRFactory.command(CMD_ADD, REG_0, REG_1));
+					output.accept(AsmIRFactory.push(REG_0, 2));
 				}
 				else if (type1 == Type.Ptr) {
-					output.accept(AsmIR.pop(REG_1, PTR_SIZE));
-					output.accept(AsmIR.pop(REG_0, 2));
-					output.accept(AsmIR.command(CMD_ADD_PTR, REG_1, REG_0));
-					output.accept(AsmIR.push(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
+					output.accept(AsmIRFactory.command(CMD_ADD_PTR, REG_1, REG_0));
+					output.accept(AsmIRFactory.push(REG_1, PTR_SIZE));
 				}
 				else if (type2 == Type.Ptr) {
-					output.accept(AsmIR.pop(REG_1, 2));
-					output.accept(AsmIR.pop(REG_0, PTR_SIZE));
-					output.accept(AsmIR.command(CMD_ADD, REG_0, REG_1));
-					output.accept(AsmIR.push(REG_0, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_1, 2));
+					output.accept(AsmIRFactory.pop(REG_0, PTR_SIZE));
+					output.accept(AsmIRFactory.command(CMD_ADD, REG_0, REG_1));
+					output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 				}
 				else {
 					throw new IllegalStateException();
@@ -256,8 +256,8 @@ public class BuiltinCommands {
 
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIR.command(CMD_MEM, REG_0, 0));
-				output.accept(AsmIR.push(REG_0, PTR_SIZE));
+				output.accept(AsmIRFactory.command(CMD_MEM, REG_0, 0));
+				output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 			}
 		});
 
@@ -274,10 +274,10 @@ public class BuiltinCommands {
 
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIR.pop(REG_1, PTR_SIZE));
-				output.accept(AsmIR.literal(0));
-				output.accept(AsmIR.load(REG_0, REG_1, 1));
-				output.accept(AsmIR.push(REG_0, 2));
+				output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
+				output.accept(AsmIRFactory.literal(0));
+				output.accept(AsmIRFactory.load(REG_0, REG_1, 1));
+				output.accept(AsmIRFactory.push(REG_0, 2));
 			}
 		});
 		nameToCommand.put(STORE8, new Command() {
@@ -301,14 +301,14 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
-					output.accept(AsmIR.pop(REG_1, PTR_SIZE));
-					output.accept(AsmIR.pop(REG_0, 2));
+					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
 				}
 				else {
-					output.accept(AsmIR.pop(REG_0, 2));
-					output.accept(AsmIR.pop(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
+					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 				}
-				output.accept(AsmIR.store(REG_1, REG_0, 1));
+				output.accept(AsmIRFactory.store(REG_1, REG_0, 1));
 			}
 		});
 
@@ -331,8 +331,8 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
-				output.accept(AsmIR.pop(REG_0, size));
-				output.accept(AsmIR.command(CMD_PRINT, REG_0, size));
+				output.accept(AsmIRFactory.pop(REG_0, size));
+				output.accept(AsmIRFactory.command(CMD_PRINT, REG_0, size));
 			}
 		});
 		nameToCommand.put(PRINT_STRING, new Command() {
@@ -356,14 +356,14 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
-					output.accept(AsmIR.pop(REG_1, PTR_SIZE));
-					output.accept(AsmIR.pop(REG_0, 2));
+					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
 				}
 				else {
-					output.accept(AsmIR.pop(REG_0, 2));
-					output.accept(AsmIR.pop(REG_1, PTR_SIZE));
+					output.accept(AsmIRFactory.pop(REG_0, 2));
+					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 				}
-				output.accept(AsmIR.command(CMD_PRINT_STRING, REG_1, REG_0));
+				output.accept(AsmIRFactory.command(CMD_PRINT_STRING, REG_1, REG_0));
 			}
 		});
 
@@ -423,10 +423,10 @@ public class BuiltinCommands {
 
 		@Override
 		public void toIR(TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIR.pop(REG_1, 2));
-			output.accept(AsmIR.pop(REG_0, 2));
-			output.accept(AsmIR.command(command, REG_0, REG_1));
-			output.accept(AsmIR.push(REG_0, 2));
+			output.accept(AsmIRFactory.pop(REG_1, 2));
+			output.accept(AsmIRFactory.pop(REG_0, 2));
+			output.accept(AsmIRFactory.command(command, REG_0, REG_1));
+			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 
 		public TypeList process(String name, Location location, TypeList input) {
@@ -448,10 +448,10 @@ public class BuiltinCommands {
 
 		@Override
 		public void toIR(TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIR.pop(REG_1, 2));
-			output.accept(AsmIR.pop(REG_0, 2));
-			output.accept(AsmIR.command(command, REG_0, REG_1));
-			output.accept(AsmIR.push(REG_0, 1));
+			output.accept(AsmIRFactory.pop(REG_1, 2));
+			output.accept(AsmIRFactory.pop(REG_0, 2));
+			output.accept(AsmIRFactory.command(command, REG_0, REG_1));
+			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
 
 		public TypeList process(String name, Location location, TypeList input) {

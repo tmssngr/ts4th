@@ -1,10 +1,10 @@
 package de.regnis.ts4th;
 
-import org.jetbrains.annotations.*;
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+
+import org.jetbrains.annotations.*;
 
 /**
  * @author Thomas Singer
@@ -67,7 +67,6 @@ public class AsmIRInterpreter {
 	private final StringBuilder buffer = new StringBuilder();
 	private final List<AsmIR> instructions;
 	private final int startIp;
-	private final AsmIR.Visitor<String> visitor;
 
 	private int mem;
 	private int reg0;
@@ -82,8 +81,8 @@ public class AsmIRInterpreter {
 		this.startIp = startIp;
 		int index = 0;
 		for (AsmIR instruction : instructions) {
-			final String label = instruction.getLabel();
-			if (label != null) {
+			if (instruction instanceof AsmIR.Label l) {
+				final String label = l.name();
 				if (labelToIndex.put(label, index) != null) {
 					throw new IllegalStateException("duplicate label " + label);
 				}
@@ -98,132 +97,36 @@ public class AsmIRInterpreter {
 				memAddressToValue.put(mem++, (int)b);
 			}
 		}
+	}
 
-		visitor = new AsmIR.Visitor<>() {
-			@Override
-			public String label(String name) {
-				return null;
-			}
+	public List<Object> run(List<Object> args) {
+		ip = startIp;
+		buffer.setLength(0);
 
-			@Override
-			public String literal(int value) {
-				reg0 = value;
-				return null;
+		dataStack.clear();
+		for (Object arg : args) {
+			if (arg instanceof Integer value) {
+				push(value, 2);
 			}
+			else if (arg instanceof Boolean value) {
+				push(value ? 1 : 0, 1);
+			}
+			else {
+				throw new IllegalStateException("Unsupported arg " + arg);
+			}
+		}
 
-			@Override
-			public String literal(boolean value) {
-				reg0 = value ? 1 : 0;
-				return null;
-			}
+		while (ip < instructions.size()) {
+			final AsmIR instruction = instructions.get(ip);
+			ip++;
+			process(instruction);
+		}
 
-			@Override
-			public String stringLiteral(int constantIndex) {
-				reg0 = stringIndexToMem.get(constantIndex);
-				return null;
-			}
+		return new ArrayList<>(dataStack);
+	}
 
-			@Override
-			public String jump(AsmIR.Condition condition, String target) {
-				if (switch (condition) {
-					case z -> flagZ;
-					case nz -> !flagZ;
-					default -> throw new IllegalStateException("unsupported condition " + condition);
-				}) {
-					setIpTo(target);
-				}
-				return null;
-			}
-
-			@Override
-			public String jump(String target) {
-				setIpTo(target);
-				return null;
-			}
-
-			@Override
-			public String push(int reg, int size) {
-				int value = getRegValue(reg);
-				AsmIRInterpreter.this.push(value, size);
-				return null;
-			}
-
-			@Override
-			public String pop(int reg, int size) {
-				final int value = AsmIRInterpreter.this.pop(size);
-				setReg(reg, value);
-				return null;
-			}
-
-			@Override
-			public String load(int valueReg, int valueSize, int pointerReg) {
-				Utils.assertTrue(valueSize == 1);
-				final Integer value = memAddressToValue.get(getRegValue(pointerReg));
-				if (value == null) {
-					throw new InterpretingFailedException("mem at " + reg1 + " read without writing");
-				}
-				setReg(valueReg, value);
-				return null;
-			}
-
-			@Override
-			public String store(int pointerReg, int valueReg, int valueSize) {
-				Utils.assertTrue(valueSize == 1);
-				memAddressToValue.put(getRegValue(pointerReg), getRegValue(valueReg));
-				return null;
-			}
-
-			@Override
-			public String ret() {
-				if (callStack.isEmpty()) {
-					ip = instructions.size();
-				}
-				else {
-					ip = callStack.pop();
-				}
-				return null;
-			}
-
-			@Override
-			public String command(String name, int reg1, int reg2) {
-				switch (name) {
-					case AsmIRConverter.CMD_ADD -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));
-					case AsmIRConverter.CMD_SUB -> setReg(reg1, getRegValue(reg1) - getRegValue(reg2));
-					case AsmIRConverter.CMD_IMUL -> setReg(reg1, getRegValue(reg1) * getRegValue(reg2));
-					case AsmIRConverter.CMD_IDIV -> setReg(reg1, getRegValue(reg1) / getRegValue(reg2));
-					case AsmIRConverter.CMD_IMOD -> setReg(reg1, getRegValue(reg1) % getRegValue(reg2));
-					case AsmIRConverter.CMD_AND -> setReg(reg1, getRegValue(reg1) & getRegValue(reg2));
-					case AsmIRConverter.CMD_SHR -> setReg(reg1, getRegValue(reg1) >> getRegValue(reg2));
-					case AsmIRConverter.CMD_TEST -> flagZ = (getRegValue(reg1) & getRegValue(reg2) & 0xFF) == 0;
-					case AsmIRConverter.CMD_LT -> setReg(reg1, getRegValue(reg1) < getRegValue(reg2) ? 1 : 0);
-					case AsmIRConverter.CMD_LE -> setReg(reg1, getRegValue(reg1) <= getRegValue(reg2) ? 1 : 0);
-					case AsmIRConverter.CMD_GE -> setReg(reg1, getRegValue(reg1) >= getRegValue(reg2) ? 1 : 0);
-					case AsmIRConverter.CMD_GT -> setReg(reg1, getRegValue(reg1) > getRegValue(reg2) ? 1 : 0);
-					case AsmIRConverter.CMD_MEM -> setReg(reg1, mem);
-					case AsmIRConverter.CMD_PRINT -> {
-						Utils.assertTrue(reg1 == AsmIRConverter.REG_0);
-						buffer.append(getRegValue(reg1));
-						buffer.append(" ");
-					}
-					case AsmIRConverter.CMD_PRINT_STRING -> {
-						for (int ptr = getRegValue(reg1), size = getRegValue(reg2); size-- > 0;) {
-							final Integer value = memAddressToValue.get(ptr);
-							buffer.append((char) value.intValue());
-							ptr++;
-						}
-					}
-					default -> {
-						final Integer ip = labelToIndex.get(name + "_0");
-						if (ip == null) {
-							throw new InterpretingFailedException("Unknown command " + name);
-						}
-						callStack.push(AsmIRInterpreter.this.ip);
-						AsmIRInterpreter.this.ip = ip;
-					}
-				}
-				return null;
-			}
-		};
+	public String getOutput() {
+		return buffer.toString();
 	}
 
 	private int pop(int size) {
@@ -259,45 +162,126 @@ public class AsmIRInterpreter {
 
 	private void setReg(int reg, int value) {
 		switch (reg) {
-			case AsmIRConverter.REG_0 -> reg0 = value;
-			case AsmIRConverter.REG_1 -> reg1 = value;
-			case AsmIRConverter.REG_2 -> reg2 = value;
-			default -> throw new IllegalStateException("unsupported reg " + reg);
+		case AsmIRConverter.REG_0 -> reg0 = value;
+		case AsmIRConverter.REG_1 -> reg1 = value;
+		case AsmIRConverter.REG_2 -> reg2 = value;
+		default -> throw new IllegalStateException("unsupported reg " + reg);
 		}
 	}
 
-	public List<Object> run(List<Object> args) {
-		ip = startIp;
-		buffer.setLength(0);
+	private void process(AsmIR instruction) {
+		if (instruction instanceof AsmIR.Label) {
+			return;
+		}
 
-		dataStack.clear();
-		for (Object arg : args) {
-			if (arg instanceof Integer value) {
-				push(value, 2);
+		if (instruction instanceof AsmIR.IntLiteral l) {
+			reg0 = l.value();
+			return;
+		}
+
+		if (instruction instanceof AsmIR.BoolLiteral l) {
+			reg0 = l.value() ? 1 : 0;
+			return;
+		}
+
+		if (instruction instanceof AsmIR.StringLiteral l) {
+			reg0 = stringIndexToMem.get(l.constantIndex());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Jump j) {
+			final AsmIR.Condition condition = j.condition();
+			if (condition == null || switch (condition) {
+				case z -> flagZ;
+				case nz -> !flagZ;
+				default -> throw new IllegalStateException("unsupported condition " + condition);
+			}) {
+				setIpTo(j.target());
 			}
-			else if (arg instanceof Boolean value) {
-				push(value ? 1 : 0, 1);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Push p) {
+			int value = getRegValue(p.reg());
+			AsmIRInterpreter.this.push(value, p.size());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Pop p) {
+			final int value = AsmIRInterpreter.this.pop(p.size());
+			setReg(p.reg(), value);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Load l) {
+			Utils.assertTrue(l.valueSize() == 1);
+			final Integer value = memAddressToValue.get(getRegValue(l.pointerReg()));
+			if (value == null) {
+				throw new InterpretingFailedException("mem at " + reg1 + " read without writing");
+			}
+			setReg(l.valueReg(), value);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Store s) {
+			Utils.assertTrue(s.valueSize() == 1);
+			memAddressToValue.put(getRegValue(s.pointerReg()), getRegValue(s.valueReg()));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Ret) {
+			if (callStack.isEmpty()) {
+				ip = instructions.size();
 			}
 			else {
-				throw new IllegalStateException("Unsupported arg " + arg);
+				ip = callStack.pop();
 			}
+			return;
 		}
 
-		while (ip < instructions.size()) {
-			final AsmIR instruction = instructions.get(ip);
-			ip++;
-			final String error = instruction.visit(visitor);
-			if (error != null) {
-				System.out.println("Error at " + ip + ": " + error);
-				break;
+		if (instruction instanceof AsmIR.Command c) {
+			final String name = c.name();
+			final int reg1 = c.reg1();
+			final int reg2 = c.reg2();
+			switch (name) {
+			case AsmIRConverter.CMD_ADD -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));
+			case AsmIRConverter.CMD_SUB -> setReg(reg1, getRegValue(reg1) - getRegValue(reg2));
+			case AsmIRConverter.CMD_IMUL -> setReg(reg1, getRegValue(reg1) * getRegValue(reg2));
+			case AsmIRConverter.CMD_IDIV -> setReg(reg1, getRegValue(reg1) / getRegValue(reg2));
+			case AsmIRConverter.CMD_IMOD -> setReg(reg1, getRegValue(reg1) % getRegValue(reg2));
+			case AsmIRConverter.CMD_AND -> setReg(reg1, getRegValue(reg1) & getRegValue(reg2));
+			case AsmIRConverter.CMD_SHR -> setReg(reg1, getRegValue(reg1) >> getRegValue(reg2));
+			case AsmIRConverter.CMD_TEST -> flagZ = (getRegValue(reg1) & getRegValue(reg2) & 0xFF) == 0;
+			case AsmIRConverter.CMD_LT -> setReg(reg1, getRegValue(reg1) < getRegValue(reg2) ? 1 : 0);
+			case AsmIRConverter.CMD_LE -> setReg(reg1, getRegValue(reg1) <= getRegValue(reg2) ? 1 : 0);
+			case AsmIRConverter.CMD_GE -> setReg(reg1, getRegValue(reg1) >= getRegValue(reg2) ? 1 : 0);
+			case AsmIRConverter.CMD_GT -> setReg(reg1, getRegValue(reg1) > getRegValue(reg2) ? 1 : 0);
+			case AsmIRConverter.CMD_MEM -> setReg(reg1, mem);
+			case AsmIRConverter.CMD_PRINT -> {
+				Utils.assertTrue(reg1 == AsmIRConverter.REG_0);
+				buffer.append(getRegValue(reg1));
+				buffer.append(" ");
 			}
+			case AsmIRConverter.CMD_PRINT_STRING -> {
+				for (int ptr = getRegValue(reg1), size = getRegValue(reg2); size-- > 0; ) {
+					final Integer value = memAddressToValue.get(ptr);
+					buffer.append((char)value.intValue());
+					ptr++;
+				}
+			}
+			default -> {
+				final Integer ip = labelToIndex.get(name + "_0");
+				if (ip == null) {
+					throw new InterpretingFailedException("Unknown command " + name);
+				}
+				callStack.push(AsmIRInterpreter.this.ip);
+				AsmIRInterpreter.this.ip = ip;
+			}
+			}
+			return;
 		}
 
-		return new ArrayList<>(dataStack);
-	}
-
-	public String getOutput() {
-		return buffer.toString();
+		throw new IllegalStateException();
 	}
 
 	private void setIpTo(String target) {
@@ -309,7 +293,7 @@ public class AsmIRInterpreter {
 
 	private static void convertToIR(Function function, TypeCheckerImpl typeChecker, AsmIRStringLiterals stringLiterals, List<AsmIR> programInstructions) {
 		final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
-		programInstructions.add(AsmIR.label(irFunction.name() + "_0"));
+		programInstructions.add(AsmIRFactory.label(irFunction.name() + "_0"));
 		programInstructions.addAll(irFunction.instructions());
 	}
 

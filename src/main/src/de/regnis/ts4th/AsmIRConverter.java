@@ -75,34 +75,34 @@ public class AsmIRConverter {
 
 	public void process(Instruction instruction) {
 		if (instruction instanceof Instruction.Label label) {
-			output.accept(AsmIR.label(label.name()));
+			output.accept(AsmIRFactory.label(label.name()));
 		}
 		else if (instruction instanceof Instruction.IntLiteral literal) {
-			output.accept(AsmIR.literal(literal.value()));
-			output.accept(AsmIR.push(REG_0, 2));
+			output.accept(AsmIRFactory.literal(literal.value()));
+			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 		else if (instruction instanceof Instruction.BoolLiteral literal) {
-			output.accept(AsmIR.literal(literal.value()));
-			output.accept(AsmIR.push(REG_0, 1));
+			output.accept(AsmIRFactory.literal(literal.value()));
+			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
 		else if (instruction instanceof Instruction.StringLiteral literal) {
 			final String text = literal.value();
-			output.accept(AsmIR.stringLiteral(stringLiterals.getConstantIndex(text)));
-			output.accept(AsmIR.push(REG_0, PTR_SIZE));
-			output.accept(AsmIR.literal(stringLiterals.getLength(text)));
-			output.accept(AsmIR.push(REG_0, 2));
+			output.accept(AsmIRFactory.stringLiteral(stringLiterals.getConstantIndex(text)));
+			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
+			output.accept(AsmIRFactory.literal(stringLiterals.getLength(text)));
+			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 		else if (instruction instanceof Instruction.Jump jump) {
-			output.accept(AsmIR.jump(jump.target()));
+			output.accept(AsmIRFactory.jump(jump.target()));
 		}
 		else if (instruction instanceof Instruction.Branch branch) {
-			output.accept(AsmIR.pop(REG_0, 1));
-			output.accept(AsmIR.command(CMD_TEST, REG_0, REG_0));
-			output.accept(AsmIR.jump(AsmIR.Condition.z, branch.elseTarget()));
-			output.accept(AsmIR.jump(branch.ifTarget()));
+			output.accept(AsmIRFactory.pop(REG_0, 1));
+			output.accept(AsmIRFactory.command(CMD_TEST, REG_0, REG_0));
+			output.accept(AsmIRFactory.jump(AsmIR.Condition.z, branch.elseTarget()));
+			output.accept(AsmIRFactory.jump(branch.ifTarget()));
 		}
 		else if (instruction instanceof Instruction.Ret) {
-			output.accept(AsmIR.ret());
+			output.accept(AsmIRFactory.ret());
 		}
 		else if (instruction instanceof Instruction.Command c) {
 			final BuiltinCommands.Command command = BuiltinCommands.get(c.name());
@@ -110,7 +110,7 @@ public class AsmIRConverter {
 				command.toIR(types, output);
 			}
 			else {
-				output.accept(AsmIR.command(c.name(), 0, 0));
+				output.accept(AsmIRFactory.command(c.name(), 0, 0));
 			}
 		}
 	}

@@ -21,168 +21,11 @@ public class X86Win64 {
 	private static final String PRINT_UINT = LABEL_PREFIX_BI + "printUint";
 
 	private final Writer writer;
-	private final AsmIR.Visitor<IOException> visitor;
 
 	private int labelIndex;
 
 	public X86Win64(Writer writer) {
 		this.writer = writer;
-		visitor = new AsmIR.Visitor<>() {
-			@Override
-			public IOException label(String name) {
-				try {
-					writeLabel(LABEL_PREFIX + name);
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException literal(int value) {
-				try {
-					writeComment("literal " + value);
-					writeIndented("mov cx, " + value);
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException literal(boolean value) {
-				try {
-					writeComment("literal " + value);
-					writeIndented("mov cx, " + (value ? 1 : 0));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException stringLiteral(int constantIndex) {
-				try {
-					writeComment("string literal " + constantIndex);
-					writeIndented("lea rcx, [%s]".formatted(STRING_PREFIX + constantIndex));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException jump(AsmIR.Condition condition, String target) {
-				try {
-					writeJump(condition, target);
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException jump(String target) {
-				try {
-					writeJump(null, target);
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException push(int reg, int size) {
-				try {
-					writeComment("push " + reg + " (" + size + ")");
-
-					final String regName = getRegName(reg, size);
-					writeIndented("""
-							              sub %s, %d
-							              mov [%s], %s
-							              """.formatted(REG_DSP, size, REG_DSP, regName));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException pop(int reg, int size) {
-				try {
-					writeComment("pop " + reg + " (" + size + ")");
-
-					final String regName = getRegName(reg, size);
-					writeIndented("""
-							              mov %s, [%s]
-							              add %s, %d
-							              """.formatted(regName, REG_DSP, REG_DSP, size));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException load(int valueReg, int valueSize, int pointerReg) {
-				try {
-					writeComment("load " + valueReg + " (" + valueSize + "), @" + pointerReg);
-
-					writeIndented("mov %s, %s [%s]".formatted(getRegName(valueReg, valueSize),
-					                                          getSizeWord(valueSize),
-					                                          getRegName(pointerReg, 8)));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException store(int pointerReg, int valueReg, int valueSize) {
-				try {
-					writeComment("store @" + pointerReg + ", " + valueReg + " (" + valueSize + ")");
-
-					writeIndented("mov %s [%s], %s".formatted(getSizeWord(valueSize),
-					                                          getRegName(pointerReg, 8),
-					                                          getRegName(valueReg, valueSize)));
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException ret() {
-				try {
-					writeRet();
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-
-			@Override
-			public IOException command(String name, int reg1, int reg2) {
-				try {
-					writeCommand(name, reg1, reg2);
-					return null;
-				}
-				catch (IOException e) {
-					return e;
-				}
-			}
-		};
 	}
 
 	public void write(List<AsmIRFunction> functions, AsmIRStringLiterals stringLiterals) throws IOException {
@@ -386,11 +229,100 @@ public class X86Win64 {
 		writeLabel(LABEL_PREFIX + function.name());
 
 		for (AsmIR instruction : function.instructions()) {
-			final IOException exception = instruction.visit(visitor);
-			if (exception != null) {
-				throw exception;
-			}
+			write(instruction);
 		}
+	}
+
+	private void write(AsmIR instruction) throws IOException {
+		if (instruction instanceof AsmIR.Label l) {
+			writeLabel(LABEL_PREFIX + l.name());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.IntLiteral l) {
+			writeComment("literal " + l.value());
+			writeIndented("mov cx, " + l.value());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.BoolLiteral l) {
+			writeComment("literal " + l.value());
+			writeIndented("mov cx, " + (l.value() ? 1 : 0));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.StringLiteral l) {
+			writeComment("string literal " + l.constantIndex());
+			writeIndented("lea rcx, [%s]".formatted(STRING_PREFIX + l.constantIndex()));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Jump j) {
+			writeJump(j.condition(), j.target());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Push p) {
+			final int reg = p.reg();
+			final int size = p.size();
+			writeComment("push " + reg + " (" + size + ")");
+
+			final String regName = getRegName(reg, size);
+			writeIndented("""
+					              sub %s, %d
+					              mov [%s], %s
+					              """.formatted(REG_DSP, size, REG_DSP, regName));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Pop p) {
+			final int reg = p.reg();
+			final int size = p.size();
+			writeComment("pop " + reg + " (" + size + ")");
+
+			final String regName = getRegName(reg, size);
+			writeIndented("""
+					              mov %s, [%s]
+					              add %s, %d
+					              """.formatted(regName, REG_DSP, REG_DSP, size));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Load l) {
+			final int valueReg = l.valueReg();
+			final int valueSize = l.valueSize();
+			final int pointerReg = l.pointerReg();
+			writeComment("load " + valueReg + " (" + valueSize + "), @" + pointerReg);
+
+			writeIndented("mov %s, %s [%s]".formatted(getRegName(valueReg, valueSize),
+			                                          getSizeWord(valueSize),
+			                                          getRegName(pointerReg, 8)));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Store s) {
+			final int pointerReg = s.pointerReg();
+			final int valueReg = s.valueReg();
+			final int valueSize = s.valueSize();
+			writeComment("store @" + pointerReg + ", " + valueReg + " (" + valueSize + ")");
+
+			writeIndented("mov %s [%s], %s".formatted(getSizeWord(valueSize),
+			                                          getRegName(pointerReg, 8),
+			                                          getRegName(valueReg, valueSize)));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Ret) {
+			writeRet();
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Command c) {
+			writeCommand(c.name(), c.reg1(), c.reg2());
+			return;
+		}
+
+		throw new IllegalStateException();
 	}
 
 	private void write(String text) throws IOException {
