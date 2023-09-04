@@ -28,7 +28,7 @@ public class X86Win64 {
 		this.writer = writer;
 	}
 
-	public void write(List<AsmIRFunction> functions, AsmIRStringLiterals stringLiterals) throws IOException {
+	public void write(Program program) throws IOException {
 		write("""
 				      format pe64 console
 				      include 'win64ax.inc'
@@ -51,7 +51,7 @@ public class X86Win64 {
 				              invoke ExitProcess, 0""");
 		writeNL();
 
-		for (AsmIRFunction function : functions) {
+		for (AsmIRFunction function : program.functions()) {
 			labelIndex = 0;
 			write(function);
 		}
@@ -65,7 +65,7 @@ public class X86Win64 {
 		writeUintPrint();
 		write(".end start");
 
-		final List<byte[]> constants = stringLiterals.getConstants();
+		final List<byte[]> constants = program.stringLiterals().getConstants();
 		if (constants.size() > 0) {
 			write("""
 					      ; string constants
