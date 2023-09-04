@@ -317,8 +317,30 @@ public class X86Win64 {
 			return;
 		}
 
+		if (instruction instanceof AsmIR.BinCommand c) {
+			writeBinCommand(c.operation(), c.reg1(), c.reg2());
+			return;
+		}
+
+		if (instruction instanceof AsmIR.PrintInt p) {
+			writePrintInt(p);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.PrintString p) {
+			writePrintString(p);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Mem) {
+			writeComment("mem");
+			writeIndented("lea %s, [mem]".formatted(getRegName(AsmIRConverter.REG_0, 8)));
+			return;
+		}
+
 		if (instruction instanceof AsmIR.Command c) {
-			writeCommand(c.name(), c.reg1(), c.reg2());
+			writeComment(c.name());
+			writeIndented("call " + LABEL_PREFIX + c.name());
 			return;
 		}
 
@@ -380,27 +402,20 @@ public class X86Win64 {
 		writeIndented("ret");
 	}
 
-	private void writeCommand(String name, int reg1, int reg2) throws IOException {
-		writeComment(name + " " + reg1 + " " + reg2);
-		switch (name) {
-		case AsmIRConverter.CMD_ADD -> {
-			writeIndented("add %s, %s".formatted(getRegName(reg1, 2),
-			                                     getRegName(reg2, 2)));
-		}
-		case AsmIRConverter.CMD_ADD_PTR -> {
-			writeIndented("add %s, %s".formatted(getRegName(reg1, 8),
-			                                     getRegName(reg2, 2)));
-		}
-		case AsmIRConverter.CMD_SUB -> {
-			writeIndented("sub %s, %s".formatted(getRegName(reg1, 2),
-			                                     getRegName(reg2, 2)));
-		}
-		case AsmIRConverter.CMD_IMUL -> {
-			// https://www.felixcloutier.com/x86/imul
-			writeIndented("imul %s, %s".formatted(getRegName(reg1, 2),
-			                                      getRegName(reg2, 2)));
-		}
-		case AsmIRConverter.CMD_IDIV -> {
+	private void writeBinCommand(AsmIR.BinOperation operation, int reg1, int reg2) throws IOException {
+		writeComment(operation + " " + reg1 + " " + reg2);
+
+		switch (operation) {
+		case add -> writeIndented("add %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 2)));
+		case add_ptr -> writeIndented("add %s, %s".formatted(getRegName(reg1, 8),
+		                                                     getRegName(reg2, 2)));
+		case sub -> writeIndented("sub %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 2)));
+		case imul -> // https://www.felixcloutier.com/x86/imul
+				writeIndented("imul %s, %s".formatted(getRegName(reg1, 2),
+				                                      getRegName(reg2, 2)));
+		case idiv -> {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
@@ -416,7 +431,7 @@ public class X86Win64 {
 					              idiv ecx
 					              mov ecx, eax""".formatted(regName1));
 		}
-		case AsmIRConverter.CMD_IMOD -> {
+		case imod -> {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
@@ -432,19 +447,19 @@ public class X86Win64 {
 					              idiv ecx
 					              mov ecx, edx""".formatted(regName1));
 		}
-		case AsmIRConverter.CMD_AND -> {
-			writeIndented("and %s, %s".formatted(getRegName(reg1, 2),
-			                                     getRegName(reg2, 2)));
-		}
-		case AsmIRConverter.CMD_SHR -> {
-			writeIndented("shr %s, %s".formatted(getRegName(reg1, 2),
-			                                     getRegName(reg2, 1)));
-		}
-		case AsmIRConverter.CMD_TEST -> {
-			writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
-			                                      getRegName(reg2, 1)));
-		}
-		case AsmIRConverter.CMD_LT -> {
+		case and -> writeIndented("and %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 2)));
+		case or -> writeIndented("or %s, %s".formatted(getRegName(reg1, 2),
+		                                               getRegName(reg2, 2)));
+		case xor -> writeIndented("xor %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 2)));
+		case shl -> writeIndented("shl %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 1)));
+		case shr -> writeIndented("shr %s, %s".formatted(getRegName(reg1, 2),
+		                                                 getRegName(reg2, 1)));
+		case boolTest -> writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
+		                                                       getRegName(reg2, 1)));
+		case lt -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -452,7 +467,7 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmovl r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_LE -> {
+		case le -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -460,7 +475,7 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmovle r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_EQ -> {
+		case eq -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -468,7 +483,7 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmove r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_NE -> {
+		case neq -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -476,7 +491,7 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmovne r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_GE -> {
+		case ge -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -484,7 +499,7 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmovge r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_GT -> {
+		case gt -> {
 			final String regName1 = getRegName(reg1, 2);
 			final String regName2 = getRegName(reg2, 2);
 			writeIndented("cmp %s, %s".formatted(regName1, regName2));
@@ -492,54 +507,54 @@ public class X86Win64 {
 			writeIndented("mov %s, 1".formatted(regName2));
 			writeIndented("cmovg r%s, r%s".formatted(regName1, regName2));
 		}
-		case AsmIRConverter.CMD_MEM -> {
-			writeIndented("lea %s, [mem]".formatted(getRegName(reg1, 8)));
+		default -> throw new IllegalStateException();
 		}
-		case AsmIRConverter.CMD_PRINT -> {
-			Utils.assertTrue(reg1 == AsmIRConverter.REG_0);
-			if (reg2 != 8) {
-				writeIndented("""
-						              movsx rcx, %s""".formatted(getRegName(reg1, reg2)));
-			}
+	}
 
-			final String labelPos = nextLocalLabel();
+	private void writePrintInt(AsmIR.PrintInt c) throws IOException {
+		writeComment(c.toString());
+
+		final int size = c.size();
+		if (size != 8) {
 			writeIndented("""
-					              test   rcx, rcx
-					              jns    %s
-					              neg    rcx
-					              push   rcx
-					                mov    cl, '-'
-					                call   %s
-					              pop    rcx
-					              """.formatted(labelPos, PRINT_CHAR));
-			writeLabel(labelPos);
-			writeIndented("""
-					              sub  rsp, 8
-					                call %s
-					              """.formatted(PRINT_UINT));
-			writeIndented("""
-					                mov  cl, ' '
-					                call %s
-					              add  rsp, 8
-					              """.formatted(PRINT_CHAR));
+					              movsx rcx, %s""".formatted(getRegName(0, size)));
 		}
-		case AsmIRConverter.CMD_PRINT_STRING -> {
-			final String ptrReg = getRegName(reg1, 8);
-			final String sizeReg = getRegName(reg2, 2);
-			writeIndented("""
-					              movsx rdx, %s""".formatted(sizeReg));
-			writeIndented("""
-					              mov rcx, %s""".formatted(ptrReg));
-			// expects ptr in rcx, size in rdx
-			writeIndented("""
-					              sub rsp, 8
-					                call %s
-					              add rsp, 8""".formatted(PRINT_STRING));
-		}
-		default -> {
-			writeIndented("call " + LABEL_PREFIX + name);
-		}
-		}
+
+		final String labelPos = nextLocalLabel();
+		writeIndented("""
+				              test   rcx, rcx
+				              jns    %s
+				              neg    rcx
+				              push   rcx
+				                mov    cl, '-'
+				                call   %s
+				              pop    rcx
+				              """.formatted(labelPos, PRINT_CHAR));
+		writeLabel(labelPos);
+		writeIndented("""
+				              sub  rsp, 8
+				                call %s
+				              """.formatted(PRINT_UINT));
+		writeIndented("""
+				                mov  cl, ' '
+				                call %s
+				              add  rsp, 8
+				              """.formatted(PRINT_CHAR));
+	}
+
+	private void writePrintString(AsmIR.PrintString p) throws IOException {
+		writeComment(p.toString());
+		final String ptrReg = getRegName(p.ptrReg(), 8);
+		final String sizeReg = getRegName(p.sizeReg(), 2);
+		writeIndented("""
+				              movsx rdx, %s""".formatted(sizeReg));
+		writeIndented("""
+				              mov rcx, %s""".formatted(ptrReg));
+		// expects ptr in rcx, size in rdx
+		writeIndented("""
+				              sub rsp, 8
+				                call %s
+				              add rsp, 8""".formatted(PRINT_STRING));
 	}
 
 	private String nextLocalLabel() {

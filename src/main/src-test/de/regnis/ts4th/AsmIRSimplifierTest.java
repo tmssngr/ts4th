@@ -16,7 +16,7 @@ public class AsmIRSimplifierTest {
 	public void testRemoveIndirectLabel() {
 		testSimplify(List.of(
 				AsmIRFactory.label("loop"),
-				AsmIRFactory.command("foo", 0, 0),
+				AsmIRFactory.command("foo"),
 				AsmIRFactory.jump(Condition.lt, "else"),
 				AsmIRFactory.literal(0),
 				AsmIRFactory.jump("loop"),
@@ -25,7 +25,7 @@ public class AsmIRSimplifierTest {
 				AsmIRFactory.jump("loop")
 		), List.of(
 				AsmIRFactory.label("loop"),
-				AsmIRFactory.command("foo", 0, 0),
+				AsmIRFactory.command("foo"),
 				AsmIRFactory.jump(Condition.lt, "else"),
 				AsmIRFactory.literal(0),
 				AsmIRFactory.jump("end"),
@@ -97,12 +97,12 @@ public class AsmIRSimplifierTest {
 	public void testPushPop() {
 		testSimplify(List.of(
 				AsmIRFactory.literal(1),
-				AsmIRFactory.command("print", 0, 0)
+				AsmIRFactory.command("print")
 		), List.of(
 				AsmIRFactory.literal(1),
 				AsmIRFactory.push(1, 2),
 				AsmIRFactory.pop(1, 2),
-				AsmIRFactory.command("print", 0, 0)
+				AsmIRFactory.command("print")
 		));
 
 		try {
@@ -110,7 +110,7 @@ public class AsmIRSimplifierTest {
 					AsmIRFactory.literal(1),
 					AsmIRFactory.push(1, 2),
 					AsmIRFactory.pop(1, 1),
-					AsmIRFactory.command("print", 0, 0)
+					AsmIRFactory.command("print")
 			));
 			fail();
 		}

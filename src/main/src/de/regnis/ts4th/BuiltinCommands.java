@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 import java.util.*;
 import java.util.function.*;
 
+import static de.regnis.ts4th.AsmIR.BinOperation.*;
 import static de.regnis.ts4th.AsmIRConverter.*;
 
 /**
@@ -218,19 +219,19 @@ public class BuiltinCommands {
 				if (type1 == Type.Int && type2 == Type.Int) {
 					output.accept(AsmIRFactory.pop(REG_1, 2));
 					output.accept(AsmIRFactory.pop(REG_0, 2));
-					output.accept(AsmIRFactory.command(CMD_ADD, REG_0, REG_1));
+					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1));
 					output.accept(AsmIRFactory.push(REG_0, 2));
 				}
 				else if (type1 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 					output.accept(AsmIRFactory.pop(REG_0, 2));
-					output.accept(AsmIRFactory.command(CMD_ADD_PTR, REG_1, REG_0));
+					output.accept(AsmIRFactory.binCommand(add_ptr, REG_1, REG_0));
 					output.accept(AsmIRFactory.push(REG_1, PTR_SIZE));
 				}
 				else if (type2 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, 2));
 					output.accept(AsmIRFactory.pop(REG_0, PTR_SIZE));
-					output.accept(AsmIRFactory.command(CMD_ADD, REG_0, REG_1));
+					output.accept(AsmIRFactory.binCommand(add_ptr, REG_0, REG_1));
 					output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 				}
 				else {
@@ -238,15 +239,15 @@ public class BuiltinCommands {
 				}
 			}
 		});
-		nameToCommand.put(SUB, new ArithmeticCommand(CMD_SUB));
-		nameToCommand.put(MUL, new ArithmeticCommand(CMD_IMUL));
-		nameToCommand.put(DIV, new ArithmeticCommand(CMD_IDIV));
-		nameToCommand.put(MOD, new ArithmeticCommand(CMD_IMOD));
-		nameToCommand.put(AND, new ArithmeticCommand(CMD_AND));
-		nameToCommand.put(OR, new ArithmeticCommand(CMD_OR));
-		nameToCommand.put(XOR, new ArithmeticCommand(CMD_XOR));
-		nameToCommand.put(SHL, new ArithmeticCommand(CMD_SHL));
-		nameToCommand.put(SHR, new ArithmeticCommand(CMD_SHR));
+		nameToCommand.put(SUB, new BinaryCommand(sub));
+		nameToCommand.put(MUL, new BinaryCommand(imul));
+		nameToCommand.put(DIV, new BinaryCommand(idiv));
+		nameToCommand.put(MOD, new BinaryCommand(imod));
+		nameToCommand.put(AND, new BinaryCommand(and));
+		nameToCommand.put(OR, new BinaryCommand(or));
+		nameToCommand.put(XOR, new BinaryCommand(xor));
+		nameToCommand.put(SHL, new BinaryCommand(shl));
+		nameToCommand.put(SHR, new BinaryCommand(shr));
 
 		nameToCommand.put(MEM, new Command() {
 			@Override
@@ -256,7 +257,7 @@ public class BuiltinCommands {
 
 			@Override
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.command(CMD_MEM, REG_0, 0));
+				output.accept(AsmIRFactory.mem());
 				output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 			}
 		});
@@ -332,7 +333,7 @@ public class BuiltinCommands {
 			public void toIR(TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
 				output.accept(AsmIRFactory.pop(REG_0, size));
-				output.accept(AsmIRFactory.command(CMD_PRINT, REG_0, size));
+				output.accept(AsmIRFactory.print(size));
 			}
 		});
 		nameToCommand.put(PRINT_STRING, new Command() {
@@ -363,16 +364,16 @@ public class BuiltinCommands {
 					output.accept(AsmIRFactory.pop(REG_0, 2));
 					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 				}
-				output.accept(AsmIRFactory.command(CMD_PRINT_STRING, REG_1, REG_0));
+				output.accept(AsmIRFactory.printString(REG_1, REG_0));
 			}
 		});
 
-		nameToCommand.put(IS_LT, new RelationalCommand(CMD_LT));
-		nameToCommand.put(IS_LE, new RelationalCommand(CMD_LE));
-		nameToCommand.put(IS_EQ, new RelationalCommand(CMD_EQ));
-		nameToCommand.put(IS_NE, new RelationalCommand(CMD_NE));
-		nameToCommand.put(IS_GE, new RelationalCommand(CMD_GE));
-		nameToCommand.put(IS_GT, new RelationalCommand(CMD_GT));
+		nameToCommand.put(IS_LT, new RelationalCommand(lt));
+		nameToCommand.put(IS_LE, new RelationalCommand(le));
+		nameToCommand.put(IS_EQ, new RelationalCommand(eq));
+		nameToCommand.put(IS_NE, new RelationalCommand(neq));
+		nameToCommand.put(IS_GE, new RelationalCommand(ge));
+		nameToCommand.put(IS_GT, new RelationalCommand(gt));
 	}
 
 	@Nullable
@@ -414,18 +415,18 @@ public class BuiltinCommands {
 		}
 	}
 
-	private final static class ArithmeticCommand extends Command {
-		private final String command;
+	private final static class BinaryCommand extends Command {
+		private final AsmIR.BinOperation operation;
 
-		public ArithmeticCommand(String command) {
-			this.command = command;
+		public BinaryCommand(AsmIR.BinOperation operation) {
+			this.operation = operation;
 		}
 
 		@Override
 		public void toIR(TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, 2));
 			output.accept(AsmIRFactory.pop(REG_0, 2));
-			output.accept(AsmIRFactory.command(command, REG_0, REG_1));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 
@@ -440,17 +441,17 @@ public class BuiltinCommands {
 	}
 
 	private final static class RelationalCommand extends Command {
-		private final String command;
+		private final AsmIR.BinOperation operation;
 
-		public RelationalCommand(String command) {
-			this.command = command;
+		public RelationalCommand(AsmIR.BinOperation operation) {
+			this.operation = operation;
 		}
 
 		@Override
 		public void toIR(TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, 2));
 			output.accept(AsmIRFactory.pop(REG_0, 2));
-			output.accept(AsmIRFactory.command(command, REG_0, REG_1));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
 			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
 

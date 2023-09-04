@@ -16,7 +16,7 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- subr 0 0 --
+        ; -- subr --
         call tsf_subr
         ; -- ret --
         ret

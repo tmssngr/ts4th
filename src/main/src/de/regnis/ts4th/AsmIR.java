@@ -5,10 +5,19 @@ package de.regnis.ts4th;
  */
 public sealed interface AsmIR permits
 		AsmIR.Label, AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.StringLiteral, AsmIR.Push,
-		AsmIR.Pop, AsmIR.Load, AsmIR.Store, AsmIR.Jump, AsmIR.Command, AsmIR.Ret {
+		AsmIR.Pop, AsmIR.Load, AsmIR.Store, AsmIR.Jump, AsmIR.Command,
+		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
 		z, nz, lt, le, ge, gt
+	}
+
+	enum BinOperation {
+		add, add_ptr, sub, imul, idiv, imod,
+		and, or, xor,
+		shl, shr,
+		boolTest,
+		lt, le, eq, neq, ge, gt
 	}
 
 	record Label(String name) implements AsmIR {
@@ -78,10 +87,38 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record Command(String name, int reg1, int reg2) implements AsmIR {
+	record Command(String name) implements AsmIR {
 		@Override
 		public String toString() {
-			return "command " + name + ", " + reg1 + ", " + reg2;
+			return "command " + name;
+		}
+	}
+
+	record BinCommand(BinOperation operation, int reg1, int reg2) implements AsmIR {
+		@Override
+		public String toString() {
+			return operation + " " + reg1 + ", " + reg2;
+		}
+	}
+
+	record PrintInt(int size) implements AsmIR {
+		@Override
+		public String toString() {
+			return "printInt(" + size + ")";
+		}
+	}
+
+	record PrintString(int ptrReg, int sizeReg) implements AsmIR {
+		@Override
+		public String toString() {
+			return "printString " + ptrReg + ", " + sizeReg;
+		}
+	}
+
+	record Mem() implements AsmIR {
+		@Override
+		public String toString() {
+			return "mem";
 		}
 	}
 

@@ -239,45 +239,60 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Command c) {
-			final String name = c.name();
+		if (instruction instanceof AsmIR.BinCommand c) {
 			final int reg1 = c.reg1();
 			final int reg2 = c.reg2();
-			switch (name) {
-			case AsmIRConverter.CMD_ADD -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));
-			case AsmIRConverter.CMD_SUB -> setReg(reg1, getRegValue(reg1) - getRegValue(reg2));
-			case AsmIRConverter.CMD_IMUL -> setReg(reg1, getRegValue(reg1) * getRegValue(reg2));
-			case AsmIRConverter.CMD_IDIV -> setReg(reg1, getRegValue(reg1) / getRegValue(reg2));
-			case AsmIRConverter.CMD_IMOD -> setReg(reg1, getRegValue(reg1) % getRegValue(reg2));
-			case AsmIRConverter.CMD_AND -> setReg(reg1, getRegValue(reg1) & getRegValue(reg2));
-			case AsmIRConverter.CMD_SHR -> setReg(reg1, getRegValue(reg1) >> getRegValue(reg2));
-			case AsmIRConverter.CMD_TEST -> flagZ = (getRegValue(reg1) & getRegValue(reg2) & 0xFF) == 0;
-			case AsmIRConverter.CMD_LT -> setReg(reg1, getRegValue(reg1) < getRegValue(reg2) ? 1 : 0);
-			case AsmIRConverter.CMD_LE -> setReg(reg1, getRegValue(reg1) <= getRegValue(reg2) ? 1 : 0);
-			case AsmIRConverter.CMD_GE -> setReg(reg1, getRegValue(reg1) >= getRegValue(reg2) ? 1 : 0);
-			case AsmIRConverter.CMD_GT -> setReg(reg1, getRegValue(reg1) > getRegValue(reg2) ? 1 : 0);
-			case AsmIRConverter.CMD_MEM -> setReg(reg1, mem);
-			case AsmIRConverter.CMD_PRINT -> {
-				Utils.assertTrue(reg1 == AsmIRConverter.REG_0);
-				buffer.append(getRegValue(reg1));
-				buffer.append(" ");
+			switch (c.operation()) {
+			case add, add_ptr -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));
+			case sub -> setReg(reg1, getRegValue(reg1) - getRegValue(reg2));
+			case imul -> setReg(reg1, getRegValue(reg1) * getRegValue(reg2));
+			case idiv -> setReg(reg1, getRegValue(reg1) / getRegValue(reg2));
+			case imod -> setReg(reg1, getRegValue(reg1) % getRegValue(reg2));
+			case and -> setReg(reg1, getRegValue(reg1) & getRegValue(reg2));
+			case or -> setReg(reg1, getRegValue(reg1) | getRegValue(reg2));
+			case xor -> setReg(reg1, getRegValue(reg1) ^ getRegValue(reg2));
+			case shl -> setReg(reg1, getRegValue(reg1) << getRegValue(reg2));
+			case shr -> setReg(reg1, getRegValue(reg1) >> getRegValue(reg2));
+			case boolTest -> flagZ = (getRegValue(reg1) & getRegValue(reg2) & 0xFF) == 0;
+			case lt -> setReg(reg1, getRegValue(reg1) < getRegValue(reg2) ? 1 : 0);
+			case le -> setReg(reg1, getRegValue(reg1) <= getRegValue(reg2) ? 1 : 0);
+			case eq -> setReg(reg1, getRegValue(reg1) == getRegValue(reg2) ? 1 : 0);
+			case neq -> setReg(reg1, getRegValue(reg1) != getRegValue(reg2) ? 1 : 0);
+			case ge -> setReg(reg1, getRegValue(reg1) >= getRegValue(reg2) ? 1 : 0);
+			case gt -> setReg(reg1, getRegValue(reg1) > getRegValue(reg2) ? 1 : 0);
+			default -> throw new IllegalStateException();
 			}
-			case AsmIRConverter.CMD_PRINT_STRING -> {
-				for (int ptr = getRegValue(reg1), size = getRegValue(reg2); size-- > 0; ) {
-					final Integer value = memAddressToValue.get(ptr);
-					buffer.append((char)value.intValue());
-					ptr++;
-				}
+			return;
+		}
+
+		if (instruction instanceof AsmIR.PrintInt) {
+			buffer.append(reg0);
+			buffer.append(" ");
+			return;
+		}
+
+		if (instruction instanceof AsmIR.PrintString p) {
+			for (int ptr = getRegValue(p.ptrReg()), size = getRegValue(p.sizeReg()); size-- > 0; ) {
+				final Integer value = memAddressToValue.get(ptr);
+				buffer.append((char)value.intValue());
+				ptr++;
 			}
-			default -> {
-				final Integer ip = labelToIndex.get(name + "_0");
-				if (ip == null) {
-					throw new InterpretingFailedException("Unknown command " + name);
-				}
-				callStack.push(AsmIRInterpreter.this.ip);
-				AsmIRInterpreter.this.ip = ip;
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Mem) {
+			setReg(AsmIRConverter.REG_0, mem);
+			return;
+		}
+
+		if (instruction instanceof AsmIR.Command c) {
+			final String name = c.name();
+			final Integer ip = labelToIndex.get(name + "_0");
+			if (ip == null) {
+				throw new InterpretingFailedException("Unknown command " + name);
 			}
-			}
+			callStack.push(AsmIRInterpreter.this.ip);
+			AsmIRInterpreter.this.ip = ip;
 			return;
 		}
 
