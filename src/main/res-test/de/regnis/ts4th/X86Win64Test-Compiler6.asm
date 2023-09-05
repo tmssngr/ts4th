@@ -188,7 +188,7 @@ tsf_main:
         ; -- pop 1 (8) --
         mov rax, [r15]
         add r15, 8
-        ; -- printString 1, 0 --
+        ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
         sub rsp, 8
@@ -201,7 +201,7 @@ tsf_main:
         ; -- pop 1 (8) --
         mov rax, [r15]
         add r15, 8
-        ; -- printString 1, 0 --
+        ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
         sub rsp, 8

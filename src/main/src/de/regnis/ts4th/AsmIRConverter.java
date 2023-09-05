@@ -91,7 +91,7 @@ public class AsmIRConverter {
 				command.toIR(types, output);
 			}
 			else {
-				output.accept(AsmIRFactory.command(c.name()));
+				output.accept(AsmIRFactory.call(c.name()));
 			}
 		}
 	}

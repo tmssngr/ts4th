@@ -285,7 +285,7 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Command c) {
+		if (instruction instanceof AsmIR.Call c) {
 			final String name = c.name();
 			final Integer ip = labelToIndex.get(name + "_0");
 			if (ip == null) {

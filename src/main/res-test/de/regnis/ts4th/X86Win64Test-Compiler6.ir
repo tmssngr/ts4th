@@ -1,0 +1,105 @@
+
+main:
+	call a
+	pop r0 (8)
+	push r0 (8)
+	push r0 (8)
+	r0 = 49
+	pop r1 (8)
+	store @r1, r0(1)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	push r0 (8)
+	r0 = 48
+	pop r1 (8)
+	store @r1, r0(1)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	push r0 (8)
+	r0 = 50
+	pop r1 (8)
+	store @r1, r0(1)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	push r0 (8)
+	r0 = 52
+	pop r1 (8)
+	store @r1, r0(1)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	push r0 (8)
+	r0 = 13
+	pop r1 (8)
+	store @r1, r0(1)
+	pop r0 (8)
+	call b
+	r0 = 104
+	push r0 (2)
+	call appendChar
+	r0 = 101
+	push r0 (2)
+	call appendChar
+	r0 = 108
+	push r0 (2)
+	call appendChar
+	r0 = 108
+	push r0 (2)
+	call appendChar
+	r0 = 111
+	push r0 (2)
+	call appendChar
+	pop r0 (8)
+	call b
+	r0 = 5
+	pop r1 (8)
+	printString r1 (0)
+	call a
+	r0 = 5
+	pop r1 (8)
+	printString r1 (0)
+	ret
+a:
+	r0 = mem
+	push r0 (8)
+	ret
+b:
+	call a
+	r0 = 10
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	ret
+appendChar:
+	pop r1 (2)
+	pop r0 (8)
+	push r0 (8)
+	push r1 (2)
+	push r0 (8)
+	pop r1 (8)
+	pop r0 (2)
+	store @r1, r0(1)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	ret

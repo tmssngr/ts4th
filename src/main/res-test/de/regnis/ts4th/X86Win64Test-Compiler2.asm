@@ -94,7 +94,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, eax
-        ; -- printInt(2) --
+        ; -- printInt r0(2) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -124,7 +124,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, eax
-        ; -- printInt(2) --
+        ; -- printInt r0(2) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .2

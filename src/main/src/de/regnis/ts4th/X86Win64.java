@@ -338,7 +338,7 @@ public class X86Win64 {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Command c) {
+		if (instruction instanceof AsmIR.Call c) {
 			writeComment(c.name());
 			writeIndented("call " + LABEL_PREFIX + c.name());
 			return;

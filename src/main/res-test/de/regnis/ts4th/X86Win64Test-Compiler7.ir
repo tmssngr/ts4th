@@ -1,0 +1,56 @@
+const %0: 68 65 6c 6c 6f 20 77 6f 72 6c 64 00
+
+main:
+	r0 = constant 0
+	push r0 (8)
+	r0 = 12
+	call strlen
+	pop r0 (2)
+	printInt r0(2)
+	ret
+strlen:
+	r0 = 0
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	push r1 (2)
+	push r0 (8)
+while_1:
+	pop r0 (8)
+	push r0 (8)
+	push r0 (8)
+	pop r1 (8)
+	r0 = 0
+	load r0(1), @r1
+	push r0 (2)
+	r0 = 0
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	neq r0, r1
+	boolTest r0, r0
+	jump z, endwhile_1
+	pop r1 (8)
+	pop r0 (2)
+	push r1 (8)
+	push r0 (2)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	add r0, r1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	push r1 (2)
+	push r0 (8)
+	r0 = 1
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (8)
+	add_ptr r0, r1
+	push r0 (8)
+	jump while_1
+endwhile_1:
+	pop r0 (8)
+	ret

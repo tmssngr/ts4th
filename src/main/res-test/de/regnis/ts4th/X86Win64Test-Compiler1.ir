@@ -1,0 +1,11 @@
+
+main:
+	r0 = 1024
+	push r0 (2)
+	r0 = 2048
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	sub r0, r1
+	printInt r0(2)
+	ret

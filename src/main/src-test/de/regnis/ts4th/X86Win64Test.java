@@ -16,7 +16,7 @@ public class X86Win64Test extends AbstractFileTest {
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final Program program = new Program(List.of(
 				new AsmIRFunction("main", stringLiterals, List.of(
-						AsmIRFactory.command("subr"),
+						AsmIRFactory.call("subr"),
 						AsmIRFactory.ret()
 				)),
 				new AsmIRFunction("subr", stringLiterals, List.of(
@@ -24,7 +24,7 @@ public class X86Win64Test extends AbstractFileTest {
 				))
 		), stringLiterals);
 
-		write(program);
+		writeX86(program);
 	}
 
 	@Test
@@ -184,14 +184,57 @@ public class X86Win64Test extends AbstractFileTest {
 
 	private void compileWrite(String s) throws IOException {
 		final Program program = Compiler.compile(Parser.parseString(s));
-		write(program);
+		writeIr(program);
+		writeX86(program);
 	}
 
-	private void write(Program program) throws IOException {
-		write(".asm", path -> writeProgram(program, path));
+	private void writeIr(Program program) throws IOException {
+		write(".ir", path -> writeIr(program, path));
 	}
 
-	private void writeProgram(Program program, Path path) throws IOException {
+	private void writeIr(Program program, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+			writeIrConstants(program, writer);
+			writer.newLine();
+
+			for (AsmIRFunction function : program.functions()) {
+				writeIrFunction(function, writer);
+			}
+		}
+	}
+
+	private void writeIrConstants(Program program, BufferedWriter writer) throws IOException {
+		List<byte[]> constants = program.stringLiterals().getConstants();
+		for (int i = 0; i < constants.size(); i++) {
+			writer.write("const %" + i + ":");
+			final byte[] bytes = constants.get(i);
+			for (byte value : bytes) {
+				writer.write(" ");
+				writer.write(Utils.toHex(value, 2));
+			}
+			writer.newLine();
+		}
+	}
+
+	private void writeIrFunction(AsmIRFunction function, BufferedWriter writer) throws IOException {
+		writer.write(function.name());
+		writer.write(":");
+		writer.newLine();
+
+		for (AsmIR instruction : function.instructions()) {
+			if (!(instruction instanceof AsmIR.Label)) {
+				writer.write("\t");
+			}
+			writer.write(instruction.toString());
+			writer.newLine();
+		}
+	}
+
+	private void writeX86(Program program) throws IOException {
+		write(".asm", path -> writeX86(program, path));
+	}
+
+	private void writeX86(Program program, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 			final X86Win64 x86Win64 = new X86Win64(writer);
 			x86Win64.write(program);

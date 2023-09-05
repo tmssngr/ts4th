@@ -5,7 +5,7 @@ package de.regnis.ts4th;
  */
 public sealed interface AsmIR permits
 		AsmIR.Label, AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.StringLiteral, AsmIR.Push,
-		AsmIR.Pop, AsmIR.Load, AsmIR.Store, AsmIR.Jump, AsmIR.Command,
+		AsmIR.Pop, AsmIR.Load, AsmIR.Store, AsmIR.Jump, AsmIR.Call,
 		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
@@ -30,49 +30,49 @@ public sealed interface AsmIR permits
 	record IntLiteral(int value) implements AsmIR {
 		@Override
 		public String toString() {
-			return String.valueOf(value);
+			return "r0 = " + value;
 		}
 	}
 
 	record BoolLiteral(boolean value) implements AsmIR {
 		@Override
 		public String toString() {
-			return String.valueOf(value);
+			return "r0 = " + value;
 		}
 	}
 
 	record StringLiteral(int constantIndex) implements AsmIR {
 		@Override
 		public String toString() {
-			return "constant " + constantIndex;
+			return "r0 = constant " + constantIndex;
 		}
 	}
 
 	record Push(int reg, int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "push " + reg + ", " + size;
+			return "push r" + reg + " (" + size + ")";
 		}
 	}
 
 	record Pop(int reg, int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "pop " + reg + ", " + size;
+			return "pop r" + reg + " (" + size + ")";
 		}
 	}
 
 	record Load(int valueReg, int pointerReg, int valueSize) implements AsmIR {
 		@Override
 		public String toString() {
-			return "load " + valueReg + "(" + valueSize + "), @" + pointerReg;
+			return "load r" + valueReg + "(" + valueSize + "), @r" + pointerReg;
 		}
 	}
 
 	record Store(int pointerReg, int valueReg, int valueSize) implements AsmIR {
 		@Override
 		public String toString() {
-			return "store @" + pointerReg + ", " + valueReg + "(" + valueSize + ")";
+			return "store @r" + pointerReg + ", r" + valueReg + "(" + valueSize + ")";
 		}
 	}
 
@@ -87,38 +87,38 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record Command(String name) implements AsmIR {
+	record Call(String name) implements AsmIR {
 		@Override
 		public String toString() {
-			return "command " + name;
+			return "call " + name;
 		}
 	}
 
 	record BinCommand(BinOperation operation, int reg1, int reg2) implements AsmIR {
 		@Override
 		public String toString() {
-			return operation + " " + reg1 + ", " + reg2;
+			return operation + " r" + reg1 + ", r" + reg2;
 		}
 	}
 
 	record PrintInt(int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "printInt(" + size + ")";
+			return "printInt r0(" + size + ")";
 		}
 	}
 
 	record PrintString(int ptrReg, int sizeReg) implements AsmIR {
 		@Override
 		public String toString() {
-			return "printString " + ptrReg + ", " + sizeReg;
+			return "printString r" + ptrReg + " (" + sizeReg + ")";
 		}
 	}
 
 	record Mem() implements AsmIR {
 		@Override
 		public String toString() {
-			return "mem";
+			return "r0 = mem";
 		}
 	}
 

@@ -28,7 +28,7 @@ tsf_main:
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
-        ; -- printInt(2) --
+        ; -- printInt r0(2) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

@@ -44,8 +44,8 @@ public class AsmIRFactory {
 		return new AsmIR.Jump(condition, target);
 	}
 
-	public static AsmIR command(String name) {
-		return new AsmIR.Command(name);
+	public static AsmIR call(String name) {
+		return new AsmIR.Call(name);
 	}
 
 	public static AsmIR binCommand(AsmIR.BinOperation operation, int reg1, int reg2) {

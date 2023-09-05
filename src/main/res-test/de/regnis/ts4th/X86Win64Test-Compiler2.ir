@@ -1,0 +1,77 @@
+
+main:
+	r0 = 1024
+	push r0 (2)
+	r0 = 768
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	push r0 (2)
+	push r1 (2)
+	call gcd
+	pop r2 (2)
+	pop r1 (2)
+	pop r0 (2)
+	push r1 (2)
+	push r2 (2)
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	idiv r0, r1
+	printInt r0(2)
+	pop r1 (2)
+	pop r0 (2)
+	idiv r0, r1
+	printInt r0(2)
+	ret
+gcd:
+while_1:
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	lt r0, r1
+	boolTest r0, r0
+	jump z, else_2
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	sub r0, r1
+	push r0 (2)
+	jump while_1
+else_2:
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	gt r0, r1
+	boolTest r0, r0
+	jump z, endwhile_1
+	pop r1 (2)
+	pop r0 (2)
+	push r1 (2)
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	push r0 (2)
+	push r1 (2)
+	push r0 (2)
+	pop r1 (2)
+	pop r0 (2)
+	sub r0, r1
+	push r0 (2)
+	jump while_1
+endwhile_1:
+	pop r0 (2)
+	ret

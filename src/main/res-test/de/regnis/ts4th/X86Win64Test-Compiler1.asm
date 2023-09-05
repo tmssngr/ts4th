@@ -34,7 +34,7 @@ tsf_main:
         add r15, 2
         ; -- sub 0 1 --
         sub cx, ax
-        ; -- printInt(2) --
+        ; -- printInt r0(2) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
