@@ -1,5 +1,4 @@
 /.*
-*.asm
 *.exe
 !.git*
 !/.idea

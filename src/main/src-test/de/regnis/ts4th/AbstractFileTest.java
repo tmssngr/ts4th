@@ -10,8 +10,8 @@ import java.nio.file.*;
  */
 public class AbstractFileTest {
 
-	protected void write(FileWriter writer) throws IOException {
-		final Path path = Paths.get("src/main/res-test/" + getName() + ".txt");
+	protected void write(String suffix, FileWriter writer) throws IOException {
+		final Path path = Paths.get("src/main/res-test/" + getName() + suffix);
 		Files.createDirectories(path.getParent());
 		writer.writeFile(path);
 	}

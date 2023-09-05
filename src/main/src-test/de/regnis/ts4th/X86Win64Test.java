@@ -183,11 +183,12 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void compileWrite(String s) throws IOException {
-		write(Compiler.compile(Parser.parseString(s)));
+		final Program program = Compiler.compile(Parser.parseString(s));
+		write(program);
 	}
 
 	private void write(Program program) throws IOException {
-		write(path -> writeProgram(program, path));
+		write(".asm", path -> writeProgram(program, path));
 	}
 
 	private void writeProgram(Program program, Path path) throws IOException {
