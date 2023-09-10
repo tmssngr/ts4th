@@ -30,7 +30,7 @@ public class Compiler {
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
 		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
-		final List<Function> usedFunctions = getUsedFunctions(program.functions());
+		final List<Function> usedFunctions = getUsedFunctions(program);
 
 		for (Function function : usedFunctions) {
 			final CfgFunction cfgFunction = new CfgFunction(function);
@@ -49,7 +49,7 @@ public class Compiler {
 		return new AsmIRProgram(processedFunctions, stringLiterals);
 	}
 
-	private static List<Function> getUsedFunctions(List<Function> functions) {
+	private static List<Function> getUsedFunctions(Program program) {
 		final List<Function> usedFunctions = new ArrayList<>();
 
 		final Set<String> invoked = new HashSet<>();
@@ -59,7 +59,11 @@ public class Compiler {
 
 		while (!pending.isEmpty()) {
 			final String name = pending.removeFirst();
-			final Function function = getFunctionNamed(name, functions);
+			final Function function = program.get(name);
+			if (function == null) {
+				throw new CompilerException("no function `" + name + "` found");
+			}
+
 			usedFunctions.add(function);
 
 			for (Instruction instruction : function.instructions()) {
@@ -74,15 +78,6 @@ public class Compiler {
 		}
 
 		return usedFunctions;
-	}
-
-	private static Function getFunctionNamed(String name, List<Function> functions) {
-		for (Function function : functions) {
-			if (function.name().equals(name)) {
-				return function;
-			}
-		}
-		throw new CompilerException("no function `" + name + "` found");
 	}
 
 	private static void writeAsmFile(Path asmFile, AsmIRProgram program) throws IOException {

@@ -16,8 +16,7 @@ public class AsmIRInterpreter {
 
 		final List<Declaration> declarations = Parser.parseFile(forthFile);
 		final Program program = Program.fromDeclarations(declarations);
-		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		final TypeChecker typeChecker = createTypeChecker(program);
 
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final List<AsmIR> programInstructions = new ArrayList<>();
@@ -44,8 +43,7 @@ public class AsmIRInterpreter {
 		final List<Declaration> declarations = Parser.parseString(code);
 		final Program program = Program.fromDeclarations(declarations);
 
-		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		final TypeChecker typeChecker = createTypeChecker(program);
 
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final List<AsmIR> programInstructions = new ArrayList<>();
@@ -75,7 +73,6 @@ public class AsmIRInterpreter {
 	private int reg1;
 	private int reg2;
 	private boolean flagZ;
-
 	private int ip;
 
 	public AsmIRInterpreter(List<AsmIR> instructions, AsmIRStringLiterals stringLiterals, int startIp) {
@@ -308,15 +305,16 @@ public class AsmIRInterpreter {
 		ip = labelToIndex.get(target);
 	}
 
-	private static void convertToIR(Function function, TypeCheckerImpl typeChecker, AsmIRStringLiterals stringLiterals, List<AsmIR> programInstructions) {
+	@NotNull
+	private static TypeChecker createTypeChecker(Program program) {
+		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
+		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		return typeChecker;
+	}
+
+	private static void convertToIR(Function function, TypeChecker typeChecker, AsmIRStringLiterals stringLiterals, List<AsmIR> programInstructions) {
 		final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
 		programInstructions.add(AsmIRFactory.label(irFunction.name() + "_0"));
 		programInstructions.addAll(irFunction.instructions());
-	}
-
-	public static final class InterpretingFailedException extends RuntimeException {
-		public InterpretingFailedException(String message) {
-			super(message);
-		}
 	}
 }

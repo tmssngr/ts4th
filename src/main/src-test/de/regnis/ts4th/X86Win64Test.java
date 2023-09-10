@@ -149,7 +149,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	'o' appendChar
 				             	drop
 				             	b 5 printString
-				                              
+
 				             	a 5 printString
 				             end
 
@@ -180,6 +180,18 @@ public class X86Win64Test extends AbstractFileTest {
 				             	print
 				             end
 				             """);
+	}
+
+	@Test
+	public void testConst() throws IOException {
+		compileWrite("""
+				             const width 40 end
+				             const height 24 end
+				             const size width height * end
+
+				             fn main(--)
+				               size print
+				             end""");
 	}
 
 	private void compileWrite(String s) throws IOException {

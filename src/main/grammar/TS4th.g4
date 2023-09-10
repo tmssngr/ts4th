@@ -5,6 +5,7 @@ root: rootItem* EOF;
 rootItem
 	: include
 	| funcDeclaration
+	| constDeclaration
 	;
 
 include
@@ -16,6 +17,12 @@ funcDeclaration
         instructions
       End
     ;
+
+constDeclaration
+	: Const name=Identifier
+	    instructions
+	  End
+	;
 
 typeList
     : Identifier*
@@ -42,6 +49,7 @@ instruction
 TypeSeparator: '--';
 Include: 'include';
 Func: 'fn';
+Const: 'const';
 End: 'end';
 If: 'if';
 Else: 'else';

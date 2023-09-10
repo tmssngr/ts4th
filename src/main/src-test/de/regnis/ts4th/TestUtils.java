@@ -35,8 +35,19 @@ public class TestUtils {
 				return;
 			}
 
+			if (expectedDeclaration instanceof ConstDeclaration expC
+			    && currentDeclaration instanceof ConstDeclaration currC) {
+				assertConstEquals(expC, currC);
+				return;
+			}
+
 			fail("unexpected types " + expectedDeclaration + " vs. " + currentDeclaration);
 		});
+	}
+
+	public static void assertConstEquals(ConstDeclaration expected, ConstDeclaration current) {
+		assertEquals(expected.name(), current.name());
+		assertInstructionsEquals(expected.instructions(), current.instructions());
 	}
 
 	public static void assertFunctionEquals(Function expected, Function current) {

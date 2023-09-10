@@ -35,6 +35,12 @@ public interface TS4thVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncDeclaration(TS4thParser.FuncDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TS4thParser#constDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstDeclaration(TS4thParser.ConstDeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TS4thParser#typeList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -83,27 +83,27 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testDup2() {
 		assertEquals(List.of(2, 0, 1, 2, 0, 1), AsmIRInterpreter.parseAndCreate("""
-				                                                                  fn main(int bool -- int bool int bool)
-				                                                                      dup2
-				                                                                  end""")
+				                                                                        fn main(int bool -- int bool int bool)
+				                                                                            dup2
+				                                                                        end""")
 				.run(List.of(2, Boolean.TRUE)));
 	}
 
 	@Test
 	public void testOver() {
 		assertEquals(List.of(2, 0, 1, 2, 0), AsmIRInterpreter.parseAndCreate("""
-				                                                                  fn main(-- int bool int)
-				                                                                      2 true over
-				                                                                  end""")
+				                                                                     fn main(-- int bool int)
+				                                                                         2 true over
+				                                                                     end""")
 				.run(List.of()));
 	}
 
 	@Test
 	public void testRot() {
 		assertEquals(List.of(0, 1, 0, 2, 0), AsmIRInterpreter.parseAndCreate("""
-				                                                                  fn main(-- bool int int)
-				                                                                      2 false 1 rot
-				                                                                  end""")
+				                                                                     fn main(-- bool int int)
+				                                                                         2 false 1 rot
+				                                                                     end""")
 				.run(List.of()));
 	}
 
@@ -123,10 +123,10 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testPrint() {
 		AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate("""
-				                                                                     fn main(--)
-				                                                                       10 print
-				                                                                       mem print
-				                                                                     end""");
+				                                                               fn main(--)
+				                                                                 10 print
+				                                                                 mem print
+				                                                               end""");
 		assertEquals(List.of(), interpreter.run(List.of()));
 		assertEquals("10 0 ", interpreter.getOutput());
 
@@ -206,5 +206,16 @@ public class AsmIRInterpreterTest {
 						    b @8
 						end""");
 		assertEquals(List.of(10, 0, 20, 0), interpreter.run(List.of()));
+	}
+
+	@Test
+	public void testConst() {
+		final AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate("""
+				                                                                     const ten 10 end
+				                                                                     fn main(--)
+				                                                                       ten print
+				                                                                     end""");
+		assertEquals(List.of(), interpreter.run(List.of()));
+		assertEquals("10 ", interpreter.getOutput());
 	}
 }

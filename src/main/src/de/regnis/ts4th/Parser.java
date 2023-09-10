@@ -62,6 +62,11 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			return visitInclude(include);
 		}
 
+		final TS4thParser.ConstDeclarationContext constDeclaration = ctx.constDeclaration();
+		if (constDeclaration != null) {
+			return List.of(visitConstDeclaration(constDeclaration));
+		}
+
 		final TS4thParser.FuncDeclarationContext funcDeclaration = ctx.funcDeclaration();
 		if (funcDeclaration != null) {
 			return List.of(visitFuncDeclaration(funcDeclaration));
@@ -74,6 +79,14 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Declaration> visitInclude(TS4thParser.IncludeContext ctx) {
 		final String path = parseStringLiteral(ctx.String());
 		return includeHandler.include(path);
+	}
+
+	@Override
+	public ConstDeclaration visitConstDeclaration(TS4thParser.ConstDeclarationContext ctx) {
+		final String name = ctx.name.getText();
+		final List<Instruction> instructions = visitInstructions(ctx.instructions());
+		final Location location = new Location(ctx.name.getLine(), ctx.name.getCharPositionInLine());
+		return new ConstDeclaration(location, name, instructions);
 	}
 
 	@Override

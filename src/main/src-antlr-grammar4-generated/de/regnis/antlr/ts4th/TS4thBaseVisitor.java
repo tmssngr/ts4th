@@ -45,6 +45,13 @@ public class TS4thBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitConstDeclaration(TS4thParser.ConstDeclarationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitTypeList(TS4thParser.TypeListContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

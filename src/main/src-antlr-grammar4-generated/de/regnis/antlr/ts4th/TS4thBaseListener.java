@@ -64,6 +64,18 @@ public class TS4thBaseListener implements TS4thListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConstDeclaration(TS4thParser.ConstDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstDeclaration(TS4thParser.ConstDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTypeList(TS4thParser.TypeListContext ctx) { }
 	/**
 	 * {@inheritDoc}

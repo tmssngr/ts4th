@@ -70,6 +70,11 @@ public class InstructionFactory {
 	}
 
 	@NotNull
+	public static Instruction mul() {
+		return new Instruction.Command(BuiltinCommands.MUL);
+	}
+
+	@NotNull
 	public static Instruction isLT() {
 		return new Instruction.Command(BuiltinCommands.IS_LT);
 	}

@@ -1,7 +1,6 @@
 package de.regnis.ts4th;
 
 import java.util.*;
-import java.util.function.*;
 
 import org.antlr.v4.runtime.misc.*;
 import org.junit.*;
@@ -279,17 +278,24 @@ public final class ParserTest {
 		}
 	}
 
-	private static <I> void checkEquals(Collection<I> expected, Collection<I> actual, BiConsumer<I, I> consumer) {
-		final Iterator<I> expIt = expected.iterator();
-		final Iterator<I> actualIt = actual.iterator();
-		while (true) {
-			final boolean hasNext = expIt.hasNext();
-			Assert.assertEquals(hasNext, actualIt.hasNext());
-			if (!hasNext) {
-				break;
-			}
-
-			consumer.accept(expIt.next(), actualIt.next());
-		}
+	@Test
+	public void testConstDeclaration() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new ConstDeclaration("width", List.of(
+						  new Instruction.IntLiteral(40)
+				)),
+				new ConstDeclaration("height", List.of(
+						  new Instruction.IntLiteral(24)
+				)),
+				new ConstDeclaration("size", List.of(
+						  new Instruction.Command("width"),
+						  new Instruction.Command("height"),
+						  InstructionFactory.mul()
+				))
+		), Parser.parseString(
+				"""
+						const width 40 end
+						const height 24 end
+						const size width height * end"""));
 	}
 }
