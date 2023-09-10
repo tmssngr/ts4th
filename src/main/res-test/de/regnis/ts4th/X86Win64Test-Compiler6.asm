@@ -16,11 +16,8 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- a --
-        call tsf_a
-        ; -- pop 0 (8) --
-        mov rcx, [r15]
-        add r15, 8
+        ; -- mem --
+        lea rcx, [mem]
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
@@ -145,8 +142,27 @@ tsf_main:
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
-        ; -- b --
-        call tsf_b
+        ; -- mem --
+        lea rcx, [mem]
+        ; -- push 0 (8) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal 10 --
+        mov cx, 10
+        ; -- push 0 (2) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- pop 1 (2) --
+        mov ax, [r15]
+        add r15, 2
+        ; -- pop 0 (8) --
+        mov rcx, [r15]
+        add r15, 8
+        ; -- add_ptr 0 1 --
+        add rcx, ax
+        ; -- push 0 (8) --
+        sub r15, 8
+        mov [r15], rcx
         ; -- literal 104 --
         mov cx, 104
         ; -- push 0 (2) --
@@ -185,49 +201,11 @@ tsf_main:
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
-        ; -- b --
-        call tsf_b
-        ; -- literal 5 --
-        mov cx, 5
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
-        ; -- printString r1 (0) --
-        movsx rdx, cx
-        mov rcx, rax
-        sub rsp, 8
-          call tsfbi_printString
-        add rsp, 8
-        ; -- a --
-        call tsf_a
-        ; -- literal 5 --
-        mov cx, 5
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
-        ; -- printString r1 (0) --
-        movsx rdx, cx
-        mov rcx, rax
-        sub rsp, 8
-          call tsfbi_printString
-        add rsp, 8
-        ; -- ret --
-        ret
-
-        ; -- proc a --
-tsf_a:
         ; -- mem --
         lea rcx, [mem]
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
-        ; -- ret --
-        ret
-
-        ; -- proc b --
-tsf_b:
-        ; -- a --
-        call tsf_a
         ; -- literal 10 --
         mov cx, 10
         ; -- push 0 (2) --
@@ -245,6 +223,33 @@ tsf_b:
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
+        ; -- literal 5 --
+        mov cx, 5
+        ; -- pop 1 (8) --
+        mov rax, [r15]
+        add r15, 8
+        ; -- printString r1 (0) --
+        movsx rdx, cx
+        mov rcx, rax
+        sub rsp, 8
+          call tsfbi_printString
+        add rsp, 8
+        ; -- mem --
+        lea rcx, [mem]
+        ; -- push 0 (8) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal 5 --
+        mov cx, 5
+        ; -- pop 1 (8) --
+        mov rax, [r15]
+        add r15, 8
+        ; -- printString r1 (0) --
+        movsx rdx, cx
+        mov rcx, rax
+        sub rsp, 8
+          call tsfbi_printString
+        add rsp, 8
         ; -- ret --
         ret
 

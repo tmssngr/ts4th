@@ -37,11 +37,11 @@ public class Compiler {
 			cfgFunction.checkTypes(typeChecker);
 		}
 
-		Inliner.process(usedFunctions);
+		final List<Function> inlinedFunctions = Inliner.process(usedFunctions);
 
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
-		for (Function function : usedFunctions) {
+		for (Function function : inlinedFunctions) {
 			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
 			processedFunctions.add(irFunction);
 		}
