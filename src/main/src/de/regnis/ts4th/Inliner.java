@@ -83,7 +83,7 @@ public class Inliner {
 	private Function inline(Function function) {
 		final List<Instruction> inlinedInstructions = new ArrayList<>();
 		inline(function, inlinedInstructions::add);
-		return new Function(function.name(), function.typesInOut(), function.isInline(), inlinedInstructions);
+		return new Function(function.location(), function.name(), function.typesInOut(), function.isInline(), inlinedInstructions);
 	}
 
 	private void inline(Function function, Consumer<Instruction> consumer) {

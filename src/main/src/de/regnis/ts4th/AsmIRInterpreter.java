@@ -14,14 +14,15 @@ public class AsmIRInterpreter {
 	public static void main(String[] args) throws IOException {
 		final Path forthFile = Paths.get(args[0]);
 
-		final List<Function> functions = Parser.parseFile(forthFile);
+		final List<Declaration> declarations = Parser.parseFile(forthFile);
+		final Program program = Program.fromDeclarations(declarations);
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		functions.forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final List<AsmIR> programInstructions = new ArrayList<>();
 		int startIp = 0;
-		for (Function function : functions) {
+		for (Function function : program.functions()) {
 			final String name = function.name();
 			System.out.println("Checking types for " + name);
 			if (name.equals("main")) {
@@ -40,15 +41,16 @@ public class AsmIRInterpreter {
 
 	@NotNull
 	public static AsmIRInterpreter parseAndCreate(String code) {
-		final List<Function> functions = Parser.parseString(code);
+		final List<Declaration> declarations = Parser.parseString(code);
+		final Program program = Program.fromDeclarations(declarations);
 
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		functions.forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
 		final List<AsmIR> programInstructions = new ArrayList<>();
 		int startIp = 0;
-		for (Function function : functions) {
+		for (Function function : program.functions()) {
 			if (function.name().equals("main")) {
 				startIp = programInstructions.size();
 			}

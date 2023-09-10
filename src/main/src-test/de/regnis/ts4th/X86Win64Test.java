@@ -183,9 +183,11 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void compileWrite(String s) throws IOException {
-		final AsmIRProgram program = Compiler.compile(Parser.parseString(s));
-		writeIr(program);
-		writeX86(program);
+		final List<Declaration> declarations = Parser.parseString(s);
+		final Program program = Program.fromDeclarations(declarations);
+		final AsmIRProgram irProgram = Compiler.compile(program);
+		writeIr(irProgram);
+		writeX86(irProgram);
 	}
 
 	private void writeIr(AsmIRProgram program) throws IOException {

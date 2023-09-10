@@ -15,8 +15,9 @@ public class Compiler {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		final Path forthFile = Paths.get(args[0]);
 
-		final List<Function> functions = Parser.parseFile(forthFile);
-		final AsmIRProgram irProgram = compile(functions);
+		final List<Declaration> declarations = Parser.parseFile(forthFile);
+		final Program program = Program.fromDeclarations(declarations);
+		final AsmIRProgram irProgram = compile(program);
 
 		final Path asmFile = forthFile.resolveSibling(getAsmName(forthFile));
 		writeAsmFile(asmFile, irProgram);
@@ -25,11 +26,11 @@ public class Compiler {
 	}
 
 	@NotNull
-	public static AsmIRProgram compile(List<Function> functions) {
+	public static AsmIRProgram compile(Program program) {
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		functions.forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
+		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
-		final List<Function> usedFunctions = getUsedFunctions(functions);
+		final List<Function> usedFunctions = getUsedFunctions(program.functions());
 
 		for (Function function : usedFunctions) {
 			final CfgFunction cfgFunction = new CfgFunction(function);

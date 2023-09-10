@@ -3,16 +3,16 @@ package de.regnis.ts4th;
 import java.util.*;
 import java.util.function.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Thomas Singer
  */
 public class TestUtils {
 
-	public static <E> void assertCollEquals(Collection<E> expectedColl, Collection<E> currentColl, BiConsumer<E, E> consumer) {
-		final Iterator<E> expectedIt = expectedColl.iterator();
-		final Iterator<E> currentIt = currentColl.iterator();
+	public static <E> void assertCollEquals(Collection<? extends E> expectedColl, Collection<? extends E> currentColl, BiConsumer<E, E> consumer) {
+		final Iterator<? extends E> expectedIt = expectedColl.iterator();
+		final Iterator<? extends E> currentIt = currentColl.iterator();
 		while (true) {
 			final boolean expectedHasNext = expectedIt.hasNext();
 			final boolean currentHasNext = currentIt.hasNext();
@@ -27,8 +27,16 @@ public class TestUtils {
 		}
 	}
 
-	public static void assertFunctionsEquals(Collection<Function> expected, Collection<Function> current) {
-		assertCollEquals(expected, current, TestUtils::assertFunctionEquals);
+	public static void assertFunctionsEquals(Collection<? extends Declaration> expected, Collection<? extends Declaration> current) {
+		assertCollEquals(expected, current, (expectedDeclaration, currentDeclaration) -> {
+			if (expectedDeclaration instanceof Function expF
+			    && currentDeclaration instanceof Function currF) {
+				assertFunctionEquals(expF, currF);
+				return;
+			}
+
+			fail("unexpected types " + expectedDeclaration + " vs. " + currentDeclaration);
+		});
 	}
 
 	public static void assertFunctionEquals(Function expected, Function current) {
