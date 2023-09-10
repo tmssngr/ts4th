@@ -28,7 +28,7 @@ public class X86Win64 {
 		this.writer = writer;
 	}
 
-	public void write(Program program) throws IOException {
+	public void write(AsmIRProgram program) throws IOException {
 		write("""
 				      format pe64 console
 				      include 'win64ax.inc'

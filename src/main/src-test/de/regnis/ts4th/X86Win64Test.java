@@ -14,7 +14,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testSimple() throws IOException {
 		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
-		final Program program = new Program(List.of(
+		final AsmIRProgram program = new AsmIRProgram(List.of(
 				new AsmIRFunction("main", stringLiterals, List.of(
 						AsmIRFactory.call("subr"),
 						AsmIRFactory.ret()
@@ -183,16 +183,16 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void compileWrite(String s) throws IOException {
-		final Program program = Compiler.compile(Parser.parseString(s));
+		final AsmIRProgram program = Compiler.compile(Parser.parseString(s));
 		writeIr(program);
 		writeX86(program);
 	}
 
-	private void writeIr(Program program) throws IOException {
+	private void writeIr(AsmIRProgram program) throws IOException {
 		write(".ir", path -> writeIr(program, path));
 	}
 
-	private void writeIr(Program program, Path path) throws IOException {
+	private void writeIr(AsmIRProgram program, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 			writeIrConstants(program, writer);
 			writer.newLine();
@@ -203,7 +203,7 @@ public class X86Win64Test extends AbstractFileTest {
 		}
 	}
 
-	private void writeIrConstants(Program program, BufferedWriter writer) throws IOException {
+	private void writeIrConstants(AsmIRProgram program, BufferedWriter writer) throws IOException {
 		List<byte[]> constants = program.stringLiterals().getConstants();
 		for (int i = 0; i < constants.size(); i++) {
 			writer.write("const %" + i + ":");
@@ -230,11 +230,11 @@ public class X86Win64Test extends AbstractFileTest {
 		}
 	}
 
-	private void writeX86(Program program) throws IOException {
+	private void writeX86(AsmIRProgram program) throws IOException {
 		write(".asm", path -> writeX86(program, path));
 	}
 
-	private void writeX86(Program program, Path path) throws IOException {
+	private void writeX86(AsmIRProgram program, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 			final X86Win64 x86Win64 = new X86Win64(writer);
 			x86Win64.write(program);

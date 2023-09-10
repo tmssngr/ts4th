@@ -16,16 +16,16 @@ public class Compiler {
 		final Path forthFile = Paths.get(args[0]);
 
 		final List<Function> functions = Parser.parseFile(forthFile);
-		final Program program = compile(functions);
+		final AsmIRProgram irProgram = compile(functions);
 
 		final Path asmFile = forthFile.resolveSibling(getAsmName(forthFile));
-		writeAsmFile(asmFile, program);
+		writeAsmFile(asmFile, irProgram);
 
 		launchFasm(asmFile);
 	}
 
 	@NotNull
-	public static Program compile(List<Function> functions) {
+	public static AsmIRProgram compile(List<Function> functions) {
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
 		functions.forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
@@ -45,7 +45,7 @@ public class Compiler {
 			processedFunctions.add(irFunction);
 		}
 
-		return new Program(processedFunctions, stringLiterals);
+		return new AsmIRProgram(processedFunctions, stringLiterals);
 	}
 
 	private static List<Function> getUsedFunctions(List<Function> functions) {
@@ -84,7 +84,7 @@ public class Compiler {
 		throw new CompilerException("no function `" + name + "` found");
 	}
 
-	private static void writeAsmFile(Path asmFile, Program program) throws IOException {
+	private static void writeAsmFile(Path asmFile, AsmIRProgram program) throws IOException {
 		try (Writer writer = Files.newBufferedWriter(asmFile)) {
 			final X86Win64 x86Win64 = new X86Win64(writer);
 			x86Win64.write(program);
