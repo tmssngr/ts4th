@@ -15,53 +15,53 @@ public class AsmIRInterpreterTest {
 	public void testSimple() {
 		assertEquals(List.of(10, 0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main( -- int)
+				                                             fn main( -- int)
 				                                                 10
 				                                             end""")
 				             .run(List.of()));
 
 		assertEquals(List.of(0, 1),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main( -- int)
+				                                             fn main( -- int)
 				                                                 256
 				                                             end""")
 				             .run(List.of()));
 
 		assertEquals(List.of(1),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main( -- bool)
+				                                             fn main( -- bool)
 				                                                 true
 				                                             end""")
 				             .run(List.of()));
 
 		assertEquals(List.of(0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main( -- bool)
+				                                             fn main( -- bool)
 				                                                 false
 				                                             end""")
 				             .run(List.of()));
 
 		assertEquals(List.of(3, 0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main( -- int)
+				                                             fn main( -- int)
 				                                                1 2 +
 				                                             end""").run(List.of()));
 
 		assertEquals(List.of(1, 0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main(int int -- int)
+				                                             fn main(int int -- int)
 				                                                -
 				                                             end""").run(List.of(4, 3)));
 
 		assertEquals(List.of(3, 0, 4, 0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main(int int -- int int)
+				                                             fn main(int int -- int int)
 				                                                swap
 				                                             end""").run(List.of(4, 3)));
 
 		assertEquals(List.of(1, 4, 0),
 		             AsmIRInterpreter.parseAndCreate("""
-				                                             def main(int bool -- bool int)
+				                                             fn main(int bool -- bool int)
 				                                                swap
 				                                             end""").run(List.of(4, Boolean.TRUE)));
 	}
@@ -69,12 +69,12 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testDup() {
 		assertEquals(List.of(1, 0, 1, 0), AsmIRInterpreter.parseAndCreate("""
-				                                                                  def main(int -- int int)
+				                                                                  fn main(int -- int int)
 				                                                                      dup
 				                                                                  end""")
 				.run(List.of(1)));
 		assertEquals(List.of(1, 1), AsmIRInterpreter.parseAndCreate("""
-				                                                            def main(bool -- bool bool)
+				                                                            fn main(bool -- bool bool)
 				                                                                dup
 				                                                            end""")
 				.run(List.of(Boolean.TRUE)));
@@ -83,7 +83,7 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testDup2() {
 		assertEquals(List.of(2, 0, 1, 2, 0, 1), AsmIRInterpreter.parseAndCreate("""
-				                                                                  def main(int bool -- int bool int bool)
+				                                                                  fn main(int bool -- int bool int bool)
 				                                                                      dup2
 				                                                                  end""")
 				.run(List.of(2, Boolean.TRUE)));
@@ -92,7 +92,7 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testOver() {
 		assertEquals(List.of(2, 0, 1, 2, 0), AsmIRInterpreter.parseAndCreate("""
-				                                                                  def main(-- int bool int)
+				                                                                  fn main(-- int bool int)
 				                                                                      2 true over
 				                                                                  end""")
 				.run(List.of()));
@@ -101,7 +101,7 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testRot() {
 		assertEquals(List.of(0, 1, 0, 2, 0), AsmIRInterpreter.parseAndCreate("""
-				                                                                  def main(-- bool int int)
+				                                                                  fn main(-- bool int int)
 				                                                                      2 false 1 rot
 				                                                                  end""")
 				.run(List.of()));
@@ -110,7 +110,7 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testIf() {
 		final AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate("""
-				                                                                     def main(int int -- int)
+				                                                                     fn main(int int -- int)
 				                                                                        dup2 < if
 				                                                                            swap
 				                                                                        end
@@ -123,7 +123,7 @@ public class AsmIRInterpreterTest {
 	@Test
 	public void testPrint() {
 		AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate("""
-				                                                                     def main(--)
+				                                                                     fn main(--)
 				                                                                       10 print
 				                                                                       mem print
 				                                                                     end""");
@@ -131,7 +131,7 @@ public class AsmIRInterpreterTest {
 		assertEquals("10 0 ", interpreter.getOutput());
 
 		interpreter = AsmIRInterpreter.parseAndCreate("""
-				                                              def main(--)
+				                                              fn main(--)
 				                                                mem
 				                                                  'h' appendChar
 				                                                  'e' appendChar
@@ -142,7 +142,7 @@ public class AsmIRInterpreterTest {
 				                                                mem 5 printString
 				                                              end
 
-				                                              def appendChar(ptr int -- ptr)
+				                                              fn appendChar(ptr int -- ptr)
 				                                                over
 				                                                !8
 				                                                1 +
@@ -151,7 +151,7 @@ public class AsmIRInterpreterTest {
 		assertEquals("hello", interpreter.getOutput());
 
 		interpreter = AsmIRInterpreter.parseAndCreate("""
-				                                              def main(--)
+				                                              fn main(--)
 				                                                "hello world" printString
 				                                              end""");
 		assertEquals(List.of(), interpreter.run(List.of()));
@@ -162,7 +162,7 @@ public class AsmIRInterpreterTest {
 	public void testFunctions() {
 		final AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate(
 				"""
-						def hex8(int -- int int)
+						fn hex8(int -- int int)
 							dup
 								4 shr
 								hex4
@@ -170,7 +170,7 @@ public class AsmIRInterpreterTest {
 							hex4
 						end
 
-						def hex4(int -- int)
+						fn hex4(int -- int)
 						    15 and
 						    dup 10 >= if
 						        0x40 0x39 - +
@@ -178,7 +178,7 @@ public class AsmIRInterpreterTest {
 						    0x30 +
 						end
 
-						def main(int -- int int)
+						fn main(int -- int int)
 						    hex8
 						end""");
 		assertEquals(List.of((int)'0', 0, (int)'0', 0), interpreter.run(List.of(0)));
@@ -193,13 +193,13 @@ public class AsmIRInterpreterTest {
 	public void testMem() {
 		final AsmIRInterpreter interpreter = AsmIRInterpreter.parseAndCreate(
 				"""
-						def a( -- ptr)
+						fn a( -- ptr)
 						    mem
 						end
-						def b(-- ptr)
+						fn b(-- ptr)
 						    mem 1 +
 						end
-						def main(-- int int)
+						fn main(-- int int)
 						    10 a !8
 						    20 b !8
 						    a @8

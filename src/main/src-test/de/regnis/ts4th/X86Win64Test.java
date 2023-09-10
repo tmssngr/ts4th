@@ -30,7 +30,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler1() throws IOException {
 		compileWrite("""
-				             def main(--)
+				             fn main(--)
 				             	1024 2048 -
 				             	print
 				             end
@@ -40,7 +40,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler2() throws IOException {
 		compileWrite("""
-				             def main(--)
+				             fn main(--)
 				             	1024 768
 				             	dup2 gcd // w h gcd
 				             	rot      // h gcd w
@@ -49,7 +49,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	/ print
 				             end
 
-				             def gcd(int int -- int)
+				             fn gcd(int int -- int)
 				             	while true do
 				             		dup2 < if
 				             			// a b     with a < b
@@ -73,7 +73,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler3() throws IOException {
 		compileWrite("""
-				             def main(--)
+				             fn main(--)
 				             	-10 print
 				             	1000 print
 				             	mem print
@@ -84,7 +84,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler4() throws IOException {
 		compileWrite("""
-				             def main(--)
+				             fn main(--)
 				             	10 mem !8
 				             	mem @8 print
 				             end
@@ -94,7 +94,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler5() throws IOException {
 		compileWrite("""
-				             def main(--)
+				             fn main(--)
 				             	mem     0x31 !8
 				             	mem 1 + 0x30 !8
 				             	mem 2 + 0x32 !8
@@ -113,7 +113,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	"\\nhello \\"world\\"\\n" printString
 				             end
 
-				             def appendChar(ptr int -- ptr)
+				             fn appendChar(ptr int -- ptr)
 				               over
 				               !8
 				               1 +
@@ -124,15 +124,15 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler6() throws IOException {
 		compileWrite("""
-				             def inline a(-- ptr)
+				             fn inline a(-- ptr)
 				             	mem
 				             end
 
-				             def inline b(-- ptr)
+				             fn inline b(-- ptr)
 				             	a 10 +
 				             end
 
-				             def main(--)
+				             fn main(--)
 				             	a
 				             	dup 0x31 !8 1 +
 				             	dup 0x30 !8 1 +
@@ -153,7 +153,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	a 5 printString
 				             end
 
-				             def appendChar(ptr int -- ptr)
+				             fn appendChar(ptr int -- ptr)
 				               over
 				               !8
 				               1 +
@@ -164,7 +164,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testCompiler7() throws IOException {
 		compileWrite("""
-				             def strlen(ptr -- int)
+				             fn strlen(ptr -- int)
 				             	0 swap               // 0 ptr
 				             	while dup @8 0 != do
 				             		swap 1 +
@@ -173,7 +173,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	drop
 				             end
 
-				             def main(--)
+				             fn main(--)
 				             	"hello world\\0" // ptr int
 				             	drop // ptr
 				             	strlen

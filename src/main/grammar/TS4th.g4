@@ -2,16 +2,17 @@ grammar TS4th;
 
 root: rootItem* EOF;
 
-rootItem: declaration
-        | include
-        ;
+rootItem
+	: include
+	| funcDeclaration
+	;
 
 include
 	: Include String
 	;
 
-declaration
-    : Def Inline? name=Identifier ParenOpen beforeTypes=typeList TypeSeparator afterTypes=typeList ParenClose
+funcDeclaration
+    : Func Inline? name=Identifier ParenOpen beforeTypes=typeList TypeSeparator afterTypes=typeList ParenClose
         instructions
       End
     ;
@@ -40,7 +41,7 @@ instruction
 
 TypeSeparator: '--';
 Include: 'include';
-Def: 'def';
+Func: 'fn';
 End: 'end';
 If: 'if';
 Else: 'else';

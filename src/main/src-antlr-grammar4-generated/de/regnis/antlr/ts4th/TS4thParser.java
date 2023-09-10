@@ -17,16 +17,16 @@ public class TS4thParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		TypeSeparator=1, Include=2, Def=3, End=4, If=5, Else=6, Do=7, While=8, 
+		TypeSeparator=1, Include=2, Func=3, End=4, If=5, Else=6, Do=7, While=8, 
 		Break=9, Continue=10, True=11, False=12, Inline=13, ParenOpen=14, ParenClose=15, 
 		Number=16, String=17, Identifier=18, Whitespace=19, NL=20, LineComment=21, 
 		BlockComment=22;
 	public static final int
-		RULE_root = 0, RULE_rootItem = 1, RULE_include = 2, RULE_declaration = 3, 
+		RULE_root = 0, RULE_rootItem = 1, RULE_include = 2, RULE_funcDeclaration = 3, 
 		RULE_typeList = 4, RULE_instructions = 5, RULE_instruction = 6;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"root", "rootItem", "include", "declaration", "typeList", "instructions", 
+			"root", "rootItem", "include", "funcDeclaration", "typeList", "instructions", 
 			"instruction"
 		};
 	}
@@ -34,7 +34,7 @@ public class TS4thParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'--'", "'include'", "'def'", "'end'", "'if'", "'else'", "'do'", 
+			null, "'--'", "'include'", "'fn'", "'end'", "'if'", "'else'", "'do'", 
 			"'while'", "'break'", "'continue'", "'true'", "'false'", "'inline'", 
 			"'('", "')'"
 		};
@@ -42,9 +42,9 @@ public class TS4thParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "TypeSeparator", "Include", "Def", "End", "If", "Else", "Do", "While", 
-			"Break", "Continue", "True", "False", "Inline", "ParenOpen", "ParenClose", 
-			"Number", "String", "Identifier", "Whitespace", "NL", "LineComment", 
+			null, "TypeSeparator", "Include", "Func", "End", "If", "Else", "Do", 
+			"While", "Break", "Continue", "True", "False", "Inline", "ParenOpen", 
+			"ParenClose", "Number", "String", "Identifier", "Whitespace", "NL", "LineComment", 
 			"BlockComment"
 		};
 	}
@@ -136,7 +136,7 @@ public class TS4thParser extends Parser {
 			setState(17);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==Include || _la==Def) {
+			while (_la==Include || _la==Func) {
 				{
 				{
 				setState(14);
@@ -163,11 +163,11 @@ public class TS4thParser extends Parser {
 	}
 
 	public static class RootItemContext extends ParserRuleContext {
-		public DeclarationContext declaration() {
-			return getRuleContext(DeclarationContext.class,0);
-		}
 		public IncludeContext include() {
 			return getRuleContext(IncludeContext.class,0);
+		}
+		public FuncDeclarationContext funcDeclaration() {
+			return getRuleContext(FuncDeclarationContext.class,0);
 		}
 		public RootItemContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -195,18 +195,18 @@ public class TS4thParser extends Parser {
 			setState(24);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case Def:
+			case Include:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(22);
-				declaration();
+				include();
 				}
 				break;
-			case Include:
+			case Func:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(23);
-				include();
+				funcDeclaration();
 				}
 				break;
 			default:
@@ -269,11 +269,11 @@ public class TS4thParser extends Parser {
 		return _localctx;
 	}
 
-	public static class DeclarationContext extends ParserRuleContext {
+	public static class FuncDeclarationContext extends ParserRuleContext {
 		public Token name;
 		public TypeListContext beforeTypes;
 		public TypeListContext afterTypes;
-		public TerminalNode Def() { return getToken(TS4thParser.Def, 0); }
+		public TerminalNode Func() { return getToken(TS4thParser.Func, 0); }
 		public TerminalNode ParenOpen() { return getToken(TS4thParser.ParenOpen, 0); }
 		public TerminalNode TypeSeparator() { return getToken(TS4thParser.TypeSeparator, 0); }
 		public TerminalNode ParenClose() { return getToken(TS4thParser.ParenClose, 0); }
@@ -289,34 +289,34 @@ public class TS4thParser extends Parser {
 			return getRuleContext(TypeListContext.class,i);
 		}
 		public TerminalNode Inline() { return getToken(TS4thParser.Inline, 0); }
-		public DeclarationContext(ParserRuleContext parent, int invokingState) {
+		public FuncDeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_declaration; }
+		@Override public int getRuleIndex() { return RULE_funcDeclaration; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).enterDeclaration(this);
+			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).enterFuncDeclaration(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).exitDeclaration(this);
+			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).exitFuncDeclaration(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof TS4thVisitor ) return ((TS4thVisitor<? extends T>)visitor).visitDeclaration(this);
+			if ( visitor instanceof TS4thVisitor ) return ((TS4thVisitor<? extends T>)visitor).visitFuncDeclaration(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final DeclarationContext declaration() throws RecognitionException {
-		DeclarationContext _localctx = new DeclarationContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_declaration);
+	public final FuncDeclarationContext funcDeclaration() throws RecognitionException {
+		FuncDeclarationContext _localctx = new FuncDeclarationContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_funcDeclaration);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(29);
-			match(Def);
+			match(Func);
 			setState(31);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -328,15 +328,15 @@ public class TS4thParser extends Parser {
 			}
 
 			setState(33);
-			((DeclarationContext)_localctx).name = match(Identifier);
+			((FuncDeclarationContext)_localctx).name = match(Identifier);
 			setState(34);
 			match(ParenOpen);
 			setState(35);
-			((DeclarationContext)_localctx).beforeTypes = typeList();
+			((FuncDeclarationContext)_localctx).beforeTypes = typeList();
 			setState(36);
 			match(TypeSeparator);
 			setState(37);
-			((DeclarationContext)_localctx).afterTypes = typeList();
+			((FuncDeclarationContext)_localctx).afterTypes = typeList();
 			setState(38);
 			match(ParenClose);
 			setState(39);
@@ -810,7 +810,7 @@ public class TS4thParser extends Parser {
 		"\16\2\2\2W\2\23\3\2\2\2\4\32\3\2\2\2\6\34\3\2\2\2\b\37\3\2\2\2\n/\3\2"+
 		"\2\2\f\63\3\2\2\2\16N\3\2\2\2\20\22\5\4\3\2\21\20\3\2\2\2\22\25\3\2\2"+
 		"\2\23\21\3\2\2\2\23\24\3\2\2\2\24\26\3\2\2\2\25\23\3\2\2\2\26\27\7\2\2"+
-		"\3\27\3\3\2\2\2\30\33\5\b\5\2\31\33\5\6\4\2\32\30\3\2\2\2\32\31\3\2\2"+
+		"\3\27\3\3\2\2\2\30\33\5\6\4\2\31\33\5\b\5\2\32\30\3\2\2\2\32\31\3\2\2"+
 		"\2\33\5\3\2\2\2\34\35\7\4\2\2\35\36\7\23\2\2\36\7\3\2\2\2\37!\7\5\2\2"+
 		" \"\7\17\2\2! \3\2\2\2!\"\3\2\2\2\"#\3\2\2\2#$\7\24\2\2$%\7\20\2\2%&\5"+
 		"\n\6\2&\'\7\3\2\2\'(\5\n\6\2()\7\21\2\2)*\5\f\7\2*+\7\6\2\2+\t\3\2\2\2"+

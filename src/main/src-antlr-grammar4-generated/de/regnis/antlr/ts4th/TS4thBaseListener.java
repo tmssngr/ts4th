@@ -52,13 +52,13 @@ public class TS4thBaseListener implements TS4thListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaration(TS4thParser.DeclarationContext ctx) { }
+	@Override public void enterFuncDeclaration(TS4thParser.FuncDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaration(TS4thParser.DeclarationContext ctx) { }
+	@Override public void exitFuncDeclaration(TS4thParser.FuncDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

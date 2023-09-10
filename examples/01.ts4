@@ -1,4 +1,4 @@
-def main(--)
+fn main(--)
 	1024 2048 -
 	print
 end

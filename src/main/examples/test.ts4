@@ -1,12 +1,12 @@
-def inc (int -- int)
+fn inc (int -- int)
 	1 +
 end
 
-def dec (int -- int)
+fn dec (int -- int)
 	1 -
 end
 
-def max (int int -- int)
+fn max (int int -- int)
 	over over
 	< if
 		swap
@@ -14,7 +14,7 @@ def max (int int -- int)
 	drop
 end
 
-def loopTest(int int --)
+fn loopTest(int int --)
 	loop
 		over over
 		>= if

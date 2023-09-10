@@ -38,15 +38,15 @@ public interface TS4thListener extends ParseTreeListener {
 	 */
 	void exitInclude(TS4thParser.IncludeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TS4thParser#declaration}.
+	 * Enter a parse tree produced by {@link TS4thParser#funcDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaration(TS4thParser.DeclarationContext ctx);
+	void enterFuncDeclaration(TS4thParser.FuncDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TS4thParser#declaration}.
+	 * Exit a parse tree produced by {@link TS4thParser#funcDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaration(TS4thParser.DeclarationContext ctx);
+	void exitFuncDeclaration(TS4thParser.FuncDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TS4thParser#typeList}.
 	 * @param ctx the parse tree

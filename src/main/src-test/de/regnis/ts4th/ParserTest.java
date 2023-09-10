@@ -46,15 +46,15 @@ public final class ParserTest {
 				)
 				)
 		), Parser.parseString("""
-				                      def inc (int -- int)
+				                      fn inc (int -- int)
 				                        1 +
 				                      end
-				                                                                        
-				                      def dec (int -- int)
+
+				                      fn dec (int -- int)
 				                        1 -
 				                      end
-				                                                                        
-				                      def max (int int -- int)
+
+				                      fn max (int int -- int)
 				                        dup2
 				                        < if
 				                            swap
@@ -90,7 +90,7 @@ public final class ParserTest {
 				)
 		), Parser.parseString(
 				"""
-						def loopTest(--)
+						fn loopTest(--)
 						  0 while dup 10 < do
 						    dup print
 						    1 +
@@ -130,7 +130,7 @@ public final class ParserTest {
 				)
 		), Parser.parseString(
 				"""
-						def loopTest(int int --)
+						fn loopTest(int int --)
 						  while true do
 						      dup2
 						      >= if
@@ -180,7 +180,7 @@ public final class ParserTest {
 				)
 		), Parser.parseString(
 				"""
-						def loopTest(--)
+						fn loopTest(--)
 						  0
 						  while true do
 						      dup 10 < if
@@ -236,7 +236,7 @@ public final class ParserTest {
 				)
 		), Parser.parseString(
 				"""
-						def gcd(int int -- int)
+						fn gcd(int int -- int)
 						   	while true do
 						   		dup2 < if
 						   			// a b     with a < b
@@ -263,7 +263,7 @@ public final class ParserTest {
 		try {
 			Parser.parseString(
 					"""
-							def loop(int int --)
+							fn loop(int int --)
 							  0 while
 							    1 < if
 							      break

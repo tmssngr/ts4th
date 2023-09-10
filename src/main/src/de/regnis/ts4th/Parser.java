@@ -57,9 +57,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public List<Function> visitRootItem(TS4thParser.RootItemContext ctx) {
-		final TS4thParser.DeclarationContext declaration = ctx.declaration();
-		if (declaration != null) {
-			return List.of(visitDeclaration(declaration));
+		final TS4thParser.FuncDeclarationContext funcDeclaration = ctx.funcDeclaration();
+		if (funcDeclaration != null) {
+			return List.of(visitFuncDeclaration(funcDeclaration));
 		}
 
 		return visitInclude(ctx.include());
@@ -72,7 +72,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	}
 
 	@Override
-	public Function visitDeclaration(TS4thParser.DeclarationContext ctx) {
+	public Function visitFuncDeclaration(TS4thParser.FuncDeclarationContext ctx) {
 		final String name = ctx.name.getText();
 		final boolean inline = ctx.Inline() != null;
 		final TypeList beforeTypes = visitTypeList(ctx.beforeTypes);
