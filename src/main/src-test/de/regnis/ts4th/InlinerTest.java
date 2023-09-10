@@ -27,7 +27,8 @@ public class InlinerTest {
 		             Inliner.process(List.of(
 				             new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
 						             literal(1),
-						             command("+")
+						             command("+"),
+						             ret()
 				             )),
 				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
 						             literal(10),

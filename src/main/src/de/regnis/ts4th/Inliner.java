@@ -82,11 +82,11 @@ public class Inliner {
 
 	private Function inline(Function function) {
 		final List<Instruction> inlinedInstructions = new ArrayList<>();
-		inline(function, inlinedInstructions::add);
+		inline(function, false, inlinedInstructions::add);
 		return new Function(function.location(), function.name(), function.typesInOut(), function.isInline(), inlinedInstructions);
 	}
 
-	private void inline(Function function, Consumer<Instruction> consumer) {
+	private void inline(Function function, boolean skipRet, Consumer<Instruction> consumer) {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Command c) {
@@ -94,9 +94,18 @@ public class Inliner {
 				if (BuiltinCommands.get(command) == null) {
 					final Function invokedFunction = Objects.requireNonNull(nameToFunction.get(command));
 					if (invokedFunction.isInline()) {
-						inline(invokedFunction, consumer);
+						inline(invokedFunction, true, consumer);
 						continue;
 					}
+				}
+			}
+
+			if (instruction instanceof Instruction.Ret) {
+				final int i = instructions.indexOf(instruction);
+				Utils.assertTrue(i == instructions.size() - 1);
+
+				if (skipRet) {
+					continue;
 				}
 			}
 
