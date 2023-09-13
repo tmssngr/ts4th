@@ -188,9 +188,17 @@ public class X86Win64Test extends AbstractFileTest {
 				             const width 40 end
 				             const height 24 end
 				             const size width height * end
+				             const dont false end
+				             const doit true end
 
 				             fn main(--)
 				               size print
+				               doit if
+				                 "doit" printString
+				               end
+				               dont if
+				                 "dont" printString
+				               end
 				             end""");
 	}
 

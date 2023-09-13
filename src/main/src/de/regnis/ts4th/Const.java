@@ -12,6 +12,10 @@ public record Const(String name, Type type, Object value) {
 		return new Const(name, Type.Int, value);
 	}
 
+	public static Const boolConst(String name, boolean value) {
+		return new Const(name, Type.Bool, value);
+	}
+
 	public static Const evaluate(ConstDeclaration declaration, Function<String, Const> existingConsts) {
 		final Interpreter interpreter = new Interpreter(declaration.instructions()) {
 			@Override
@@ -43,12 +47,18 @@ public record Const(String name, Type type, Object value) {
 			return intConst(declaration.name(), i);
 		}
 
+		if (result instanceof Boolean b) {
+			return boolConst(declaration.name(), b);
+		}
+
 		throw new CompilerException(declaration.location() + ": unsupported const type " + result);
 	}
 
 	public Instruction createInstruction() {
-		Utils.assertTrue(type == Type.Int);
-
-		return new Instruction.IntLiteral((Integer)value);
+		return switch (type) {
+			case Int -> new Instruction.IntLiteral((Integer)value);
+			case Bool -> new Instruction.BoolLiteral((Boolean)value);
+			default -> throw new IllegalStateException("unsupported type " + type);
+		};
 	}
 }

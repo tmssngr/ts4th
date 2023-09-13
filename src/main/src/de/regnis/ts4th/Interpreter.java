@@ -48,8 +48,17 @@ public class Interpreter {
 		stack.addLast(value);
 	}
 
+	protected final void push(boolean value) {
+		stack.addLast(value);
+	}
+
 	private void process(Instruction instruction) {
 		if (instruction instanceof Instruction.IntLiteral literal) {
+			push(literal.value());
+			return;
+		}
+
+		if (instruction instanceof Instruction.BoolLiteral literal) {
 			push(literal.value());
 			return;
 		}

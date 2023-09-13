@@ -33,6 +33,22 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
+        ; -- string literal 0 --
+        lea rcx, [string_0]
+        ; -- push 0 (8) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal 4 --
+        mov cx, 4
+        ; -- pop 1 (8) --
+        mov rax, [r15]
+        add r15, 8
+        ; -- printString r1 (0) --
+        movsx rdx, cx
+        mov rcx, rax
+        sub rsp, 8
+          call tsfbi_printString
+        add rsp, 8
         ; -- ret --
         ret
 
@@ -120,6 +136,9 @@ tsfbi_printUint:
         leave ; Set SP to BP, then pop BP
         ret
 .end start
+; string constants
+section '.data' data readable
+        string_0 db 'doit'
 
 section '.data' data readable writeable
 
