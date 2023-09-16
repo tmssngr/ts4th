@@ -484,10 +484,18 @@ public class X86Win64 {
 		                                               getRegName(reg2, 2)));
 		case xor -> writeIndented("xor %s, %s".formatted(getRegName(reg1, 2),
 		                                                 getRegName(reg2, 2)));
-		case shl -> writeIndented("shl %s, %s".formatted(getRegName(reg1, 2),
-		                                                 getRegName(reg2, 1)));
-		case shr -> writeIndented("shr %s, %s".formatted(getRegName(reg1, 2),
-		                                                 getRegName(reg2, 1)));
+		case shl -> {
+			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
+			Utils.assertTrue(reg2 == 0, "source must be cl");
+			writeIndented("shl %s, %s".formatted(getRegName(reg1, 2),
+			                                     getRegName(reg2, 1)));
+		}
+		case shr -> {
+			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
+			Utils.assertTrue(reg2 == 0, "source must be cl");
+			writeIndented("shr %s, %s".formatted(getRegName(reg1, 2),
+			                                     getRegName(reg2, 1)));
+		}
 		case boolTest -> writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
 		                                                       getRegName(reg2, 1)));
 		case lt -> {
@@ -604,12 +612,12 @@ public class X86Win64 {
 	@NotNull
 	private static String getRegName(int reg, int size) {
 		return switch (size) {
-			case 1 -> {
-				if (reg != AsmIRConverter.REG_0) {
-					throw new IllegalStateException("unsupported reg " + reg);
-				}
-				yield "cl";
-			}
+			case 1 -> switch (reg) {
+				case AsmIRConverter.REG_0 -> "cl";
+				case AsmIRConverter.REG_1 -> "al";
+				case AsmIRConverter.REG_2 -> "bl";
+				default -> throw new IllegalStateException("unsupported reg " + reg);
+			};
 			case 2 -> switch (reg) {
 				case AsmIRConverter.REG_0 -> "cx";
 				case AsmIRConverter.REG_1 -> "ax";

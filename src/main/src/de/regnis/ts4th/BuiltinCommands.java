@@ -240,8 +240,24 @@ public class BuiltinCommands {
 		nameToCommand.put(AND, new BinaryCommand(and));
 		nameToCommand.put(OR, new BinaryCommand(or));
 		nameToCommand.put(XOR, new BinaryCommand(xor));
-		nameToCommand.put(SHL, new BinaryCommand(shl));
-		nameToCommand.put(SHR, new BinaryCommand(shr));
+		nameToCommand.put(SHL, new BinaryCommand(shl) {
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				output.accept(AsmIRFactory.pop(REG_0, 2));
+				output.accept(AsmIRFactory.pop(REG_1, 2));
+				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0));
+				output.accept(AsmIRFactory.push(REG_1, 2));
+			}
+		});
+		nameToCommand.put(SHR, new BinaryCommand(shr) {
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				output.accept(AsmIRFactory.pop(REG_0, 2));
+				output.accept(AsmIRFactory.pop(REG_1, 2));
+				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0));
+				output.accept(AsmIRFactory.push(REG_1, 2));
+			}
+		});
 
 		nameToCommand.put(MEM, new Command() {
 			@Override
@@ -449,7 +465,7 @@ public class BuiltinCommands {
 		}
 	}
 
-	private final static class BinaryCommand extends Command {
+	private static class BinaryCommand extends Command {
 		private final AsmIR.BinOperation operation;
 
 		public BinaryCommand(AsmIR.BinOperation operation) {
