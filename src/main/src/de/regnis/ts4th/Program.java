@@ -11,7 +11,7 @@ public record Program(List<Function> functions) {
 
 	public static Program fromDeclarations(List<Declaration> declarations) {
 		final Map<String, Location> names = new HashMap<>();
-		final Map<String, Const> nameToConst = new HashMap<>();
+		final Map<String, Instruction> nameToConst = new HashMap<>();
 		final List<Function> functions = new ArrayList<>();
 		for (Declaration declaration : declarations) {
 			final String name = declaration.name();
@@ -29,7 +29,7 @@ public record Program(List<Function> functions) {
 			}
 
 			if (declaration instanceof ConstDeclaration c) {
-				nameToConst.put(name, Const.evaluate(c, nameToConst::get));
+				nameToConst.put(name, c.evaluate(nameToConst::get));
 				continue;
 			}
 
@@ -55,13 +55,13 @@ public record Program(List<Function> functions) {
 		return null;
 	}
 
-	private static List<Instruction> inlineConsts(List<Instruction> instructions, Map<String, Const> nameToConst) {
+	private static List<Instruction> inlineConsts(List<Instruction> instructions, Map<String, Instruction> nameToConst) {
 		final List<Instruction> resultingInstructions = new ArrayList<>(instructions.size());
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Command command) {
-				final Const constant = nameToConst.get(command.name());
+				final Instruction constant = nameToConst.get(command.name());
 				if (constant != null) {
-					instruction = constant.createInstruction();
+					instruction = constant;
 				}
 			}
 			resultingInstructions.add(instruction);

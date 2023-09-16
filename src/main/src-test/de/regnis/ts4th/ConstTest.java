@@ -13,46 +13,51 @@ public class ConstTest {
 
 	@Test
 	public void testEvaluation() {
-		assertEquals(Const.intConst("a", 1),
-		             Const.evaluate(new ConstDeclaration("a", List.of(
+		assertEquals(InstructionFactory.literal(1),
+		             new ConstDeclaration("a", List.of(
 				             new Instruction.IntLiteral(1)
-		             )), name -> null));
-		assertEquals(Const.intConst("b", 3),
-		             Const.evaluate(new ConstDeclaration("b", List.of(
+		             )).evaluate(name -> null));
+		assertEquals(InstructionFactory.literal(3),
+		             new ConstDeclaration("b", List.of(
 				             new Instruction.IntLiteral(1),
 				             new Instruction.IntLiteral(2),
 				             InstructionFactory.add()
-		             )), name -> null));
-		assertEquals(Const.intConst("c", 12),
-		             Const.evaluate(new ConstDeclaration("c", List.of(
+		             )).evaluate(name -> null));
+		assertEquals(InstructionFactory.literal(12),
+		             new ConstDeclaration("c", List.of(
 				             new Instruction.IntLiteral(3),
 				             new Instruction.IntLiteral(4),
 				             InstructionFactory.mul()
-		             )), name -> null));
-		assertEquals(Const.intConst("d", 6),
-		             Const.evaluate(new ConstDeclaration("d", List.of(
+		             )).evaluate(name -> null));
+		assertEquals(InstructionFactory.literal(6),
+		             new ConstDeclaration("d", List.of(
 				             new Instruction.Command("a"),
 				             new Instruction.Command("b"),
 				             InstructionFactory.mul()
-		             )), Map.of("a", Const.intConst("a", 2),
-		                        "b", Const.intConst("b", 3))::get));
+		             )).evaluate(Map.of("a", InstructionFactory.literal(2),
+		                                "b", InstructionFactory.literal(3))::get));
+		assertEquals(InstructionFactory.literal(true),
+		             new ConstDeclaration("e", List.of(
+				             InstructionFactory.literal(true)
+		             )).evaluate(Map.of("a", InstructionFactory.literal(2),
+		                                "b", InstructionFactory.literal(3))::get));
 
 		try {
-			Const.evaluate(new ConstDeclaration("c", List.of(
+			new ConstDeclaration("c", List.of(
 					new Instruction.IntLiteral(3),
 					InstructionFactory.mul()
-			)), name -> null);
+			)).evaluate(name -> null);
 			fail();
 		}
 		catch (InterpretingFailedException ignored) {
 		}
 
 		try {
-			Const.evaluate(new ConstDeclaration("d", List.of(
+			new ConstDeclaration("d", List.of(
 					new Instruction.Command("a"),
 					new Instruction.Command("b"),
 					InstructionFactory.mul()
-			)), Map.of("a", Const.intConst("a", 2))::get);
+			)).evaluate(Map.of("a", InstructionFactory.literal(2))::get);
 		}
 		catch (InterpretingFailedException ignored) {
 		}

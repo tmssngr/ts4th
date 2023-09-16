@@ -52,7 +52,7 @@ public class Interpreter {
 		stack.addLast(value);
 	}
 
-	private void process(Instruction instruction) {
+	protected void process(Instruction instruction) {
 		if (instruction instanceof Instruction.IntLiteral literal) {
 			push(literal.value());
 			return;
