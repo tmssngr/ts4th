@@ -1,9 +1,9 @@
 package de.regnis.ts4th;
 
-import org.jetbrains.annotations.*;
-
 import java.util.*;
 import java.util.function.*;
+
+import org.jetbrains.annotations.*;
 
 import static de.regnis.ts4th.AsmIR.BinOperation.*;
 import static de.regnis.ts4th.AsmIRConverter.*;
@@ -47,14 +47,6 @@ public class BuiltinCommands {
 	public static final String IS_GT = ">";
 
 	private static final Map<String, Command> nameToCommand = new HashMap<>();
-
-	private static int size(Type type) {
-		return switch (type) {
-			case Int -> 2;
-			case Bool -> 1;
-			case Ptr -> PTR_SIZE;
-		};
-	}
 
 	static {
 		nameToCommand.put(DROP, new Command() {
@@ -379,6 +371,14 @@ public class BuiltinCommands {
 	@Nullable
 	public static Command get(String name) {
 		return nameToCommand.get(name);
+	}
+
+	private static int size(Type type) {
+		return switch (type) {
+			case Int -> 2;
+			case Bool -> 1;
+			case Ptr -> PTR_SIZE;
+		};
 	}
 
 	public static class Command {
