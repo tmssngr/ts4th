@@ -249,26 +249,26 @@ public class X86Win64 {
 		}
 
 		if (instruction instanceof AsmIR.IntLiteral l) {
-			writeComment("literal " + l.value());
-			writeIndented("mov cx, " + l.value());
+			writeComment("literal r" + l.target() + ", #" + l.value());
+			writeIndented("mov %s, %d".formatted(getRegName(l.target(), 2), l.value()));
 			return;
 		}
 
 		if (instruction instanceof AsmIR.BoolLiteral l) {
-			writeComment("literal " + l.value());
-			writeIndented("mov cx, " + (l.value() ? 1 : 0));
+			writeComment("literal r" + l.target() + ", #" + l.value());
+			writeIndented("mov %s, %d".formatted(getRegName(l.target(), 2), l.value() ? 1 : 0));
 			return;
 		}
 
 		if (instruction instanceof AsmIR.PtrLiteral l) {
-			writeComment("var " + l.varName());
-			writeIndented("lea rcx, [%s]".formatted(VAR_PREFIX + l.varIndex()));
+			writeComment("var r" + l.target() + ", @" + l.varName());
+			writeIndented("lea %s, [%s]".formatted(getRegName(l.target(), 8), VAR_PREFIX + l.varIndex()));
 			return;
 		}
 
 		if (instruction instanceof AsmIR.StringLiteral l) {
-			writeComment("string literal " + l.constantIndex());
-			writeIndented("lea rcx, [%s]".formatted(STRING_PREFIX + l.constantIndex()));
+			writeComment("literal r" + l.target() + ", \"" + l.constantIndex());
+			writeIndented("lea %s, [%s]".formatted(getRegName(l.target(), 8), STRING_PREFIX + l.constantIndex()));
 			return;
 		}
 

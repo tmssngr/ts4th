@@ -16,12 +16,12 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- string literal 0 --
+        ; -- literal r0, "0 --
         lea rcx, [string_0]
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
-        ; -- literal 12 --
+        ; -- literal r0, #12 --
         mov cx, 12
         ; -- strlen --
         call tsf_strlen
@@ -48,7 +48,7 @@ tsf_main:
 
         ; -- proc strlen --
 tsf_strlen:
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         mov ax, cx
         ; -- pop 0 (8) --
@@ -68,14 +68,14 @@ tsf_while_1:
         sub r15, 8
         mov [r15], rcx
         mov rax, rcx
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         mov ax, cx
         ; -- pop 0 (2) --
@@ -102,7 +102,7 @@ tsf_while_1:
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal 1 --
+        ; -- literal r0, #1 --
         mov cx, 1
         mov ax, cx
         ; -- pop 0 (2) --
@@ -120,7 +120,7 @@ tsf_while_1:
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
-        ; -- literal 1 --
+        ; -- literal r0, #1 --
         mov cx, 1
         mov ax, cx
         ; -- pop 0 (8) --

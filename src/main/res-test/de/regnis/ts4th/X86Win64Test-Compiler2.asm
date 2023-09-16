@@ -16,12 +16,12 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal 1024 --
+        ; -- literal r0, #1024 --
         mov cx, 1024
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal 768 --
+        ; -- literal r0, #768 --
         mov cx, 768
         mov ax, cx
         ; -- pop 0 (2) --

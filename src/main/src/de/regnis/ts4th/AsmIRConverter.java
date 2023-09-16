@@ -59,22 +59,22 @@ public class AsmIRConverter {
 			output.accept(AsmIRFactory.label(label.name()));
 		}
 		else if (instruction instanceof Instruction.IntLiteral literal) {
-			output.accept(AsmIRFactory.literal(literal.value()));
+			output.accept(AsmIRFactory.literal(REG_0, literal.value()));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 		else if (instruction instanceof Instruction.BoolLiteral literal) {
-			output.accept(AsmIRFactory.literal(literal.value()));
+			output.accept(AsmIRFactory.literal(REG_0, literal.value()));
 			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
 		else if (instruction instanceof Instruction.PtrLiteral literal) {
-			output.accept(AsmIRFactory.ptrLiteral(literal.index(), literal.varName()));
+			output.accept(AsmIRFactory.ptrLiteral(REG_0, literal.index(), literal.varName()));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 		}
 		else if (instruction instanceof Instruction.StringLiteral literal) {
 			final String text = literal.value();
-			output.accept(AsmIRFactory.stringLiteral(stringLiterals.getConstantIndex(text)));
+			output.accept(AsmIRFactory.stringLiteral(REG_0, stringLiterals.getConstantIndex(text)));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
-			output.accept(AsmIRFactory.literal(stringLiterals.getLength(text)));
+			output.accept(AsmIRFactory.literal(REG_0, stringLiterals.getLength(text)));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 		else if (instruction instanceof Instruction.Jump jump) {

@@ -8,20 +8,20 @@ public class AsmIRFactory {
 		return new AsmIR.Label(name);
 	}
 
-	public static AsmIR literal(int value) {
-		return new AsmIR.IntLiteral(value);
+	public static AsmIR literal(int target, int value) {
+		return new AsmIR.IntLiteral(target, value);
 	}
 
-	public static AsmIR literal(boolean value) {
-		return new AsmIR.BoolLiteral(value);
+	public static AsmIR literal(int target, boolean value) {
+		return new AsmIR.BoolLiteral(target, value);
 	}
 
-	public static AsmIR ptrLiteral(int index, String varName) {
-		return new AsmIR.PtrLiteral(index, varName);
+	public static AsmIR ptrLiteral(int target, int index, String varName) {
+		return new AsmIR.PtrLiteral(target, index, varName);
 	}
 
-	public static AsmIR stringLiteral(int constantIndex) {
-		return new AsmIR.StringLiteral(constantIndex);
+	public static AsmIR stringLiteral(int target, int constantIndex) {
+		return new AsmIR.StringLiteral(target, constantIndex);
 	}
 
 	public static AsmIR push(int reg, int size) {

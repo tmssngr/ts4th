@@ -16,22 +16,22 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- var buffer --
+        ; -- var r0, @buffer --
         lea rcx, [var_0]
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
-        ; -- literal 40 --
+        ; -- literal r0, #40 --
         mov cx, 40
         ; -- pop 1 (8) --
         mov rax, [r15]
         add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
-        ; -- var buffer --
+        ; -- var r0, @buffer --
         lea rcx, [var_0]
         mov rax, rcx
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]

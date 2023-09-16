@@ -174,17 +174,17 @@ public class AsmIRInterpreter {
 		}
 
 		if (instruction instanceof AsmIR.IntLiteral l) {
-			reg0 = l.value();
+			setReg(l.target(), l.value());
 			return;
 		}
 
 		if (instruction instanceof AsmIR.BoolLiteral l) {
-			reg0 = l.value() ? 1 : 0;
+			setReg(l.target(), l.value() ? 1 : 0);
 			return;
 		}
 
 		if (instruction instanceof AsmIR.StringLiteral l) {
-			reg0 = stringIndexToMem.get(l.constantIndex());
+			setReg(l.target(), stringIndexToMem.get(l.constantIndex()));
 			return;
 		}
 

@@ -16,7 +16,7 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         ; -- push 0 (2) --
         sub r15, 2
@@ -31,7 +31,7 @@ tsf_while_1:
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal 10 --
+        ; -- literal r0, #10 --
         mov cx, 10
         mov ax, cx
         ; -- pop 0 (2) --
@@ -46,7 +46,7 @@ tsf_while_1:
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
-        ; -- literal 0 --
+        ; -- literal r0, #0 --
         mov cx, 0
         ; -- push 0 (2) --
         sub r15, 2
@@ -61,7 +61,7 @@ tsf_while_2:
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal 20 --
+        ; -- literal r0, #20 --
         mov cx, 20
         mov ax, cx
         ; -- pop 0 (2) --
@@ -105,7 +105,7 @@ tsf_while_2:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
-        ; -- literal 1 --
+        ; -- literal r0, #1 --
         mov cx, 1
         mov ax, cx
         ; -- pop 0 (2) --
@@ -122,13 +122,13 @@ tsf_endwhile_2:
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
-        ; -- literal 10 --
+        ; -- literal r0, #10 --
         mov cx, 10
         ; -- printChar --
         sub rsp, 8
           call tsfbi_printChar
         add rsp, 8
-        ; -- literal 1 --
+        ; -- literal r0, #1 --
         mov cx, 1
         mov ax, cx
         ; -- pop 0 (2) --

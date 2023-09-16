@@ -16,7 +16,7 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal -10 --
+        ; -- literal r0, #-10 --
         mov cx, -10
         ; -- printInt r0(2) --
         movsx rcx, cx
@@ -33,7 +33,7 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
-        ; -- literal 1000 --
+        ; -- literal r0, #1000 --
         mov cx, 1000
         ; -- printInt r0(2) --
         movsx rcx, cx

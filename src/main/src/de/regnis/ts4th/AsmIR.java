@@ -30,31 +30,31 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record IntLiteral(int value) implements AsmIR {
+	record IntLiteral(int target, int value) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r0 = " + value;
+			return "r" + target + " = " + value;
 		}
 	}
 
-	record BoolLiteral(boolean value) implements AsmIR {
+	record BoolLiteral(int target, boolean value) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r0 = " + value;
+			return "r" + target + " = " + value;
 		}
 	}
 
-	record PtrLiteral(int varIndex, String varName) implements AsmIR {
+	record PtrLiteral(int target, int varIndex, String varName) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r0 = var " + varIndex + ":" + varName;
+			return "r" + target + " = var " + varIndex + ":" + varName;
 		}
 	}
 
-	record StringLiteral(int constantIndex) implements AsmIR {
+	record StringLiteral(int target, int constantIndex) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r0 = constant " + constantIndex;
+			return "r" + target + " = constant " + constantIndex;
 		}
 	}
 

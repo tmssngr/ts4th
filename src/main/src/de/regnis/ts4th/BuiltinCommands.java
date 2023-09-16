@@ -270,7 +270,7 @@ public class BuiltinCommands {
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
-				output.accept(AsmIRFactory.literal(0));
+				output.accept(AsmIRFactory.literal(REG_0, 0));
 				output.accept(AsmIRFactory.load(REG_0, REG_1, 1));
 				output.accept(AsmIRFactory.push(REG_0, 2));
 			}
