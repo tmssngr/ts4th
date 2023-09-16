@@ -36,4 +36,15 @@ public class Utils {
 		}
 		buffer.append("0123456789abcdef".charAt((int)value & 0xF));
 	}
+
+	public static String join(Iterable<String> iterable, String separator) {
+		final StringBuilder buffer = new StringBuilder();
+		for (String s : iterable) {
+			if (buffer.length() > 0) {
+				buffer.append(separator);
+			}
+			buffer.append(s);
+		}
+		return buffer.toString();
+	}
 }
