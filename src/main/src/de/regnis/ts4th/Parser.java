@@ -91,7 +91,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public ConstDeclaration visitConstDeclaration(TS4thParser.ConstDeclarationContext ctx) {
 		final String name = ctx.name.getText();
 		final List<Instruction> instructions = visitInstructions(ctx.instructions());
-		final Location location = new Location(ctx.name.getLine(), ctx.name.getCharPositionInLine());
+		final Location location = createLocation(ctx.name);
 		return new ConstDeclaration(location, name, instructions);
 	}
 
@@ -99,7 +99,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public VarDeclaration visitVarDeclaration(TS4thParser.VarDeclarationContext ctx) {
 		final String name = ctx.name.getText();
 		final List<Instruction> instructions = visitInstructions(ctx.instructions());
-		final Location location = new Location(ctx.name.getLine(), ctx.name.getCharPositionInLine());
+		final Location location = createLocation(ctx.name);
 		return new VarDeclaration(location, name, instructions);
 	}
 
@@ -111,8 +111,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final TypeList afterTypes = visitTypeList(ctx.afterTypes);
 		final List<Instruction> instructions = visitInstructions(ctx.instructions());
 		instructions.add(new Instruction.Ret());
-		final Location location = new Location(ctx.name.getLine(), ctx.name.getCharPositionInLine());
-		return new Function(location, name, new TypesInOut(beforeTypes, afterTypes), inline, instructions);
+		final Location locationStart = createLocation(ctx.name);
+		final Location locationEnd = createLocation(ctx.End());
+		return new Function(locationStart, locationEnd, name, new TypesInOut(beforeTypes, afterTypes), inline, instructions);
 	}
 
 	@Override
@@ -189,9 +190,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public List<Instruction> visitIdentifier(TS4thParser.IdentifierContext ctx) {
-		final Token token = ctx.Identifier().getSymbol();
-		final String name = ctx.getText();
-		final Location location = new Location(token.getLine(), token.getCharPositionInLine());
+		final TerminalNode identifier = ctx.Identifier();
+		final String name = identifier.getText();
+		final Location location = createLocation(identifier);
 		return List.of(new Instruction.Command(name, location));
 	}
 
@@ -201,14 +202,18 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final String labelIf = "if_" + index;
 		final String labelEnd = "endif_" + index;
 
+		final Location ifLocation = createLocation(ctx.If());
+
 		final List<Instruction> instructions = new ArrayList<>();
-		instructions.add(new Instruction.Branch(labelIf, labelEnd));
+		instructions.add(new Instruction.Branch(labelIf, labelEnd, ifLocation));
 
-		instructions.add(new Instruction.Label(labelIf));
+		instructions.add(new Instruction.Label(labelIf, ifLocation));
 		instructions.addAll(visitInstructions(ctx.instructions()));
-		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(new Instruction.Label(labelEnd));
+		final Location endLocation = createLocation(ctx.End());
+		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions, endLocation);
+
+		instructions.add(new Instruction.Label(labelEnd, endLocation));
 		return instructions;
 	}
 
@@ -219,18 +224,24 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final String labelElse = "else_" + index;
 		final String labelEnd = "endif_" + index;
 
+		final Location ifLocation = createLocation(ctx.If());
+
 		final List<Instruction> instructions = new ArrayList<>();
-		instructions.add(new Instruction.Branch(labelIf, labelElse));
+		instructions.add(new Instruction.Branch(labelIf, labelElse, ifLocation));
 
-		instructions.add(new Instruction.Label(labelIf));
+		instructions.add(new Instruction.Label(labelIf, ifLocation));
 		instructions.addAll(visitInstructions(ctx.ifInstructions));
-		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(new Instruction.Label(labelElse));
+		final Location elseLocation = createLocation(ctx.Else());
+		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions, elseLocation);
+
+		instructions.add(new Instruction.Label(labelElse, elseLocation));
 		instructions.addAll(visitInstructions(ctx.elseInstructions));
-		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions);
 
-		instructions.add(new Instruction.Label(labelEnd));
+		final Location endLocation = createLocation(ctx.End());
+		addJumpIfPrevIsNoJumpOrBranch(labelEnd, instructions, endLocation);
+
+		instructions.add(new Instruction.Label(labelEnd, endLocation));
 		return instructions;
 	}
 
@@ -245,15 +256,17 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		try {
 			final List<Instruction> instructions = new ArrayList<>();
-			instructions.add(new Instruction.Label(labelWhile));
+			instructions.add(new Instruction.Label(labelWhile, createLocation(ctx.While())));
 
 			breakLabel = null;
 			continueLabel = null;
 
 			instructions.addAll(visitInstructions(ctx.condition));
-			instructions.add(new Instruction.Branch(labelWhileBody, labelWhileEnd));
 
-			instructions.add(new Instruction.Label(labelWhileBody));
+			final Location doLocation = createLocation(ctx.Do());
+			instructions.add(new Instruction.Branch(labelWhileBody, labelWhileEnd, doLocation));
+
+			instructions.add(new Instruction.Label(labelWhileBody, doLocation));
 
 			breakLabel = labelWhileEnd;
 			continueLabel = labelWhile;
@@ -261,7 +274,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			instructions.addAll(visitInstructions(ctx.body));
 			instructions.add(new Instruction.Jump(labelWhile));
 
-			instructions.add(new Instruction.Label(labelWhileEnd));
+			instructions.add(new Instruction.Label(labelWhileEnd, createLocation(ctx.End())));
 			return instructions;
 		}
 		finally {
@@ -294,14 +307,22 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		return unescape(raw);
 	}
 
-	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions) {
+	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions, Location location) {
 		if (instructions.size() > 0) {
 			final Instruction lastInstruction = instructions.get(instructions.size() - 1);
 			if (lastInstruction instanceof Instruction.Jump || lastInstruction instanceof Instruction.Label) {
 				return;
 			}
 		}
-		instructions.add(new Instruction.Jump(target));
+		instructions.add(new Instruction.Jump(target, location));
+	}
+
+	private static Location createLocation(TerminalNode token) {
+		return createLocation(token.getSymbol());
+	}
+
+	private static Location createLocation(Token token) {
+		return new Location(token.getLine(), token.getCharPositionInLine());
 	}
 
 	private static String unescape(String s) {

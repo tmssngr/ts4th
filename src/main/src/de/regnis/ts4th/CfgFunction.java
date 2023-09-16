@@ -22,17 +22,19 @@ public class CfgFunction {
 
 		final List<Instruction> instructions = function.instructions();
 		String blockName = name + "_" + 0;
+		Location location = function.locationStart();
 		List<Instruction> blockInstructions = new ArrayList<>();
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Label l) {
 				final String label = l.name();
 				if (blockName != null) {
 					ensureLastInstructionIsJumpOrBranch(blockInstructions, label);
-					addBlock(blockName, blockInstructions);
+					addBlock(blockName, blockInstructions, location, l.location());
 					connectBlocks(blockName, label);
 				}
 				blockName = label;
 				blockInstructions = new ArrayList<>();
+				location = l.location();
 				continue;
 			}
 
@@ -42,13 +44,13 @@ public class CfgFunction {
 
 			blockInstructions.add(instruction);
 			if (instruction instanceof Instruction.Jump j) {
-				addBlock(blockName, blockInstructions);
+				addBlock(blockName, blockInstructions, location, j.location());
 				connectBlocks(blockName, j.target());
 				blockInstructions = new ArrayList<>();
 				blockName = null;
 			}
 			else if (instruction instanceof Instruction.Branch b) {
-				addBlock(blockName, blockInstructions);
+				addBlock(blockName, blockInstructions, location, b.location());
 				connectBlocks(blockName, b.ifTarget());
 				connectBlocks(blockName, b.elseTarget());
 				blockInstructions = new ArrayList<>();
@@ -56,14 +58,14 @@ public class CfgFunction {
 			}
 		}
 		if (blockName != null) {
-			addBlock(blockName, blockInstructions);
+			addBlock(blockName, blockInstructions, location, function.locationEnd());
 		}
 
 		Utils.assertTrue(blocks.size() == nameToPredecessors.size());
 		Utils.assertTrue(blocks.size() == nameToSuccessors.size());
 
 		for (CfgBlock block : blocks) {
-			final String name = block.getName();
+			final String name = block.name();
 			Objects.requireNonNull(nameToPredecessors.get(name));
 			Objects.requireNonNull(nameToSuccessors.get(name));
 		}
@@ -92,8 +94,8 @@ public class CfgFunction {
 	public List<Instruction> flatten() {
 		final List<Instruction> instructions = new ArrayList<>();
 		for (CfgBlock block : blocks) {
-			instructions.add(new Instruction.Label(block.getName()));
-			instructions.addAll(block.getInstructions());
+			instructions.add(new Instruction.Label(block.name()));
+			instructions.addAll(block.instructions());
 		}
 		return instructions;
 	}
@@ -101,11 +103,11 @@ public class CfgFunction {
 	public void checkTypes(TypeChecker typeChecker) {
 		final Map<String, TypeList> blockInputs = new HashMap<>();
 		final CfgBlock firstBlock = blocks.get(0);
-		blockInputs.put(firstBlock.getName(), typesInOut.in());
+		blockInputs.put(firstBlock.name(), typesInOut.in());
 
 		final Set<String> processed = new HashSet<>();
 		final Deque<String> pendingNames = new ArrayDeque<>();
-		pendingNames.add(firstBlock.getName());
+		pendingNames.add(firstBlock.name());
 
 		while (!pendingNames.isEmpty()) {
 			final String name = pendingNames.removeFirst();
@@ -121,7 +123,7 @@ public class CfgFunction {
 			if (successors.isEmpty()) {
 				final TypeList expectedOut = typesInOut.out();
 				if (!expectedOut.equals(output)) {
-					throw new InvalidTypeException("Invalid types after block " + name + ", expected " + expectedOut + ", but got " + output);
+					throw new InvalidTypeException(block.locationEnd() + ": Invalid types! Expected " + expectedOut + ", but got " + output);
 				}
 				continue;
 			}
@@ -130,7 +132,7 @@ public class CfgFunction {
 				final TypeList prevInput = blockInputs.put(successor, output);
 				if (prevInput != null) {
 					if (!prevInput.equals(output)) {
-						throw new InvalidTypeException("Invalid types at begin of block " + successor + ", expected " + prevInput + ", but got " + output);
+						throw new InvalidTypeException(block.locationStart() + ": Invalid types! Expected " + prevInput + ", but got " + output);
 					}
 				}
 				else {
@@ -151,8 +153,8 @@ public class CfgFunction {
 		blockInstructions.add(new Instruction.Jump(label));
 	}
 
-	private void addBlock(String name, List<Instruction> blockInstructions) {
-		final CfgBlock block = new CfgBlock(name, blockInstructions);
+	private void addBlock(String name, List<Instruction> blockInstructions, Location locationStart, Location locationEnd) {
+		final CfgBlock block = new CfgBlock(name, blockInstructions, locationStart, locationEnd);
 		blocks.add(block);
 		if (nameToBlock.put(name, block) != null) {
 			throw new IllegalStateException("duplicate block " + name);

@@ -8,7 +8,11 @@ public sealed interface Instruction permits
 		Instruction.IntLiteral, Instruction.BoolLiteral, Instruction.PtrLiteral, Instruction.StringLiteral,
 		Instruction.Command, Instruction.Jump, Instruction.Branch, Instruction.Ret {
 
-	record Label(String name) implements Instruction {
+	record Label(String name, Location location) implements Instruction {
+		public Label(String name) {
+			this(name, Location.DUMMY);
+		}
+
 		@Override
 		public String toString() {
 			return name + ":";
@@ -54,14 +58,22 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record Jump(String target) implements Instruction {
+	record Jump(String target, Location location) implements Instruction {
+		public Jump(String target) {
+			this(target, Location.DUMMY);
+		}
+
 		@Override
 		public String toString() {
 			return "jmp " + target;
 		}
 	}
 
-	record Branch(String ifTarget, String elseTarget) implements Instruction {
+	record Branch(String ifTarget, String elseTarget, Location location) implements Instruction {
+		public Branch(String ifTarget, String elseTarget) {
+			this(ifTarget, elseTarget, Location.DUMMY);
+		}
+
 		@Override
 		public String toString() {
 			return "branch " + ifTarget + ", " + elseTarget;

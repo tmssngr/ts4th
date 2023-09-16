@@ -48,7 +48,7 @@ public record Program(List<Function> functions, List<Var> vars) {
 		final List<Function> functionsWithInlinedConsts = new ArrayList<>();
 		for (Function function : functions) {
 			final List<Instruction> instructions = inlineConstsAndVars(function.instructions(), nameToConst, nameToVar);
-			functionsWithInlinedConsts.add(new Function(function.location(), function.name(), function.typesInOut(), function.isInline(), instructions));
+			functionsWithInlinedConsts.add(new Function(function.locationStart(), function.locationEnd(), function.name(), function.typesInOut(), function.isInline(), instructions));
 		}
 
 		return new Program(functionsWithInlinedConsts, vars);
