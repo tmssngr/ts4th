@@ -28,9 +28,8 @@ tsf_main:
         add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
-        ; -- var r0, @buffer --
-        lea rcx, [var_0]
-        mov rax, rcx
+        ; -- var r1, @buffer --
+        lea rax, [var_0]
         ; -- literal r0, #0 --
         mov cx, 0
         ; -- load 0 (1), @1 --

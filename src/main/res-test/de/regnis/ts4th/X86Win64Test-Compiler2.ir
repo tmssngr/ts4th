@@ -1,8 +1,7 @@
 main:
 	r0 = 1024
 	push r0 (2)
-	r0 = 768
-	move 1, 0 (2)
+	r1 = 768
 	pop r0 (2)
 	push r0 (2)
 	push r1 (2)

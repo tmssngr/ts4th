@@ -12,6 +12,7 @@ public class AsmIRSimplifier {
 			newInstructions = removeIndirectLabel(newInstructions);
 			newInstructions = removeCommandsAfterJump(newInstructions);
 			newInstructions = removePushPop(newInstructions);
+			newInstructions = removeLiteralMove(newInstructions);
 			removeUnusedLabels(newInstructions);
 			if (newInstructions.equals(instructions)) {
 				return instructions;
@@ -116,6 +117,44 @@ public class AsmIRSimplifier {
 					else {
 						removeNext();
 						replace(new AsmIR.Move(pop.reg(), push.reg(), push.size()));
+					}
+				}
+			}
+		}.process();
+
+		return newInstructions;
+	}
+
+	private static List<AsmIR> removeLiteralMove(List<AsmIR> instructions) {
+		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
+
+		new DualPeepHoleSimplifier<>(newInstructions) {
+			@Override
+			protected void handle(AsmIR i1, AsmIR i2) {
+				if (i2 instanceof AsmIR.Move m) {
+					if (i1 instanceof AsmIR.IntLiteral l
+					    && m.source() == l.target()) {
+						Utils.assertTrue(m.size() == 2);
+						removeNext();
+						replace(new AsmIR.IntLiteral(m.target(), l.value()));
+					}
+					else if (i1 instanceof AsmIR.BoolLiteral l
+					    && m.source() == l.target()) {
+						Utils.assertTrue(m.size() == 1);
+						removeNext();
+						replace(new AsmIR.BoolLiteral(m.target(), l.value()));
+					}
+					else if (i1 instanceof AsmIR.PtrLiteral l
+					    && m.source() == l.target()) {
+						Utils.assertTrue(m.size() == 8);
+						removeNext();
+						replace(new AsmIR.PtrLiteral(m.target(), l.varIndex(), l.varName()));
+					}
+					else if (i1 instanceof AsmIR.StringLiteral l
+					    && m.source() == l.target()) {
+						Utils.assertTrue(m.size() == 8);
+						removeNext();
+						replace(new AsmIR.StringLiteral(m.target(), l.constantIndex()));
 					}
 				}
 			}

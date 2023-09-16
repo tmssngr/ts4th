@@ -122,8 +122,15 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testPushPopToMove() {
 		testSimplify(List.of(
-				             literal(0, 0),
 				             move(1, 0, 2)
+		             ),
+		             List.of(
+							 push(0, 2),
+							 pop(1, 2)
+		             ));
+
+		testSimplify(List.of(
+				             literal(1, 0)
 		             ),
 		             List.of(
 							 literal(0, 0),
