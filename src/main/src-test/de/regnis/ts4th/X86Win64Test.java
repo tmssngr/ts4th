@@ -183,6 +183,28 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testNestedWhile() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				             	0
+				             	while dup 10 < do
+				             		0
+				             		while dup 20 < do
+				             			dup2 + print
+				             			1 +
+				             		end
+				             		drop
+
+				             		10 printChar
+
+				             		1 +
+				             	end
+				             	drop
+				             end
+				             """);
+	}
+
+	@Test
 	public void testConst() throws IOException {
 		compileWrite("""
 				             const width 40 end
