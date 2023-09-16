@@ -408,8 +408,12 @@ public class X86Win64 {
 		switch (operation) {
 		case add -> writeIndented("add %s, %s".formatted(getRegName(reg1, 2),
 		                                                 getRegName(reg2, 2)));
-		case add_ptr -> writeIndented("add %s, %s".formatted(getRegName(reg1, 8),
-		                                                     getRegName(reg2, 2)));
+		case add_ptr -> {
+			final String offsetReg = getRegName(reg2, 2);
+			final String offset64Reg = getRegName(reg2, 8);
+			writeIndented("movsx %s, %s".formatted(offset64Reg, offsetReg));
+			writeIndented("add   %s, %s".formatted(getRegName(reg1, 8), offset64Reg));
+		}
 		case sub -> writeIndented("sub %s, %s".formatted(getRegName(reg1, 2),
 		                                                 getRegName(reg2, 2)));
 		case imul -> // https://www.felixcloutier.com/x86/imul

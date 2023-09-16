@@ -1,0 +1,24 @@
+fn main(--)
+    mem     0x31 !8
+    mem 1 + 0x30 !8
+    mem 2 + 0x32 !8
+    mem 3 + 0x34 !8
+    mem 4 printString
+
+    mem
+    'h' appendChar
+    'e' appendChar
+    'l' appendChar
+    'l' appendChar
+    'o' appendChar
+    drop
+    mem 5 printString
+
+    "\nhello \"world\"\n" printString
+end
+
+fn appendChar(ptr int -- ptr)
+    over
+    !8
+    1 +
+end

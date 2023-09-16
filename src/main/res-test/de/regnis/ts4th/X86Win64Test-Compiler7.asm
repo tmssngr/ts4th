@@ -157,7 +157,8 @@ tsf_while_1:
         mov rcx, [r15]
         add r15, 8
         ; -- add_ptr 0 1 --
-        add rcx, ax
+        movsx rax, ax
+        add   rcx, rax
         ; -- push 0 (8) --
         sub r15, 8
         mov [r15], rcx
