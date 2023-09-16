@@ -92,7 +92,7 @@ public class AsmIRConverter {
 		else if (instruction instanceof Instruction.Command c) {
 			final BuiltinCommands.Command command = BuiltinCommands.get(c.name());
 			if (command != null) {
-				command.toIR(types, output);
+				command.toIR(c.name(), types, output);
 			}
 			else {
 				output.accept(AsmIRFactory.call(c.name()));

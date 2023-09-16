@@ -59,7 +59,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
 				output.accept(AsmIRFactory.pop(REG_0, size));
 			}
@@ -74,7 +74,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
 				output.accept(AsmIRFactory.pop(REG_0, size));
 				output.accept(AsmIRFactory.push(REG_0, size));
@@ -95,7 +95,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
 				output.accept(AsmIRFactory.pop(REG_1, size1st));
@@ -120,7 +120,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
 				output.accept(AsmIRFactory.pop(REG_1, size1st));
@@ -142,7 +142,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
 				output.accept(AsmIRFactory.pop(REG_1, size1st));
@@ -168,7 +168,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size1st = size(types.type());
 				final int size2nd = size(types.prev().type());
 				final int size3rd = size(types.prev().prev().type());
@@ -205,7 +205,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final Type type1 = types.type();
 				final Type type2 = types.prev().type();
 				if (type1 == Type.Int && type2 == Type.Int) {
@@ -248,7 +248,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.mem());
 				output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 			}
@@ -266,7 +266,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 				output.accept(AsmIRFactory.literal(0));
 				output.accept(AsmIRFactory.load(REG_0, REG_1, 1));
@@ -292,7 +292,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 					output.accept(AsmIRFactory.pop(REG_0, 2));
@@ -322,7 +322,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
 				output.accept(AsmIRFactory.pop(REG_0, size));
 				output.accept(AsmIRFactory.print(size));
@@ -347,7 +347,7 @@ public class BuiltinCommands {
 			}
 
 			@Override
-			public void toIR(TypeList types, Consumer<AsmIR> output) {
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 					output.accept(AsmIRFactory.pop(REG_0, 2));
@@ -389,7 +389,7 @@ public class BuiltinCommands {
 			throw new IllegalStateException("not implemented yet");
 		}
 
-		public void toIR(TypeList types, Consumer<AsmIR> output) {
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 			throw new IllegalStateException("not implemented yet");
 		}
 	}
@@ -410,8 +410,8 @@ public class BuiltinCommands {
 			return output;
 		}
 
-		public void toIR(TypeList types, Consumer<AsmIR> output) {
-			throw new IllegalStateException("not implemented yet");
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			throw new IllegalStateException("not implemented yet " + name);
 		}
 	}
 
@@ -423,7 +423,7 @@ public class BuiltinCommands {
 		}
 
 		@Override
-		public void toIR(TypeList types, Consumer<AsmIR> output) {
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, 2));
 			output.accept(AsmIRFactory.pop(REG_0, 2));
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
@@ -448,7 +448,7 @@ public class BuiltinCommands {
 		}
 
 		@Override
-		public void toIR(TypeList types, Consumer<AsmIR> output) {
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, 2));
 			output.accept(AsmIRFactory.pop(REG_0, 2));
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
