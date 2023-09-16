@@ -60,6 +60,10 @@ public class AsmIRFactory {
 		return new AsmIR.PrintString(ptrReg, sizeReg);
 	}
 
+	public static AsmIR printChar() {
+		return new AsmIR.PrintChar();
+	}
+
 	public static AsmIR print(int size) {
 		return new AsmIR.PrintInt(size);
 	}

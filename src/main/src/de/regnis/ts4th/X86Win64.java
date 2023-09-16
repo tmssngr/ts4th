@@ -342,6 +342,11 @@ public class X86Win64 {
 			return;
 		}
 
+		if (instruction instanceof AsmIR.PrintChar p) {
+			writePrintChar(p);
+			return;
+		}
+
 		if (instruction instanceof AsmIR.PrintString p) {
 			writePrintString(p);
 			return;
@@ -359,7 +364,7 @@ public class X86Win64 {
 			return;
 		}
 
-		throw new IllegalStateException();
+		throw new IllegalStateException("not implemented yet " + instruction);
 	}
 
 	private void write(String text) throws IOException {
@@ -559,6 +564,15 @@ public class X86Win64 {
 				                call %s
 				              add  rsp, 8
 				              """.formatted(PRINT_CHAR));
+	}
+
+	private void writePrintChar(AsmIR.PrintChar p) throws IOException {
+		writeComment(p.toString());
+		// expects char in cl
+		writeIndented("""
+				              sub rsp, 8
+				                call %s
+				              add rsp, 8""".formatted(PRINT_CHAR));
 	}
 
 	private void writePrintString(AsmIR.PrintString p) throws IOException {

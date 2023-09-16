@@ -36,7 +36,7 @@ public class BuiltinCommands {
 	public static final String STORE8 = "!8";
 
 	public static final String PRINT = "print";
-	public static final String PRINT_ASCII = "asciiPrint";
+	public static final String PRINT_CHAR = "printChar";
 	public static final String PRINT_STRING = "printString";
 
 	public static final String ABORT = "abort";
@@ -307,7 +307,28 @@ public class BuiltinCommands {
 			}
 		});
 
-		nameToCommand.put(PRINT_ASCII, new DefaultCommand(TypeList.INT, TypeList.EMPTY));
+		nameToCommand.put(PRINT_CHAR, new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				if (input.isEmpty()) {
+					throw new InvalidTypeException(location, name + " (ascii --) can't operate on empty stack");
+				}
+
+				final Type type = input.type();
+				if (type != Type.Int && type != Type.Ptr) {
+					throw new InvalidTypeException(location, name + " (ascii --) only can work on `int`");
+				}
+
+				return input.prev();
+			}
+
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				final int size = size(types.type());
+				output.accept(AsmIRFactory.pop(REG_0, size));
+				output.accept(AsmIRFactory.printChar());
+			}
+		});
 		nameToCommand.put(PRINT, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {

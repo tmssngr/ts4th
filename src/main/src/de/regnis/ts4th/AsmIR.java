@@ -9,7 +9,7 @@ public sealed interface AsmIR permits
 		AsmIR.Push, AsmIR.Pop,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
-		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.Mem, AsmIR.Ret {
+		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.PrintChar, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
 		z, nz, lt, le, ge, gt
@@ -115,6 +115,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return "printInt r0(" + size + ")";
+		}
+	}
+
+	record PrintChar() implements AsmIR {
+		@Override
+		public String toString() {
+			return "printChar";
 		}
 	}
 
