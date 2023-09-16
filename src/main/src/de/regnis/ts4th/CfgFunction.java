@@ -100,6 +100,25 @@ public class CfgFunction {
 		return instructions;
 	}
 
+	public void debugPrint() {
+		final List<Instruction> instructions = flatten();
+		for (Instruction instruction : instructions) {
+			if (instruction instanceof Instruction.Label l) {
+				System.out.print(instruction);
+				final List<String> predecessors = nameToPredecessors.get(l.name());
+				if (predecessors.size() > 0) {
+					System.out.print("   // from: ");
+					System.out.print(Utils.join(predecessors, ", "));
+				}
+				System.out.println();
+			}
+			else {
+				System.out.print("    ");
+				System.out.println(instruction);
+			}
+		}
+	}
+
 	public void checkTypes(TypeChecker typeChecker) {
 		final Map<String, TypeList> blockInputs = new HashMap<>();
 		final CfgBlock firstBlock = blocks.get(0);
