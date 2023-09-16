@@ -134,10 +134,11 @@ public class CfgFunction {
 				continue;
 			}
 
-			final CfgBlock block = nameToBlock.get(name);
-			Objects.requireNonNull(block, name);
-			final TypeList input = blockInputs.get(name);
-			final TypeList output = block.checkTypes(input, typeChecker);
+			final CfgBlock block = Objects.requireNonNull(nameToBlock.get(name), name);
+			final TypeList input = Objects.requireNonNull(blockInputs.get(name), block.locationStart().toString());
+
+			final TypeList output = Objects.requireNonNull(block.checkTypes(input, typeChecker), name);
+
 			final List<String> successors = getSuccessors(name);
 			if (successors.isEmpty()) {
 				final TypeList expectedOut = typesInOut.out();
