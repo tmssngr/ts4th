@@ -1,4 +1,3 @@
-
 main:
 	r0 = mem
 	push r0 (8)

@@ -7,11 +7,13 @@ import org.jetbrains.annotations.*;
 /**
  * @author Thomas Singer
  */
-public record Program(List<Function> functions) {
+public record Program(List<Function> functions, List<Var> vars) {
 
 	public static Program fromDeclarations(List<Declaration> declarations) {
 		final Map<String, Location> names = new HashMap<>();
 		final Map<String, Instruction> nameToConst = new HashMap<>();
+		final Map<String, Var> nameToVar = new HashMap<>();
+		final List<Var> vars = new ArrayList<>();
 		final List<Function> functions = new ArrayList<>();
 		for (Declaration declaration : declarations) {
 			final String name = declaration.name();
@@ -33,16 +35,23 @@ public record Program(List<Function> functions) {
 				continue;
 			}
 
+			if (declaration instanceof VarDeclaration v) {
+				final Var var = Var.evaluate(v, vars.size(), nameToConst::get);
+				nameToVar.put(name, var);
+				vars.add(var);
+				continue;
+			}
+
 			throw new IllegalStateException("not implemented");
 		}
 
 		final List<Function> functionsWithInlinedConsts = new ArrayList<>();
 		for (Function function : functions) {
-			final List<Instruction> instructions = inlineConsts(function.instructions(), nameToConst);
+			final List<Instruction> instructions = inlineConstsAndVars(function.instructions(), nameToConst, nameToVar);
 			functionsWithInlinedConsts.add(new Function(function.location(), function.name(), function.typesInOut(), function.isInline(), instructions));
 		}
 
-		return new Program(functionsWithInlinedConsts);
+		return new Program(functionsWithInlinedConsts, vars);
 	}
 
 	@Nullable
@@ -55,13 +64,20 @@ public record Program(List<Function> functions) {
 		return null;
 	}
 
-	private static List<Instruction> inlineConsts(List<Instruction> instructions, Map<String, Instruction> nameToConst) {
+	private static List<Instruction> inlineConstsAndVars(List<Instruction> instructions, Map<String, Instruction> nameToConst, Map<String, Var> nameToVar) {
 		final List<Instruction> resultingInstructions = new ArrayList<>(instructions.size());
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Command command) {
-				final Instruction constant = nameToConst.get(command.name());
+				final String name = command.name();
+				final Instruction constant = nameToConst.get(name);
 				if (constant != null) {
 					instruction = constant;
+				}
+				else {
+					final Var var = nameToVar.get(name);
+					if (var != null) {
+						instruction = var.createInstruction();
+					}
 				}
 			}
 			resultingInstructions.add(instruction);

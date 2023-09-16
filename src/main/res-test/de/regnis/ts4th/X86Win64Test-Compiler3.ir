@@ -1,4 +1,3 @@
-
 main:
 	r0 = -10
 	printInt r0(2)

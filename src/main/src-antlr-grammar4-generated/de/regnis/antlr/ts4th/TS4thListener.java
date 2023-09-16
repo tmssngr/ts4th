@@ -58,6 +58,16 @@ public interface TS4thListener extends ParseTreeListener {
 	 */
 	void exitConstDeclaration(TS4thParser.ConstDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TS4thParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarDeclaration(TS4thParser.VarDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TS4thParser#varDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarDeclaration(TS4thParser.VarDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TS4thParser#typeList}.
 	 * @param ctx the parse tree
 	 */

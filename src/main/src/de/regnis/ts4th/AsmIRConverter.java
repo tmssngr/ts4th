@@ -66,6 +66,10 @@ public class AsmIRConverter {
 			output.accept(AsmIRFactory.literal(literal.value()));
 			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
+		else if (instruction instanceof Instruction.PtrLiteral literal) {
+			output.accept(AsmIRFactory.ptrLiteral(literal.index(), literal.varName()));
+			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
+		}
 		else if (instruction instanceof Instruction.StringLiteral literal) {
 			final String text = literal.value();
 			output.accept(AsmIRFactory.stringLiteral(stringLiterals.getConstantIndex(text)));
@@ -93,6 +97,9 @@ public class AsmIRConverter {
 			else {
 				output.accept(AsmIRFactory.call(c.name()));
 			}
+		}
+		else {
+			throw new IllegalStateException("not implemented " + instruction);
 		}
 	}
 }

@@ -16,6 +16,10 @@ public class AsmIRFactory {
 		return new AsmIR.BoolLiteral(value);
 	}
 
+	public static AsmIR ptrLiteral(int index, String varName) {
+		return new AsmIR.PtrLiteral(index, varName);
+	}
+
 	public static AsmIR stringLiteral(int constantIndex) {
 		return new AsmIR.StringLiteral(constantIndex);
 	}

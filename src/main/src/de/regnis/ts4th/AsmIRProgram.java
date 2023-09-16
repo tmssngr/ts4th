@@ -5,5 +5,5 @@ import java.util.*;
 /**
  * @author Thomas Singer
  */
-public record AsmIRProgram(List<AsmIRFunction> functions, AsmIRStringLiterals stringLiterals) {
+public record AsmIRProgram(List<AsmIRFunction> functions, AsmIRStringLiterals stringLiterals, List<Var> vars) {
 }

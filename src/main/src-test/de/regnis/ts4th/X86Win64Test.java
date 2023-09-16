@@ -22,7 +22,7 @@ public class X86Win64Test extends AbstractFileTest {
 				new AsmIRFunction("subr", stringLiterals, List.of(
 						AsmIRFactory.ret()
 				))
-		), stringLiterals);
+		), stringLiterals, List.of());
 
 		writeX86(program);
 	}
@@ -202,6 +202,19 @@ public class X86Win64Test extends AbstractFileTest {
 				             end""");
 	}
 
+	@Test
+	public void testVar() throws IOException {
+		compileWrite("""
+				             const width 40 end
+				             const height 24 end
+				             var buffer width height * end
+
+				             fn main(--)
+				               buffer 40 !8
+				               buffer @8 print
+				             end""");
+	}
+
 	private void compileWrite(String s) throws IOException {
 		final List<Declaration> declarations = Parser.parseString(s);
 		final Program program = Program.fromDeclarations(declarations);
@@ -216,17 +229,18 @@ public class X86Win64Test extends AbstractFileTest {
 
 	private void writeIr(AsmIRProgram program, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-			writeIrConstants(program, writer);
-			writer.newLine();
+			writeIrConstants(program.stringLiterals(), writer);
 
 			for (AsmIRFunction function : program.functions()) {
 				writeIrFunction(function, writer);
 			}
+
+			writeIrVars(program.vars(), writer);
 		}
 	}
 
-	private void writeIrConstants(AsmIRProgram program, BufferedWriter writer) throws IOException {
-		List<byte[]> constants = program.stringLiterals().getConstants();
+	private void writeIrConstants(AsmIRStringLiterals stringLiterals, BufferedWriter writer) throws IOException {
+		List<byte[]> constants = stringLiterals.getConstants();
 		for (int i = 0; i < constants.size(); i++) {
 			writer.write("const %" + i + ":");
 			final byte[] bytes = constants.get(i);
@@ -234,6 +248,21 @@ public class X86Win64Test extends AbstractFileTest {
 				writer.write(" ");
 				writer.write(Utils.toHex(value, 2));
 			}
+			writer.newLine();
+		}
+
+		if (constants.size() > 0) {
+			writer.newLine();
+		}
+	}
+
+	private void writeIrVars(List<Var> vars, BufferedWriter writer) throws IOException {
+		if (vars.size() > 0) {
+			writer.newLine();
+		}
+
+		for (Var var : vars) {
+			writer.write("var " + var.name() + ", " + var.size());
 			writer.newLine();
 		}
 	}

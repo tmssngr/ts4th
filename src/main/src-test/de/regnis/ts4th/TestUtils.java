@@ -41,11 +41,22 @@ public class TestUtils {
 				return;
 			}
 
+			if (expectedDeclaration instanceof VarDeclaration expV
+			    && currentDeclaration instanceof VarDeclaration currV) {
+				assertVarEquals(expV, currV);
+				return;
+			}
+
 			fail("unexpected types " + expectedDeclaration + " vs. " + currentDeclaration);
 		});
 	}
 
 	public static void assertConstEquals(ConstDeclaration expected, ConstDeclaration current) {
+		assertEquals(expected.name(), current.name());
+		assertInstructionsEquals(expected.instructions(), current.instructions());
+	}
+
+	public static void assertVarEquals(VarDeclaration expected, VarDeclaration current) {
 		assertEquals(expected.name(), current.name());
 		assertInstructionsEquals(expected.instructions(), current.instructions());
 	}

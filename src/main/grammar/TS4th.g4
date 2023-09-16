@@ -6,6 +6,7 @@ rootItem
 	: include
 	| funcDeclaration
 	| constDeclaration
+	| varDeclaration
 	;
 
 include
@@ -20,6 +21,12 @@ funcDeclaration
 
 constDeclaration
 	: Const name=Identifier
+	    instructions
+	  End
+	;
+
+varDeclaration
+	: Var name=Identifier
 	    instructions
 	  End
 	;
@@ -50,6 +57,7 @@ TypeSeparator: '--';
 Include: 'include';
 Func: 'fn';
 Const: 'const';
+Var: 'var';
 End: 'end';
 If: 'if';
 Else: 'else';

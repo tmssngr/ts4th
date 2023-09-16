@@ -4,7 +4,8 @@ package de.regnis.ts4th;
  * @author Thomas Singer
  */
 public sealed interface Instruction permits
-		Instruction.Label, Instruction.IntLiteral, Instruction.BoolLiteral, Instruction.StringLiteral,
+		Instruction.Label,
+		Instruction.IntLiteral, Instruction.BoolLiteral, Instruction.PtrLiteral, Instruction.StringLiteral,
 		Instruction.Command, Instruction.Jump, Instruction.Branch, Instruction.Ret {
 
 	record Label(String name) implements Instruction {
@@ -25,6 +26,13 @@ public sealed interface Instruction permits
 		@Override
 		public String toString() {
 			return String.valueOf(value);
+		}
+	}
+
+	record PtrLiteral(int index, String varName) implements Instruction {
+		@Override
+		public String toString() {
+			return "@" + index + ":" + varName;
 		}
 	}
 

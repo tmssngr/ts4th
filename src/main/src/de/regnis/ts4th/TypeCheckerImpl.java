@@ -100,6 +100,10 @@ public class TypeCheckerImpl implements TypeChecker {
 			return input.append(Type.Bool);
 		}
 
+		if (instruction instanceof Instruction.PtrLiteral) {
+			return input.append(Type.Ptr);
+		}
+
 		if (instruction instanceof Instruction.StringLiteral) {
 			return input.append(Type.Ptr).append(Type.Int);
 		}

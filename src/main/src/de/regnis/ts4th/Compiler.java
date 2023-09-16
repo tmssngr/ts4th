@@ -46,7 +46,7 @@ public class Compiler {
 			processedFunctions.add(irFunction);
 		}
 
-		return new AsmIRProgram(processedFunctions, stringLiterals);
+		return new AsmIRProgram(processedFunctions, stringLiterals, program.vars());
 	}
 
 	private static List<Function> getUsedFunctions(Program program) {

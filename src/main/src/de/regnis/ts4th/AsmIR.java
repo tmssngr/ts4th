@@ -4,8 +4,11 @@ package de.regnis.ts4th;
  * @author Thomas Singer
  */
 public sealed interface AsmIR permits
-		AsmIR.Label, AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.StringLiteral, AsmIR.Push,
-		AsmIR.Pop, AsmIR.Load, AsmIR.Store, AsmIR.Jump, AsmIR.Call,
+		AsmIR.Label,
+		AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.PtrLiteral, AsmIR.StringLiteral,
+		AsmIR.Push, AsmIR.Pop,
+		AsmIR.Load, AsmIR.Store,
+		AsmIR.Jump, AsmIR.Call,
 		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
@@ -38,6 +41,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return "r0 = " + value;
+		}
+	}
+
+	record PtrLiteral(int varIndex, String varName) implements AsmIR {
+		@Override
+		public String toString() {
+			return "r0 = var " + varIndex + ":" + varName;
 		}
 	}
 

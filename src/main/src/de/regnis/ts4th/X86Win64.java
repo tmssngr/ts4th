@@ -16,6 +16,7 @@ public class X86Win64 {
 	private static final String LABEL_PREFIX = "tsf_";
 	private static final String LABEL_PREFIX_BI = "tsfbi_";
 	private static final String STRING_PREFIX = "string_";
+	private static final String VAR_PREFIX = "var_";
 	private static final String PRINT_STRING = LABEL_PREFIX_BI + "printString";
 	private static final String PRINT_CHAR = LABEL_PREFIX_BI + "printChar";
 	private static final String PRINT_UINT = LABEL_PREFIX_BI + "printUint";
@@ -78,7 +79,15 @@ public class X86Win64 {
 		writeNL();
 
 		write("""
-				      section '.data' data readable writeable
+				      section '.data' data readable writeable""");
+
+		for (Var var : program.vars()) {
+			write("""
+					      ; %s
+					      %s rb %d
+					      """.formatted(var.name(), VAR_PREFIX + var.index(), var.size()));
+		}
+		write("""
 
 				      mem rb 640000""");
 	}
@@ -248,6 +257,12 @@ public class X86Win64 {
 		if (instruction instanceof AsmIR.BoolLiteral l) {
 			writeComment("literal " + l.value());
 			writeIndented("mov cx, " + (l.value() ? 1 : 0));
+			return;
+		}
+
+		if (instruction instanceof AsmIR.PtrLiteral l) {
+			writeComment("var " + l.varName());
+			writeIndented("lea rcx, [%s]".formatted(VAR_PREFIX + l.varIndex()));
 			return;
 		}
 

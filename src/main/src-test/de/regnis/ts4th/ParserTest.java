@@ -298,4 +298,19 @@ public final class ParserTest {
 						const height 24 end
 						const size width height * end"""));
 	}
+
+	@Test
+	public void testVarDeclaration() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new VarDeclaration("width", List.of(
+						  new Instruction.IntLiteral(2)
+				)),
+				new VarDeclaration("buffer", List.of(
+						new Instruction.IntLiteral(256)
+				))
+		), Parser.parseString(
+				"""
+						var width 2 end
+						var buffer 256 end"""));
+	}
 }
