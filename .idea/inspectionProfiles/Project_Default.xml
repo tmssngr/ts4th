@@ -1,14 +1,8 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="3ccd4fdf-ed4d-3014-9527-3c7fe1f8fb89" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="InconsistentTextBlockIndent" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <replaceConfiguration name="Replace &quot;-string with &quot;&quot;&quot;" text="&quot;$String$&quot;" recursive="false" caseInsensitive="false" reformatAccordingToStyle="true" shortenFQN="false" replacement="&quot;&quot;&quot;&#10;&#9;&#9;$String$&quot;&quot;&quot;">
-        <constraint name="__context__" within="" contains="" />
-        <constraint name="String" within="" contains="" />
-      </replaceConfiguration>
-    </inspection_tool>
+    <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SizeReplaceableByIsEmpty" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
       <option name="processCode" value="true" />
