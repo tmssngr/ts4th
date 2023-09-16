@@ -212,6 +212,11 @@ public class AsmIRInterpreter {
 			return;
 		}
 
+		if (instruction instanceof AsmIR.Move m) {
+			setReg(m.target(), getRegValue(m.source()));
+			return;
+		}
+
 		if (instruction instanceof AsmIR.Load l) {
 			Utils.assertTrue(l.valueSize() == 1);
 			final Integer value = memAddressToValue.get(getRegValue(l.pointerReg()));
@@ -295,7 +300,7 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		throw new IllegalStateException();
+		throw new IllegalStateException("not implemented " + instruction);
 	}
 
 	private void setIpTo(String target) {

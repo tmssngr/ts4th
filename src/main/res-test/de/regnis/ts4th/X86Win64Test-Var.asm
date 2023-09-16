@@ -30,12 +30,7 @@ tsf_main:
         mov byte [rax], cl
         ; -- var buffer --
         lea rcx, [var_0]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
+        mov rax, rcx
         ; -- literal 0 --
         mov cx, 0
         ; -- load 0 (1), @1 --

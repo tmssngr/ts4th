@@ -6,7 +6,7 @@ package de.regnis.ts4th;
 public sealed interface AsmIR permits
 		AsmIR.Label,
 		AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.PtrLiteral, AsmIR.StringLiteral,
-		AsmIR.Push, AsmIR.Pop,
+		AsmIR.Push, AsmIR.Pop, AsmIR.Move,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
 		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.PrintChar, AsmIR.Mem, AsmIR.Ret {
@@ -69,6 +69,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return "pop r" + reg + " (" + size + ")";
+		}
+	}
+
+	record Move(int target, int source, int size) implements AsmIR {
+		@Override
+		public String toString() {
+			return "move " + target + ", " + source + " (" + size + ")";
 		}
 	}
 

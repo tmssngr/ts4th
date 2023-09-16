@@ -23,12 +23,7 @@ tsf_main:
         mov [r15], cx
         ; -- literal 2048 --
         mov cx, 2048
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2

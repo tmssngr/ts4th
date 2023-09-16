@@ -23,12 +23,7 @@ tsf_main:
         mov [r15], cx
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
+        mov rax, rcx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
@@ -36,12 +31,7 @@ tsf_main:
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
+        mov rax, rcx
         ; -- literal 0 --
         mov cx, 0
         ; -- load 0 (1), @1 --

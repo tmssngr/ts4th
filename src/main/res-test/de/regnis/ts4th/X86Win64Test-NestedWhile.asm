@@ -33,12 +33,7 @@ tsf_while_1:
         mov [r15], cx
         ; -- literal 10 --
         mov cx, 10
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
@@ -68,12 +63,7 @@ tsf_while_2:
         mov [r15], cx
         ; -- literal 20 --
         mov cx, 20
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
@@ -117,12 +107,7 @@ tsf_while_2:
         add  rsp, 8
         ; -- literal 1 --
         mov cx, 1
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
@@ -145,12 +130,7 @@ tsf_endwhile_2:
         add rsp, 8
         ; -- literal 1 --
         mov cx, 1
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2

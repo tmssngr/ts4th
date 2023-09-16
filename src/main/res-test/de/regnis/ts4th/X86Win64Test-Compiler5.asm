@@ -35,12 +35,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal 1 --
         mov cx, 1
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
@@ -64,12 +59,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal 2 --
         mov cx, 2
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
@@ -93,12 +83,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal 3 --
         mov cx, 3
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
@@ -223,12 +208,7 @@ tsf_appendChar:
         ; -- push 1 (2) --
         sub r15, 2
         mov [r15], ax
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
+        mov rax, rcx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
@@ -236,12 +216,7 @@ tsf_appendChar:
         mov byte [rax], cl
         ; -- literal 1 --
         mov cx, 1
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
+        mov ax, cx
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8

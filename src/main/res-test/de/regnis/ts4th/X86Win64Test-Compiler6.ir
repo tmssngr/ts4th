@@ -6,8 +6,7 @@ main:
 	pop r1 (8)
 	store @r1, r0(1)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -16,8 +15,7 @@ main:
 	pop r1 (8)
 	store @r1, r0(1)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -26,8 +24,7 @@ main:
 	pop r1 (8)
 	store @r1, r0(1)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -36,8 +33,7 @@ main:
 	pop r1 (8)
 	store @r1, r0(1)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -49,8 +45,7 @@ main:
 	r0 = mem
 	push r0 (8)
 	r0 = 10
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -73,8 +68,7 @@ main:
 	r0 = mem
 	push r0 (8)
 	r0 = 10
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
@@ -92,13 +86,11 @@ appendChar:
 	pop r0 (8)
 	push r0 (8)
 	push r1 (2)
-	push r0 (8)
-	pop r1 (8)
+	move 1, 0 (8)
 	pop r0 (2)
 	store @r1, r0(1)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)

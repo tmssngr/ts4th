@@ -32,6 +32,10 @@ public class AsmIRFactory {
 		return new AsmIR.Pop(reg, size);
 	}
 
+	public static AsmIR move(int target, int source, int size) {
+		return new AsmIR.Move(target, source, size);
+	}
+
 	public static AsmIR load(int valueReg, int pointerReg, int valueSize) {
 		return new AsmIR.Load(valueReg, valueSize, pointerReg);
 	}

@@ -303,6 +303,13 @@ public class X86Win64 {
 			return;
 		}
 
+		if (instruction instanceof AsmIR.Move m) {
+			final int size = m.size();
+			writeIndented("mov %s, %s".formatted(getRegName(m.target(), size),
+			                                     getRegName(m.source(), size)));
+			return;
+		}
+
 		if (instruction instanceof AsmIR.Load l) {
 			final int valueReg = l.valueReg();
 			final int valueSize = l.valueSize();

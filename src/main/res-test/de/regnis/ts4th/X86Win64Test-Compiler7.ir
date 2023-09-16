@@ -10,22 +10,19 @@ main:
 	ret
 strlen:
 	r0 = 0
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	push r1 (2)
 	push r0 (8)
 while_1:
 	pop r0 (8)
 	push r0 (8)
-	push r0 (8)
-	pop r1 (8)
+	move 1, 0 (8)
 	r0 = 0
 	load r0(1), @r1
 	push r0 (2)
 	r0 = 0
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (2)
 	neq r0, r1
 	boolTest r0, r0
@@ -35,18 +32,15 @@ while_1:
 	push r1 (8)
 	push r0 (2)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (2)
 	add r0, r1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	push r1 (2)
 	push r0 (8)
 	r0 = 1
-	push r0 (2)
-	pop r1 (2)
+	move 1, 0 (2)
 	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)

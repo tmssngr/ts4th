@@ -106,12 +106,17 @@ public class AsmIRSimplifier {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Push push
-				    && i2 instanceof AsmIR.Pop pop
-				    && push.reg() == pop.reg()) {
+				    && i2 instanceof AsmIR.Pop pop) {
 					Utils.assertTrue(push.size() == pop.size());
-					removeNext();
-					remove();
-					again();
+					if (push.reg() == pop.reg()) {
+						removeNext();
+						remove();
+						again();
+					}
+					else {
+						removeNext();
+						replace(new AsmIR.Move(pop.reg(), push.reg(), push.size()));
+					}
 				}
 			}
 		}.process();
