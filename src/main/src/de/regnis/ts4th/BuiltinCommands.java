@@ -39,6 +39,8 @@ public class BuiltinCommands {
 	public static final String PRINT_ASCII = "asciiPrint";
 	public static final String PRINT_STRING = "printString";
 
+	public static final String ABORT = "abort";
+
 	public static final String IS_LT = "<";
 	public static final String IS_LE = "<=";
 	public static final String IS_EQ = "==";
@@ -357,6 +359,17 @@ public class BuiltinCommands {
 					output.accept(AsmIRFactory.pop(REG_1, PTR_SIZE));
 				}
 				output.accept(AsmIRFactory.printString(REG_1, REG_0));
+			}
+		});
+		nameToCommand.put(ABORT, new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				throw new InvalidTypeException(location, "Types " + input);
+			}
+
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				throw new IllegalStateException("not reachable");
 			}
 		});
 
