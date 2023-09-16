@@ -37,6 +37,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	private String continueLabel;
 	private String breakLabel;
 	private int index;
+
 	private Parser(IncludeHandler includeHandler) {
 		this.includeHandler = includeHandler;
 	}
@@ -176,12 +177,6 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		return List.of(new Instruction.StringLiteral(value));
 	}
 
-	private String parseStringLiteral(TerminalNode node) {
-		final String text = node.getText();
-		final String raw = text.substring(1, text.length() - 1);
-		return unescape(raw);
-	}
-
 	@Override
 	public List<Instruction> visitTrue(TS4thParser.TrueContext ctx) {
 		return List.of(new Instruction.BoolLiteral(true));
@@ -291,6 +286,12 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			throw new ParseCancellationException("%1$d:%2$d continue only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
 		}
 		return List.of(new Instruction.Jump(continueLabel));
+	}
+
+	private String parseStringLiteral(TerminalNode node) {
+		final String text = node.getText();
+		final String raw = text.substring(1, text.length() - 1);
+		return unescape(raw);
 	}
 
 	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions) {
