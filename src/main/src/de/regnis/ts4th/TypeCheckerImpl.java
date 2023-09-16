@@ -108,8 +108,12 @@ public class TypeCheckerImpl implements TypeChecker {
 			return input.append(Type.Ptr).append(Type.Int);
 		}
 
-		if (instruction instanceof Instruction.Branch) {
-			return input.transform(TypeList.BOOL, TypeList.EMPTY);
+		if (instruction instanceof Instruction.Branch b) {
+			final TypeList output = input.transform(TypeList.BOOL, TypeList.EMPTY);
+			if (output == null) {
+				throw new InvalidTypeException(b.location(), "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
+			}
+			return output;
 		}
 
 		if (instruction instanceof Instruction.Command c) {

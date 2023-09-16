@@ -25,7 +25,11 @@ public record CfgBlock(String name, List<Instruction> instructions, Location loc
 
 	public TypeList checkTypes(TypeList input, TypeChecker checker) {
 		for (Instruction instruction : instructions) {
-			input = checker.checkType(instruction, input);
+			final TypeList output = checker.checkType(instruction, input);
+			if (output == null) {
+				throw new NullPointerException(instruction.toString() + " with input " + input);
+			}
+			input = output;
 		}
 		return input;
 	}
