@@ -1,0 +1,85 @@
+const BOARD_CAP 30 end
+var board BOARD_CAP end
+
+// target size value
+fn fill(ptr int int --)
+	rot // size value target
+	rot // value target size
+	while dup 0 > do
+		rot // target size value
+		rot // size value target
+		dup2 // size value target value target
+		!8 // size value target
+		1 +
+		rot // value target size
+		1 -
+	end
+	drop // value target
+	drop // value
+	drop
+end
+
+/*
+for (size_t j = 0; j < BOARD_CAP; ++j) {
+    fputc(" *"[board[j]], stdout);
+}
+fputc('\n', stdout);
+*/
+fn printBoard(--)
+	'|' printChar
+	0
+	while dup BOARD_CAP 2 - < do
+		dup board + @8 // i board[i]
+		" *" drop swap + @8 // i chr
+		printChar
+		1 +
+	end
+	drop
+	'|'  printChar
+	0x0a printChar
+end
+
+fn main(--)
+	board BOARD_CAP 0 fill
+	// board[BOARD_CAP - 2] = 1;
+	board BOARD_CAP 2 - + 1 !8
+	0
+	while dup BOARD_CAP 2 - < do
+		printBoard
+
+		// int pattern = (board[0] << 1) | board[1];
+		board     @8
+		board 1 + @8
+		or
+		// pattern
+
+		// for (size_t j = 1; j < BOARD_CAP - 1; ++j) {
+		1
+		while dup BOARD_CAP 1 - < do
+			swap // j pattern
+			// pattern = ((pattern << 1) & 7) ...
+			1 shl 7 and // j result
+			// ... | board[j + 1];
+			over // j result j
+			1 + board + @8 // j result board[j]
+			or // j pattern
+
+			swap // pattern j
+
+			// board[j] = (110 >> pattern) & 1;
+			over // pattern j pattern
+			110 swap shr // pattern j (110 >> pattern)
+			1 and    // j pattern value
+
+			over board + // pattern j value @board[j]
+			!8
+
+			1 + // pattern j
+		end
+		drop // pattern
+		drop
+
+		1 +
+	end
+	drop
+end
