@@ -291,12 +291,21 @@ public final class ParserTest {
 						  new Instruction.Command("width"),
 						  new Instruction.Command("height"),
 						  InstructionFactory.mul()
+				)),
+				new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
+						new Instruction.Command("height"),
+						new Instruction.Command("print"),
+						new Instruction.Ret()
 				))
 		), Parser.parseString(
 				"""
 						const width 40 end
 						const height 24 end
-						const size width height * end"""));
+						const size width height * end
+
+						fn main()
+							height print
+						end"""));
 	}
 
 	@Test

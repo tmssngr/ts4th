@@ -14,7 +14,7 @@ include
 	;
 
 funcDeclaration
-    : Func Inline? name=Identifier ParenOpen beforeTypes=typeList TypeSeparator afterTypes=typeList ParenClose
+    : Func Inline? name=Identifier ParenOpen beforeTypes=typeList (TypeSeparator afterTypes=typeList)? ParenClose
         instructions
       End
     ;

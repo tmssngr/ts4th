@@ -9,6 +9,7 @@ import java.util.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
+import org.jetbrains.annotations.*;
 
 /**
  * @author Thomas Singer
@@ -117,26 +118,28 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	}
 
 	@Override
-	public TypeList visitTypeList(TS4thParser.TypeListContext ctx) {
+	public TypeList visitTypeList(@Nullable TS4thParser.TypeListContext ctx) {
 		TypeList typeList = TypeList.EMPTY;
-		for (TerminalNode node : ctx.Identifier()) {
-			final String text = node.getText();
-			if (text.equals("int")) {
-				typeList = typeList.append(Type.Int);
-				continue;
-			}
+		if (ctx != null) {
+			for (TerminalNode node : ctx.Identifier()) {
+				final String text = node.getText();
+				if (text.equals("int")) {
+					typeList = typeList.append(Type.Int);
+					continue;
+				}
 
-			if (text.equals("ptr")) {
-				typeList = typeList.append(Type.Ptr);
-				continue;
-			}
+				if (text.equals("ptr")) {
+					typeList = typeList.append(Type.Ptr);
+					continue;
+				}
 
-			if (text.equals("bool")) {
-				typeList = typeList.append(Type.Bool);
-				continue;
-			}
+				if (text.equals("bool")) {
+					typeList = typeList.append(Type.Bool);
+					continue;
+				}
 
-			throw new ParseCancellationException("%1$d:%2$d invalid type %3$s".formatted(node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), text));
+				throw new ParseCancellationException("%1$d:%2$d invalid type %3$s".formatted(node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), text));
+			}
 		}
 		return typeList;
 	}
