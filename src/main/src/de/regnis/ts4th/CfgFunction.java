@@ -94,7 +94,7 @@ public class CfgFunction {
 	public List<Instruction> flatten() {
 		final List<Instruction> instructions = new ArrayList<>();
 		for (CfgBlock block : blocks) {
-			instructions.add(new Instruction.Label(block.name()));
+			instructions.add(InstructionFactory.label(block.name()));
 			instructions.addAll(block.instructions());
 		}
 		return instructions;
@@ -170,7 +170,7 @@ public class CfgFunction {
 			}
 		}
 
-		blockInstructions.add(new Instruction.Jump(label));
+		blockInstructions.add(InstructionFactory.jump(label));
 	}
 
 	private void addBlock(String name, List<Instruction> blockInstructions, Location locationStart, Location locationEnd) {

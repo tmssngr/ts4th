@@ -111,7 +111,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final TypeList beforeTypes = visitTypeList(ctx.beforeTypes);
 		final TypeList afterTypes = visitTypeList(ctx.afterTypes);
 		final List<Instruction> instructions = visitInstructions(ctx.instructions());
-		instructions.add(new Instruction.Ret());
+		instructions.add(InstructionFactory.ret());
 		final Location locationStart = createLocation(ctx.name);
 		final Location locationEnd = createLocation(ctx.End());
 		return new Function(locationStart, locationEnd, name, new TypesInOut(beforeTypes, afterTypes), inline, instructions);
@@ -172,7 +172,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		else {
 			value = Integer.parseInt(text);
 		}
-		return List.of(new Instruction.IntLiteral(value));
+		return List.of(InstructionFactory.literal(value));
 	}
 
 	@Override
@@ -183,12 +183,12 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	@Override
 	public List<Instruction> visitTrue(TS4thParser.TrueContext ctx) {
-		return List.of(new Instruction.BoolLiteral(true));
+		return List.of(InstructionFactory.literal(true));
 	}
 
 	@Override
 	public List<Instruction> visitFalse(TS4thParser.FalseContext ctx) {
-		return List.of(new Instruction.BoolLiteral(false));
+		return List.of(InstructionFactory.literal(false));
 	}
 
 	@Override
@@ -275,7 +275,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			continueLabel = labelWhile;
 
 			instructions.addAll(visitInstructions(ctx.body));
-			instructions.add(new Instruction.Jump(labelWhile));
+			instructions.add(InstructionFactory.jump(labelWhile));
 
 			instructions.add(new Instruction.Label(labelWhileEnd, createLocation(ctx.End())));
 			return instructions;
@@ -292,7 +292,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			final Token token = ctx.Break().getSymbol();
 			throw new ParseCancellationException("%1$d:%2$d break only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
 		}
-		return List.of(new Instruction.Jump(breakLabel));
+		return List.of(InstructionFactory.jump(breakLabel));
 	}
 
 	@Override
@@ -301,7 +301,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			final Token token = ctx.Continue().getSymbol();
 			throw new ParseCancellationException("%1$d:%2$d continue only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
 		}
-		return List.of(new Instruction.Jump(continueLabel));
+		return List.of(InstructionFactory.jump(continueLabel));
 	}
 
 	private String parseStringLiteral(TerminalNode node) {

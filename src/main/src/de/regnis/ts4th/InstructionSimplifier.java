@@ -63,12 +63,12 @@ public class InstructionSimplifier {
 			if (instruction instanceof Instruction.Jump j) {
 				final String target = j.target();
 				final String newTarget = getNewTarget(target, fromTo);
-				newInstructions.add(new Instruction.Jump(newTarget));
+				newInstructions.add(InstructionFactory.jump(newTarget));
 			}
 			else if (instruction instanceof Instruction.Branch b) {
 				final String ifTarget = getNewTarget(b.ifTarget(), fromTo);
 				final String elseTarget = getNewTarget(b.elseTarget(), fromTo);
-				newInstructions.add(new Instruction.Branch(ifTarget, elseTarget));
+				newInstructions.add(InstructionFactory.branch(ifTarget, elseTarget));
 			}
 			else {
 				newInstructions.add(instruction);
@@ -111,7 +111,7 @@ public class InstructionSimplifier {
 			protected void handle(Instruction i1, Instruction i2) {
 				if (i1 instanceof Instruction.BoolLiteral lit
 				    && i2 instanceof Instruction.Branch b) {
-					replace(new Instruction.Jump(lit.value()
+					replace(InstructionFactory.jump(lit.value()
 							                             ? b.ifTarget()
 							                             : b.elseTarget()));
 					removeNext();

@@ -37,75 +37,75 @@ public class InstructionFactory {
 
 	@NotNull
 	public static Instruction dup() {
-		return new Instruction.Command(BuiltinCommands.DUP);
+		return command(BuiltinCommands.DUP);
 	}
 
 	public static Instruction dup2Int() {
-		return new Instruction.Command(BuiltinCommands.DUP2);
+		return command(BuiltinCommands.DUP2);
 	}
 
 	@NotNull
 	public static Instruction dropInt() {
-		return new Instruction.Command(BuiltinCommands.DROP);
+		return command(BuiltinCommands.DROP);
 	}
 
 	@NotNull
 	public static Instruction swapInt() {
-		return new Instruction.Command(BuiltinCommands.SWAP);
+		return command(BuiltinCommands.SWAP);
 	}
 
 	@NotNull
 	public static Instruction overInt() {
-		return new Instruction.Command(BuiltinCommands.OVER);
+		return command(BuiltinCommands.OVER);
 	}
 
 	@NotNull
 	public static Instruction add() {
-		return new Instruction.Command(BuiltinCommands.ADD);
+		return command(BuiltinCommands.ADD);
 	}
 
 	@NotNull
 	public static Instruction sub() {
-		return new Instruction.Command(BuiltinCommands.SUB);
+		return command(BuiltinCommands.SUB);
 	}
 
 	@NotNull
 	public static Instruction mul() {
-		return new Instruction.Command(BuiltinCommands.MUL);
+		return command(BuiltinCommands.MUL);
 	}
 
 	@NotNull
 	public static Instruction isLT() {
-		return new Instruction.Command(BuiltinCommands.IS_LT);
+		return command(BuiltinCommands.IS_LT);
 	}
 
 	@NotNull
 	public static Instruction isLE() {
-		return new Instruction.Command(BuiltinCommands.IS_LE);
+		return command(BuiltinCommands.IS_LE);
 	}
 
 	@NotNull
 	public static Instruction isEQ() {
-		return new Instruction.Command(BuiltinCommands.IS_EQ);
+		return command(BuiltinCommands.IS_EQ);
 	}
 
 	@NotNull
 	public static Instruction isNE() {
-		return new Instruction.Command(BuiltinCommands.IS_NE);
+		return command(BuiltinCommands.IS_NE);
 	}
 
 	@NotNull
 	public static Instruction isGE() {
-		return new Instruction.Command(BuiltinCommands.IS_GE);
+		return command(BuiltinCommands.IS_GE);
 	}
 
 	@NotNull
 	public static Instruction isGT() {
-		return new Instruction.Command(BuiltinCommands.IS_GT);
+		return command(BuiltinCommands.IS_GT);
 	}
 
 	@NotNull
 	public static Instruction print() {
-		return new Instruction.Command(BuiltinCommands.PRINT);
+		return command(BuiltinCommands.PRINT);
 	}
 }

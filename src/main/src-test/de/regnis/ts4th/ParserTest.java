@@ -282,20 +282,20 @@ public final class ParserTest {
 	public void testConstDeclaration() {
 		TestUtils.assertFunctionsEquals(List.of(
 				new ConstDeclaration("width", List.of(
-						  new Instruction.IntLiteral(40)
+						literal(40)
 				)),
 				new ConstDeclaration("height", List.of(
-						  new Instruction.IntLiteral(24)
+						literal(24)
 				)),
 				new ConstDeclaration("size", List.of(
-						  new Instruction.Command("width"),
-						  new Instruction.Command("height"),
-						  InstructionFactory.mul()
+						command("width"),
+						command("height"),
+						mul()
 				)),
 				new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
-						new Instruction.Command("height"),
-						new Instruction.Command("print"),
-						new Instruction.Ret()
+						command("height"),
+						command("print"),
+						ret()
 				))
 		), Parser.parseString(
 				"""
@@ -312,10 +312,10 @@ public final class ParserTest {
 	public void testVarDeclaration() {
 		TestUtils.assertFunctionsEquals(List.of(
 				new VarDeclaration("width", List.of(
-						  new Instruction.IntLiteral(2)
+						literal(2)
 				)),
 				new VarDeclaration("buffer", List.of(
-						new Instruction.IntLiteral(256)
+						literal(256)
 				))
 		), Parser.parseString(
 				"""

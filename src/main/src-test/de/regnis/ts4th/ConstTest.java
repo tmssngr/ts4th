@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.junit.*;
 
+import static de.regnis.ts4th.InstructionFactory.*;
 import static org.junit.Assert.*;
 
 /**
@@ -13,39 +14,39 @@ public class ConstTest {
 
 	@Test
 	public void testEvaluation() {
-		assertEquals(InstructionFactory.literal(1),
+		assertEquals(literal(1),
 		             new ConstDeclaration("a", List.of(
-				             new Instruction.IntLiteral(1)
+				             literal(1)
 		             )).evaluate(name -> null));
-		assertEquals(InstructionFactory.literal(3),
+		assertEquals(literal(3),
 		             new ConstDeclaration("b", List.of(
-				             new Instruction.IntLiteral(1),
-				             new Instruction.IntLiteral(2),
-				             InstructionFactory.add()
+				             literal(1),
+				             literal(2),
+				             add()
 		             )).evaluate(name -> null));
-		assertEquals(InstructionFactory.literal(12),
+		assertEquals(literal(12),
 		             new ConstDeclaration("c", List.of(
-				             new Instruction.IntLiteral(3),
-				             new Instruction.IntLiteral(4),
-				             InstructionFactory.mul()
+				             literal(3),
+				             literal(4),
+				             mul()
 		             )).evaluate(name -> null));
-		assertEquals(InstructionFactory.literal(6),
+		assertEquals(literal(6),
 		             new ConstDeclaration("d", List.of(
-				             new Instruction.Command("a"),
-				             new Instruction.Command("b"),
-				             InstructionFactory.mul()
-		             )).evaluate(Map.of("a", InstructionFactory.literal(2),
-		                                "b", InstructionFactory.literal(3))::get));
-		assertEquals(InstructionFactory.literal(true),
+				             command("a"),
+				             command("b"),
+				             mul()
+		             )).evaluate(Map.of("a", literal(2),
+		                                "b", literal(3))::get));
+		assertEquals(literal(true),
 		             new ConstDeclaration("e", List.of(
-				             InstructionFactory.literal(true)
-		             )).evaluate(Map.of("a", InstructionFactory.literal(2),
-		                                "b", InstructionFactory.literal(3))::get));
+				             literal(true)
+		             )).evaluate(Map.of("a", literal(2),
+		                                "b", literal(3))::get));
 
 		try {
 			new ConstDeclaration("c", List.of(
-					new Instruction.IntLiteral(3),
-					InstructionFactory.mul()
+					literal(3),
+					mul()
 			)).evaluate(name -> null);
 			fail();
 		}
@@ -54,10 +55,10 @@ public class ConstTest {
 
 		try {
 			new ConstDeclaration("d", List.of(
-					new Instruction.Command("a"),
-					new Instruction.Command("b"),
-					InstructionFactory.mul()
-			)).evaluate(Map.of("a", InstructionFactory.literal(2))::get);
+					command("a"),
+					command("b"),
+					mul()
+			)).evaluate(Map.of("a", literal(2))::get);
 		}
 		catch (InterpretingFailedException ignored) {
 		}
