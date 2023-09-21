@@ -37,9 +37,9 @@ tsf_while_1:
         mov cx, [r15]
         add r15, 2
         ; -- lt 0 1 --
-        cmp cx, ax
-        mov cx, 0
-        mov ax, 1
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
         cmovl rcx, rax
         ; -- boolTest 0 0 --
         test cl, cl
@@ -66,9 +66,9 @@ tsf_while_2:
         mov cx, [r15]
         add r15, 2
         ; -- lt 0 1 --
-        cmp cx, ax
-        mov cx, 0
-        mov ax, 1
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
         cmovl rcx, rax
         ; -- boolTest 0 0 --
         test cl, cl

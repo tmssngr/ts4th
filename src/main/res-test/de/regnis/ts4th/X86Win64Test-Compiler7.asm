@@ -80,9 +80,9 @@ tsf_while_1:
         mov cx, [r15]
         add r15, 2
         ; -- neq 0 1 --
-        cmp cx, ax
-        mov cx, 0
-        mov ax, 1
+        cmp    cx, ax
+        mov    cx, 0
+        mov    ax, 1
         cmovne rcx, rax
         ; -- boolTest 0 0 --
         test cl, cl

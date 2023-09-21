@@ -142,9 +142,9 @@ tsf_while_1:
         sub r15, 2
         mov [r15], ax
         ; -- lt 0 1 --
-        cmp cx, ax
-        mov cx, 0
-        mov ax, 1
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
         cmovl rcx, rax
         ; -- boolTest 0 0 --
         test cl, cl
@@ -187,9 +187,9 @@ tsf_else_2:
         sub r15, 2
         mov [r15], ax
         ; -- gt 0 1 --
-        cmp cx, ax
-        mov cx, 0
-        mov ax, 1
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
         cmovg rcx, rax
         ; -- boolTest 0 0 --
         test cl, cl
