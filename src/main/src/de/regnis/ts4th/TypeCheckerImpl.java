@@ -25,11 +25,11 @@ public class TypeCheckerImpl implements TypeChecker {
 			input = Objects.requireNonNull(types[index]);
 			final TypeList output = typeChecker.checkType(instruction, input);
 			final List<String> targets;
-			if (instruction instanceof Instruction.Jump j) {
-				targets = List.of(j.target());
+			if (instruction instanceof Instruction.Jump(String target, _)) {
+				targets = List.of(target);
 			}
-			else if (instruction instanceof Instruction.Branch b) {
-				targets = List.of(b.ifTarget(), b.elseTarget());
+			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
+				targets = List.of(ifTarget, elseTarget);
 			}
 			else {
 				if (index + 1 == types.length) {
@@ -108,18 +108,15 @@ public class TypeCheckerImpl implements TypeChecker {
 			return input.append(Type.Ptr).append(Type.Int);
 		}
 
-		if (instruction instanceof Instruction.Branch b) {
+		if (instruction instanceof Instruction.Branch(_, _, Location location)) {
 			final TypeList output = input.transform(TypeList.BOOL, TypeList.EMPTY);
 			if (output == null) {
-				throw new InvalidTypeException(b.location(), "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
+				throw new InvalidTypeException(location, "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
 			}
 			return output;
 		}
 
-		if (instruction instanceof Instruction.Command c) {
-			final String name = c.name();
-			final Location location = c.location();
-
+		if (instruction instanceof Instruction.Command(String name, Location location)) {
 			final TypesInOut types = nameToDef.get(name);
 			if (types != null) {
 				final TypeList output = input.transform(types.in(), types.out());
@@ -144,8 +141,8 @@ public class TypeCheckerImpl implements TypeChecker {
 		final Map<String, Integer> labelToIndex = new HashMap<>();
 		for (int i = 0; i < instructions.size(); i++) {
 			final Instruction instruction = instructions.get(i);
-			if (instruction instanceof Instruction.Label l) {
-				labelToIndex.put(l.name(), i);
+			if (instruction instanceof Instruction.Label(String name, _)) {
+				labelToIndex.put(name, i);
 			}
 		}
 

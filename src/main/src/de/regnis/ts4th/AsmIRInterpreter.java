@@ -80,10 +80,9 @@ public class AsmIRInterpreter {
 		this.startIp = startIp;
 		int index = 0;
 		for (AsmIR instruction : instructions) {
-			if (instruction instanceof AsmIR.Label l) {
-				final String label = l.name();
-				if (labelToIndex.put(label, index) != null) {
-					throw new IllegalStateException("duplicate label " + label);
+			if (instruction instanceof AsmIR.Label(String name)) {
+				if (labelToIndex.put(name, index) != null) {
+					throw new IllegalStateException("duplicate label " + name);
 				}
 			}
 			index++;
@@ -173,63 +172,62 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.IntLiteral l) {
-			setReg(l.target(), l.value());
+		if (instruction instanceof AsmIR.IntLiteral(int target, int value)) {
+			setReg(target, value);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.BoolLiteral l) {
-			setReg(l.target(), l.value() ? 1 : 0);
+		if (instruction instanceof AsmIR.BoolLiteral(int targetReg, boolean value)) {
+			setReg(targetReg, value ? 1 : 0);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.StringLiteral l) {
-			setReg(l.target(), stringIndexToMem.get(l.constantIndex()));
+		if (instruction instanceof AsmIR.StringLiteral(int targetReg, int index)) {
+			setReg(targetReg, stringIndexToMem.get(index));
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Jump j) {
-			final AsmIR.Condition condition = j.condition();
+		if (instruction instanceof AsmIR.Jump(AsmIR.Condition condition, String target)) {
 			if (condition == null || switch (condition) {
 				case z -> flagZ;
 				case nz -> !flagZ;
 				default -> throw new IllegalStateException("unsupported condition " + condition);
 			}) {
-				setIpTo(j.target());
+				setIpTo(target);
 			}
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Push p) {
-			int value = getRegValue(p.reg());
-			AsmIRInterpreter.this.push(value, p.size());
+		if (instruction instanceof AsmIR.Push(int sourceReg, int size)) {
+			int value = getRegValue(sourceReg);
+			AsmIRInterpreter.this.push(value, size);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Pop p) {
-			final int value = AsmIRInterpreter.this.pop(p.size());
-			setReg(p.reg(), value);
+		if (instruction instanceof AsmIR.Pop(int targetReg, int size)) {
+			final int value = AsmIRInterpreter.this.pop(size);
+			setReg(targetReg, value);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Move m) {
-			setReg(m.target(), getRegValue(m.source()));
+		if (instruction instanceof AsmIR.Move(int targetReg, int sourceReg, _)) {
+			setReg(targetReg, getRegValue(sourceReg));
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Load l) {
-			Utils.assertTrue(l.valueSize() == 1);
-			final Integer value = memAddressToValue.get(getRegValue(l.pointerReg()));
+		if (instruction instanceof AsmIR.Load(int valueReg, int pointerReg, int valueSize)) {
+			Utils.assertTrue(valueSize == 1);
+			final Integer value = memAddressToValue.get(getRegValue(pointerReg));
 			if (value == null) {
 				throw new InterpretingFailedException("mem at " + reg1 + " read without writing");
 			}
-			setReg(l.valueReg(), value);
+			setReg(valueReg, value);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Store s) {
-			Utils.assertTrue(s.valueSize() == 1);
-			memAddressToValue.put(getRegValue(s.pointerReg()), getRegValue(s.valueReg()));
+		if (instruction instanceof AsmIR.Store(int pointerReg, int valueReg, int valueSize)) {
+			Utils.assertTrue(valueSize == 1);
+			memAddressToValue.put(getRegValue(pointerReg), getRegValue(valueReg));
 			return;
 		}
 
@@ -243,10 +241,8 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.BinCommand c) {
-			final int reg1 = c.reg1();
-			final int reg2 = c.reg2();
-			switch (c.operation()) {
+		if (instruction instanceof AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2)) {
+			switch (operation) {
 			case add, add_ptr -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));
 			case sub -> setReg(reg1, getRegValue(reg1) - getRegValue(reg2));
 			case imul -> setReg(reg1, getRegValue(reg1) * getRegValue(reg2));
@@ -275,8 +271,8 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.PrintString p) {
-			for (int ptr = getRegValue(p.ptrReg()), size = getRegValue(p.sizeReg()); size-- > 0; ) {
+		if (instruction instanceof AsmIR.PrintString(int ptrReg, int sizeReg)) {
+			for (int ptr = getRegValue(ptrReg), size = getRegValue(sizeReg); size-- > 0; ) {
 				final Integer value = memAddressToValue.get(ptr);
 				buffer.append((char)value.intValue());
 				ptr++;
@@ -289,8 +285,7 @@ public class AsmIRInterpreter {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Call c) {
-			final String name = c.name();
+		if (instruction instanceof AsmIR.Call(String name)) {
 			final Integer ip = labelToIndex.get(name + "_0");
 			if (ip == null) {
 				throw new InterpretingFailedException("Unknown command " + name);

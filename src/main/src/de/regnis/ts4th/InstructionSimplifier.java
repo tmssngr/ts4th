@@ -26,9 +26,9 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1 instanceof Instruction.Jump j
-				    && i2 instanceof Instruction.Label l
-				    && Objects.equals(j.target(), l.name())) {
+				if (i1 instanceof Instruction.Jump(String target, _)
+				    && i2 instanceof Instruction.Label(String name, _)
+				    && Objects.equals(target, name)) {
 					remove();
 				}
 			}
@@ -43,13 +43,10 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(instructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1 instanceof Instruction.Label l
-				    && i2 instanceof Instruction.Jump j) {
-					final String label = l.name();
-					final String target = j.target();
-					if (!Objects.equals(label, target)) {
-						fromTo.put(label, target);
-					}
+				if (i1 instanceof Instruction.Label(String label, _)
+				    && i2 instanceof Instruction.Jump(String target, _)
+				    && !Objects.equals(label, target)) {
+					fromTo.put(label, target);
 				}
 			}
 		}.process();
@@ -65,10 +62,10 @@ public class InstructionSimplifier {
 				final String newTarget = getNewTarget(target, fromTo);
 				newInstructions.add(InstructionFactory.jump(newTarget));
 			}
-			else if (instruction instanceof Instruction.Branch b) {
-				final String ifTarget = getNewTarget(b.ifTarget(), fromTo);
-				final String elseTarget = getNewTarget(b.elseTarget(), fromTo);
-				newInstructions.add(InstructionFactory.branch(ifTarget, elseTarget));
+			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, Location location)) {
+				final String newIfTarget = getNewTarget(ifTarget, fromTo);
+				final String newElseTarget = getNewTarget(elseTarget, fromTo);
+				newInstructions.add(new Instruction.Branch(newIfTarget, newElseTarget, location));
 			}
 			else {
 				newInstructions.add(instruction);
@@ -109,11 +106,9 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1 instanceof Instruction.BoolLiteral lit
-				    && i2 instanceof Instruction.Branch b) {
-					replace(InstructionFactory.jump(lit.value()
-							                             ? b.ifTarget()
-							                             : b.elseTarget()));
+				if (i1 instanceof Instruction.BoolLiteral(boolean value)
+				    && i2 instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
+					replace(InstructionFactory.jump(value ? ifTarget : elseTarget));
 					removeNext();
 				}
 			}
@@ -124,21 +119,20 @@ public class InstructionSimplifier {
 
 	private static void removeUnusedLabels(List<Instruction> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
-		instructions.removeIf(instruction -> {
-			return instruction instanceof Instruction.Label label
-			       && !usedTargets.contains(label.name());
-		});
+		instructions.removeIf(instruction ->
+				                      instruction instanceof Instruction.Label label
+				                      && !usedTargets.contains(label.name()));
 	}
 
 	private static Set<String> getUsedTargets(List<Instruction> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Jump j) {
-				usedTargets.add(j.target());
+			if (instruction instanceof Instruction.Jump(String target, _)) {
+				usedTargets.add(target);
 			}
-			else if (instruction instanceof Instruction.Branch b) {
-				usedTargets.add(b.ifTarget());
-				usedTargets.add(b.elseTarget());
+			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
+				usedTargets.add(ifTarget);
+				usedTargets.add(elseTarget);
 			}
 		}
 		return usedTargets;

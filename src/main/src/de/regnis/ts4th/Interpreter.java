@@ -53,18 +53,17 @@ public class Interpreter {
 	}
 
 	protected void process(Instruction instruction) {
-		if (instruction instanceof Instruction.IntLiteral literal) {
-			push(literal.value());
+		if (instruction instanceof Instruction.IntLiteral(int value)) {
+			push(value);
 			return;
 		}
 
-		if (instruction instanceof Instruction.BoolLiteral literal) {
-			push(literal.value());
+		if (instruction instanceof Instruction.BoolLiteral(boolean value)) {
+			push(value);
 			return;
 		}
 
-		if (instruction instanceof Instruction.Command command) {
-			final String name = command.name();
+		if (instruction instanceof Instruction.Command(String name, _)) {
 			if (!process(name)) {
 				throw new InterpretingFailedException("Unsupported command " + name);
 			}

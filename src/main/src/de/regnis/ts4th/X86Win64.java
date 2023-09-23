@@ -242,46 +242,44 @@ public class X86Win64 {
 	}
 
 	private void write(AsmIR instruction) throws IOException {
-		if (instruction instanceof AsmIR.Label l) {
-			writeLabel(LABEL_PREFIX + l.name());
+		if (instruction instanceof AsmIR.Label(String name)) {
+			writeLabel(LABEL_PREFIX + name);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.IntLiteral l) {
-			writeComment(STR."literal r\{l.target()}, #\{l.value()}");
-			writeIndented(STR."mov \{getRegName(l.target(), 2)}, \{l.value()}");
+		if (instruction instanceof AsmIR.IntLiteral(int targetReg, int value)) {
+			writeComment(STR."literal r\{targetReg}, #\{value}");
+			writeIndented(STR."mov \{getRegName(targetReg, 2)}, \{value}");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.BoolLiteral l) {
-			writeComment(STR."literal r\{l.target()}, #\{l.value()}");
-			writeIndented(STR."mov \{getRegName(l.target(), 2)}, \{l.value() ? 1 : 0}");
+		if (instruction instanceof AsmIR.BoolLiteral(int targetReg, boolean value)) {
+			writeComment(STR."literal r\{ targetReg }, #\{ value }");
+			writeIndented(STR."mov \{getRegName(targetReg, 2)}, \{ value ? 1 : 0}");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.PtrLiteral l) {
-			writeComment(STR."var r\{l.target()}, @\{l.varName()}");
-			writeIndented(STR."lea \{getRegName(l.target(), 8)}, [\{VAR_PREFIX + l.varIndex()}]");
+		if (instruction instanceof AsmIR.PtrLiteral(int targetReg, int index, String name)) {
+			writeComment(STR."var r\{ targetReg }, @\{ name }");
+			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ VAR_PREFIX + index }]");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.StringLiteral l) {
-			writeComment(STR."literal r\{l.target()}, \"\{l.constantIndex()}");
-			writeIndented(STR."lea \{getRegName(l.target(), 8)}, [\{STRING_PREFIX + l.constantIndex()}]");
+		if (instruction instanceof AsmIR.StringLiteral(int targetReg, int index)) {
+			writeComment(STR."literal r\{ targetReg }, \"\{ index }");
+			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ STRING_PREFIX + index }]");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Jump j) {
-			writeJump(j.condition(), j.target());
+		if (instruction instanceof AsmIR.Jump(AsmIR.Condition condition, String target)) {
+			writeJump(condition, target);
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Push p) {
-			final int reg = p.reg();
-			final int size = p.size();
-			writeComment(STR."push \{reg} (\{size})");
+		if (instruction instanceof AsmIR.Push(int sourceReg, int size)) {
+			writeComment(STR."push \{ sourceReg } (\{size})");
 
-			final String regName = getRegName(reg, size);
+			final String regName = getRegName(sourceReg, size);
 			writeIndented(STR."""
 					              sub \{REG_DSP}, \{size}
 					              mov [\{REG_DSP}], \{regName}
@@ -289,12 +287,10 @@ public class X86Win64 {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Pop p) {
-			final int reg = p.reg();
-			final int size = p.size();
-			writeComment(STR."pop \{reg} (\{size})");
+		if (instruction instanceof AsmIR.Pop(int targetReg, int size)) {
+			writeComment(STR."pop \{ targetReg } (\{size})");
 
-			final String regName = getRegName(reg, size);
+			final String regName = getRegName(targetReg, size);
 			writeIndented(STR."""
 					              mov \{regName}, [\{REG_DSP}]
 					              add \{REG_DSP}, \{size}
@@ -302,26 +298,19 @@ public class X86Win64 {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Move m) {
-			final int size = m.size();
-			writeIndented(STR."mov \{getRegName(m.target(), size)}, \{getRegName(m.source(), size)}");
+		if (instruction instanceof AsmIR.Move(int targetReg, int sourceReg, int size)) {
+			writeIndented(STR."mov \{getRegName(targetReg, size)}, \{getRegName(sourceReg, size)}");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Load l) {
-			final int valueReg = l.valueReg();
-			final int valueSize = l.valueSize();
-			final int pointerReg = l.pointerReg();
+		if (instruction instanceof AsmIR.Load(int valueReg, int pointerReg, int valueSize)) {
 			writeComment(STR."load \{valueReg} (\{valueSize}), @\{pointerReg}");
 
 			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}]");
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Store s) {
-			final int pointerReg = s.pointerReg();
-			final int valueReg = s.valueReg();
-			final int valueSize = s.valueSize();
+		if (instruction instanceof AsmIR.Store(int pointerReg, int valueReg, int valueSize)) {
 			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{valueSize})");
 
 			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}], \{getRegName(valueReg, valueSize)}");
@@ -333,8 +322,8 @@ public class X86Win64 {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.BinCommand c) {
-			writeBinCommand(c.operation(), c.reg1(), c.reg2());
+		if (instruction instanceof AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2)) {
+			writeBinCommand(operation, reg1, reg2);
 			return;
 		}
 
@@ -359,9 +348,9 @@ public class X86Win64 {
 			return;
 		}
 
-		if (instruction instanceof AsmIR.Call c) {
-			writeComment(c.name());
-			writeIndented(STR."call \{LABEL_PREFIX}\{c.name()}");
+		if (instruction instanceof AsmIR.Call(String name)) {
+			writeComment(name);
+			writeIndented(STR."call \{LABEL_PREFIX}\{name}");
 			return;
 		}
 

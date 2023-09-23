@@ -67,8 +67,7 @@ public class Compiler {
 			usedFunctions.add(function);
 
 			for (Instruction instruction : function.instructions()) {
-				if (instruction instanceof Instruction.Command c) {
-					final String command = c.name();
+				if (instruction instanceof Instruction.Command(String command, _)) {
 					if (BuiltinCommands.get(command) == null
 					    && invoked.add(command)) {
 						pending.add(command);

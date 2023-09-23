@@ -25,16 +25,15 @@ public class CfgFunction {
 		Location location = function.locationStart();
 		List<Instruction> blockInstructions = new ArrayList<>();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Label l) {
-				final String label = l.name();
+			if (instruction instanceof Instruction.Label(String label, Location labelLocation)) {
 				if (blockName != null) {
 					ensureLastInstructionIsJumpOrBranch(blockInstructions, label);
-					addBlock(blockName, blockInstructions, location, l.location());
+					addBlock(blockName, blockInstructions, labelLocation, labelLocation);
 					connectBlocks(blockName, label);
 				}
 				blockName = label;
 				blockInstructions = new ArrayList<>();
-				location = l.location();
+				location = labelLocation;
 				continue;
 			}
 
@@ -43,16 +42,16 @@ public class CfgFunction {
 			}
 
 			blockInstructions.add(instruction);
-			if (instruction instanceof Instruction.Jump j) {
-				addBlock(blockName, blockInstructions, location, j.location());
-				connectBlocks(blockName, j.target());
+			if (instruction instanceof Instruction.Jump(String target, Location jLocation)) {
+				addBlock(blockName, blockInstructions, location, jLocation);
+				connectBlocks(blockName, target);
 				blockInstructions = new ArrayList<>();
 				blockName = null;
 			}
-			else if (instruction instanceof Instruction.Branch b) {
-				addBlock(blockName, blockInstructions, location, b.location());
-				connectBlocks(blockName, b.ifTarget());
-				connectBlocks(blockName, b.elseTarget());
+			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, Location bLocation)) {
+				addBlock(blockName, blockInstructions, location, bLocation);
+				connectBlocks(blockName, ifTarget);
+				connectBlocks(blockName, elseTarget);
 				blockInstructions = new ArrayList<>();
 				blockName = null;
 			}
@@ -103,9 +102,9 @@ public class CfgFunction {
 	public void debugPrint() {
 		final List<Instruction> instructions = flatten();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Label l) {
+			if (instruction instanceof Instruction.Label(String label, _)) {
 				System.out.print(instruction);
-				final List<String> predecessors = nameToPredecessors.get(l.name());
+				final List<String> predecessors = nameToPredecessors.get(label);
 				if (predecessors.size() > 0) {
 					System.out.print("   // from: ");
 					System.out.print(Utils.join(predecessors, ", "));

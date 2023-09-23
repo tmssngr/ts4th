@@ -27,9 +27,9 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.Jump j
-				    && i2 instanceof AsmIR.Label l
-				    && Objects.equals(j.target(), l.name())) {
+				if (i1 instanceof AsmIR.Jump(_, String target)
+				    && i2 instanceof AsmIR.Label(String name)
+				    && Objects.equals(target, name)) {
 					remove();
 				}
 			}
@@ -44,10 +44,10 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(instructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.Label l
-				    && i2 instanceof AsmIR.Jump j
-				    && !Objects.equals(l.name(), j.target())) {
-					fromTo.put(l.name(), j.target());
+				if (i1 instanceof AsmIR.Label(String name)
+				    && i2 instanceof AsmIR.Jump(_, String target)
+				    && !Objects.equals(name, target)) {
+					fromTo.put(name, target);
 				}
 			}
 		}.process();
@@ -58,9 +58,8 @@ public class AsmIRSimplifier {
 
 		final List<AsmIR> newInstructions = new ArrayList<>();
 		for (AsmIR instruction : instructions) {
-			if (instruction instanceof AsmIR.Jump j) {
-				final String newTarget = getNewTarget(j.target(), fromTo);
-				final AsmIR.Condition condition = j.condition();
+			if (instruction instanceof AsmIR.Jump(AsmIR.Condition condition, String target)) {
+				final String newTarget = getNewTarget(target, fromTo);
 				newInstructions.add(condition != null
 						                    ? AsmIRFactory.jump(condition, newTarget)
 						                    : AsmIRFactory.jump(newTarget));
@@ -106,17 +105,17 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.Push push
-				    && i2 instanceof AsmIR.Pop pop) {
-					Utils.assertTrue(push.size() == pop.size());
-					if (push.reg() == pop.reg()) {
+				if (i1 instanceof AsmIR.Push(int sourceReg, int sourceSize)
+				    && i2 instanceof AsmIR.Pop(int targetReg, int targetSize)) {
+					Utils.assertTrue(sourceSize == targetSize);
+					if (sourceReg == targetReg) {
 						removeNext();
 						remove();
 						again();
 					}
 					else {
 						removeNext();
-						replace(new AsmIR.Move(pop.reg(), push.reg(), push.size()));
+						replace(new AsmIR.Move(targetReg, sourceReg, sourceSize));
 					}
 				}
 			}
@@ -131,30 +130,30 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i2 instanceof AsmIR.Move m) {
-					if (i1 instanceof AsmIR.IntLiteral l
-					    && m.source() == l.target()) {
-						Utils.assertTrue(m.size() == 2);
+				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, int size)) {
+					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value)
+					    && sourceReg == tmp) {
+						Utils.assertTrue(size == 2);
 						removeNext();
-						replace(new AsmIR.IntLiteral(m.target(), l.value()));
+						replace(new AsmIR.IntLiteral(targetReg, value));
 					}
-					else if (i1 instanceof AsmIR.BoolLiteral l
-					    && m.source() == l.target()) {
-						Utils.assertTrue(m.size() == 1);
+					else if (i1 instanceof AsmIR.BoolLiteral(int tmpReg, boolean value)
+					         && sourceReg == tmpReg) {
+						Utils.assertTrue(size == 1);
 						removeNext();
-						replace(new AsmIR.BoolLiteral(m.target(), l.value()));
+						replace(new AsmIR.BoolLiteral(targetReg, value));
 					}
-					else if (i1 instanceof AsmIR.PtrLiteral l
-					    && m.source() == l.target()) {
-						Utils.assertTrue(m.size() == 8);
+					else if (i1 instanceof AsmIR.PtrLiteral(int tmpReg, int index, String name)
+					         && sourceReg == tmpReg) {
+						Utils.assertTrue(size == 8);
 						removeNext();
-						replace(new AsmIR.PtrLiteral(m.target(), l.varIndex(), l.varName()));
+						replace(new AsmIR.PtrLiteral(targetReg, index, name));
 					}
-					else if (i1 instanceof AsmIR.StringLiteral l
-					    && m.source() == l.target()) {
-						Utils.assertTrue(m.size() == 8);
+					else if (i1 instanceof AsmIR.StringLiteral(int tmpReg, int index)
+					         && sourceReg == tmpReg) {
+						Utils.assertTrue(size == 8);
 						removeNext();
-						replace(new AsmIR.StringLiteral(m.target(), l.constantIndex()));
+						replace(new AsmIR.StringLiteral(targetReg, index));
 					}
 				}
 			}
@@ -165,14 +164,14 @@ public class AsmIRSimplifier {
 
 	private static void removeUnusedLabels(List<AsmIR> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
-		instructions.removeIf(instruction -> instruction instanceof AsmIR.Label l && !usedTargets.contains(l.name()));
+		instructions.removeIf(instruction -> instruction instanceof AsmIR.Label(String name) && !usedTargets.contains(name));
 	}
 
 	private static Set<String> getUsedTargets(List<AsmIR> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (AsmIR instruction : instructions) {
-			if (instruction instanceof AsmIR.Jump j) {
-				usedTargets.add(j.target());
+			if (instruction instanceof AsmIR.Jump(_, String target)) {
+				usedTargets.add(target);
 			}
 		}
 		return usedTargets;

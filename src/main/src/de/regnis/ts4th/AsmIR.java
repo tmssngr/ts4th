@@ -30,52 +30,52 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record IntLiteral(int target, int value) implements AsmIR {
+	record IntLiteral(int targetReg, int value) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r" + target + " = " + value;
+			return "r" + targetReg + " = " + value;
 		}
 	}
 
-	record BoolLiteral(int target, boolean value) implements AsmIR {
+	record BoolLiteral(int targetReg, boolean value) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r" + target + " = " + value;
+			return "r" + targetReg + " = " + value;
 		}
 	}
 
-	record PtrLiteral(int target, int varIndex, String varName) implements AsmIR {
+	record PtrLiteral(int targetReg, int varIndex, String varName) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r" + target + " = var " + varIndex + ":" + varName;
+			return "r" + targetReg + " = var " + varIndex + ":" + varName;
 		}
 	}
 
-	record StringLiteral(int target, int constantIndex) implements AsmIR {
+	record StringLiteral(int targetReg, int constantIndex) implements AsmIR {
 		@Override
 		public String toString() {
-			return "r" + target + " = constant " + constantIndex;
+			return "r" + targetReg + " = constant " + constantIndex;
 		}
 	}
 
-	record Push(int reg, int size) implements AsmIR {
+	record Push(int sourceReg, int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "push r" + reg + " (" + size + ")";
+			return "push r" + sourceReg + " (" + size + ")";
 		}
 	}
 
-	record Pop(int reg, int size) implements AsmIR {
+	record Pop(int targetReg, int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "pop r" + reg + " (" + size + ")";
+			return "pop r" + targetReg + " (" + size + ")";
 		}
 	}
 
-	record Move(int target, int source, int size) implements AsmIR {
+	record Move(int targetReg, int sourceReg, int size) implements AsmIR {
 		@Override
 		public String toString() {
-			return "move " + target + ", " + source + " (" + size + ")";
+			return "move " + targetReg + ", " + sourceReg + " (" + size + ")";
 		}
 	}
 

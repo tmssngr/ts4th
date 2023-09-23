@@ -55,47 +55,46 @@ public class AsmIRConverter {
 	}
 
 	public void process(Instruction instruction) {
-		if (instruction instanceof Instruction.Label label) {
-			output.accept(AsmIRFactory.label(label.name()));
+		if (instruction instanceof Instruction.Label(String name, _)) {
+			output.accept(AsmIRFactory.label(name));
 		}
-		else if (instruction instanceof Instruction.IntLiteral literal) {
-			output.accept(AsmIRFactory.literal(REG_0, literal.value()));
+		else if (instruction instanceof Instruction.IntLiteral(int value)) {
+			output.accept(AsmIRFactory.literal(REG_0, value));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
-		else if (instruction instanceof Instruction.BoolLiteral literal) {
-			output.accept(AsmIRFactory.literal(REG_0, literal.value()));
+		else if (instruction instanceof Instruction.BoolLiteral(boolean value)) {
+			output.accept(AsmIRFactory.literal(REG_0, value));
 			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
-		else if (instruction instanceof Instruction.PtrLiteral literal) {
-			output.accept(AsmIRFactory.ptrLiteral(REG_0, literal.index(), literal.varName()));
+		else if (instruction instanceof Instruction.PtrLiteral(int index, String varName)) {
+			output.accept(AsmIRFactory.ptrLiteral(REG_0, index, varName));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 		}
-		else if (instruction instanceof Instruction.StringLiteral literal) {
-			final String text = literal.value();
-			output.accept(AsmIRFactory.stringLiteral(REG_0, stringLiterals.getConstantIndex(text)));
+		else if (instruction instanceof Instruction.StringLiteral(String value)) {
+			output.accept(AsmIRFactory.stringLiteral(REG_0, stringLiterals.getConstantIndex(value)));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
-			output.accept(AsmIRFactory.literal(REG_0, stringLiterals.getLength(text)));
+			output.accept(AsmIRFactory.literal(REG_0, stringLiterals.getLength(value)));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
-		else if (instruction instanceof Instruction.Jump jump) {
-			output.accept(AsmIRFactory.jump(jump.target()));
+		else if (instruction instanceof Instruction.Jump(String target, _)) {
+			output.accept(AsmIRFactory.jump(target));
 		}
-		else if (instruction instanceof Instruction.Branch branch) {
+		else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
 			output.accept(AsmIRFactory.pop(REG_0, 1));
 			output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0));
-			output.accept(AsmIRFactory.jump(AsmIR.Condition.z, branch.elseTarget()));
-			output.accept(AsmIRFactory.jump(branch.ifTarget()));
+			output.accept(AsmIRFactory.jump(AsmIR.Condition.z, elseTarget));
+			output.accept(AsmIRFactory.jump(ifTarget));
 		}
 		else if (instruction instanceof Instruction.Ret) {
 			output.accept(AsmIRFactory.ret());
 		}
-		else if (instruction instanceof Instruction.Command c) {
-			final BuiltinCommands.Command command = BuiltinCommands.get(c.name());
+		else if (instruction instanceof Instruction.Command(String name, _)) {
+			final BuiltinCommands.Command command = BuiltinCommands.get(name);
 			if (command != null) {
-				command.toIR(c.name(), types, output);
+				command.toIR(name, types, output);
 			}
 			else {
-				output.accept(AsmIRFactory.call(c.name()));
+				output.accept(AsmIRFactory.call(name));
 			}
 		}
 		else {

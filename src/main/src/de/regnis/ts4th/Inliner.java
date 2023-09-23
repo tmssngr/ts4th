@@ -55,11 +55,10 @@ public class Inliner {
 		callStack.add(function.name());
 
 		for (Instruction instruction : function.instructions()) {
-			if (!(instruction instanceof Instruction.Command c)) {
+			if (!(instruction instanceof Instruction.Command(String command, _))) {
 				continue;
 			}
 
-			final String command = c.name();
 			if (BuiltinCommands.get(command) != null) {
 				continue;
 			}
@@ -89,8 +88,7 @@ public class Inliner {
 	private void inline(Function function, boolean skipRet, Consumer<Instruction> consumer) {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Command c) {
-				final String command = c.name();
+			if (instruction instanceof Instruction.Command(String command, Location location)) {
 				if (BuiltinCommands.get(command) == null) {
 					final Function invokedFunction = Objects.requireNonNull(nameToFunction.get(command));
 					if (invokedFunction.isInline()) {
