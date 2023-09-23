@@ -39,7 +39,7 @@ public class BuiltinCommands {
 	public static final String PRINT_CHAR = "printChar";
 	public static final String PRINT_STRING = "printString";
 
-	public static final String ABORT = "abort";
+	public static final String ABORT = "???";
 
 	public static final String IS_LT = "<";
 	public static final String IS_LE = "<=";
