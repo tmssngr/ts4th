@@ -241,6 +241,7 @@ public class AsmIRInterpreter {
 			return;
 		}
 
+		//noinspection PatternVariableHidesField
 		if (instruction instanceof AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2)) {
 			switch (operation) {
 			case add, add_ptr -> setReg(reg1, getRegValue(reg1) + getRegValue(reg2));

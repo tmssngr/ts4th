@@ -55,40 +55,35 @@ public class AsmIRConverter {
 	}
 
 	public void process(Instruction instruction) {
-		if (instruction instanceof Instruction.Label(String name, _)) {
-			output.accept(AsmIRFactory.label(name));
-		}
-		else if (instruction instanceof Instruction.IntLiteral(int value)) {
+		switch (instruction) {
+		case Instruction.Label(String name, _) -> output.accept(AsmIRFactory.label(name));
+		case Instruction.IntLiteral(int value) -> {
 			output.accept(AsmIRFactory.literal(REG_0, value));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
-		else if (instruction instanceof Instruction.BoolLiteral(boolean value)) {
+		case Instruction.BoolLiteral(boolean value) -> {
 			output.accept(AsmIRFactory.literal(REG_0, value));
 			output.accept(AsmIRFactory.push(REG_0, 1));
 		}
-		else if (instruction instanceof Instruction.PtrLiteral(int index, String varName)) {
+		case Instruction.PtrLiteral(int index, String varName) -> {
 			output.accept(AsmIRFactory.ptrLiteral(REG_0, index, varName));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 		}
-		else if (instruction instanceof Instruction.StringLiteral(String value)) {
+		case Instruction.StringLiteral(String value) -> {
 			output.accept(AsmIRFactory.stringLiteral(REG_0, stringLiterals.getConstantIndex(value)));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 			output.accept(AsmIRFactory.literal(REG_0, stringLiterals.getLength(value)));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
-		else if (instruction instanceof Instruction.Jump(String target, _)) {
-			output.accept(AsmIRFactory.jump(target));
-		}
-		else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
+		case Instruction.Jump(String target, _) -> output.accept(AsmIRFactory.jump(target));
+		case Instruction.Branch(String ifTarget, String elseTarget, _) -> {
 			output.accept(AsmIRFactory.pop(REG_0, 1));
 			output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0));
 			output.accept(AsmIRFactory.jump(AsmIR.Condition.z, elseTarget));
 			output.accept(AsmIRFactory.jump(ifTarget));
 		}
-		else if (instruction instanceof Instruction.Ret) {
-			output.accept(AsmIRFactory.ret());
-		}
-		else if (instruction instanceof Instruction.Command(String name, _)) {
+		case Instruction.Ret _ -> output.accept(AsmIRFactory.ret());
+		case Instruction.Command(String name, _) -> {
 			final BuiltinCommands.Command command = BuiltinCommands.get(name);
 			if (command != null) {
 				command.toIR(name, types, output);
@@ -97,8 +92,6 @@ public class AsmIRConverter {
 				output.accept(AsmIRFactory.call(name));
 			}
 		}
-		else {
-			throw new IllegalStateException("not implemented " + instruction);
 		}
 	}
 }
