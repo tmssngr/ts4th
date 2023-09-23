@@ -36,10 +36,6 @@ public class BuiltinCommands {
 	public static final String STORE8 = "!8";
 
 	public static final String PRINT = "print";
-	public static final String PRINT_CHAR = "printChar";
-	public static final String PRINT_STRING = "printString";
-
-	public static final String ABORT = "???";
 
 	public static final String IS_LT = "<";
 	public static final String IS_LE = "<=";
@@ -55,7 +51,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException(location, "drop (a --) can't operate on empty stack");
+					throw new InvalidTypeException(location, name + " (a --) can't operate on empty stack");
 				}
 				return input.prev();
 			}
@@ -70,7 +66,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException(location, "dup (a -- a a) can't operate on empty stack");
+					throw new InvalidTypeException(location, name + " (a -- a a) can't operate on empty stack");
 				}
 				return input.append(input.type());
 			}
@@ -87,7 +83,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException(location, "dup2 (a b -- a b a b) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, name + " (a b -- a b a b) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -112,7 +108,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException(location, "swap (a b -- b a) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, name + " (a b -- b a) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -135,7 +131,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 2) {
-					throw new InvalidTypeException(location, "over (a, b -- a, b, a) requires 2 elements on the stack");
+					throw new InvalidTypeException(location, name + " (a, b -- a, b, a) requires 2 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -158,7 +154,7 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.size() < 3) {
-					throw new InvalidTypeException(location, "rot (a b c -- b c a) requires 3 elements on the stack");
+					throw new InvalidTypeException(location, name + " (a b c -- b c a) requires 3 elements on the stack");
 				}
 
 				final TypeList parent = input.prev();
@@ -240,7 +236,17 @@ public class BuiltinCommands {
 		nameToCommand.put(AND, new BinaryCommand(and));
 		nameToCommand.put(OR, new BinaryCommand(or));
 		nameToCommand.put(XOR, new BinaryCommand(xor));
-		nameToCommand.put(SHL, new BinaryCommand(shl) {
+		nameToCommand.put(SHL, new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
+				if (output == null) {
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
+				}
+
+				return output;
+			}
+
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_0, 2));
@@ -249,7 +255,17 @@ public class BuiltinCommands {
 				output.accept(AsmIRFactory.push(REG_1, 2));
 			}
 		});
-		nameToCommand.put(SHR, new BinaryCommand(shr) {
+		nameToCommand.put(SHR, new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
+				if (output == null) {
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
+				}
+
+				return output;
+			}
+
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_0, 2));
@@ -323,7 +339,7 @@ public class BuiltinCommands {
 			}
 		});
 
-		nameToCommand.put(PRINT_CHAR, new Command() {
+		nameToCommand.put("printChar", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
@@ -349,12 +365,12 @@ public class BuiltinCommands {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
-					throw new InvalidTypeException(location, "print (a --) can't operate on empty stack");
+					throw new InvalidTypeException(location, name + " (a --) can't operate on empty stack");
 				}
 
 				final Type type = input.type();
 				if (type != Type.Int && type != Type.Ptr) {
-					throw new InvalidTypeException(location, "print (a --) only can work on `int` and `ptr`");
+					throw new InvalidTypeException(location, name + " (a --) only can work on `int` and `ptr`");
 				}
 
 				return input.prev();
@@ -367,7 +383,7 @@ public class BuiltinCommands {
 				output.accept(AsmIRFactory.print(size));
 			}
 		});
-		nameToCommand.put(PRINT_STRING, new Command() {
+		nameToCommand.put("printString", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				TypeList expected = TypeList.INT.append(Type.Ptr);
@@ -398,7 +414,7 @@ public class BuiltinCommands {
 				output.accept(AsmIRFactory.printString(REG_1, REG_0));
 			}
 		});
-		nameToCommand.put(ABORT, new Command() {
+		nameToCommand.put("???", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				throw new InvalidTypeException(location, "Types " + input);
@@ -431,45 +447,20 @@ public class BuiltinCommands {
 		};
 	}
 
-	public static class Command {
-		protected Command() {
-		}
+	public interface Command {
+		TypeList process(String name, Location location, TypeList input);
 
-		public TypeList process(String name, Location location, TypeList input) {
-			throw new IllegalStateException("not implemented yet");
-		}
-
-		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			throw new IllegalStateException("not implemented yet");
-		}
+		void toIR(String name, TypeList types, Consumer<AsmIR> output);
 	}
 
-	private static class DefaultCommand extends Command {
-		public final TypesInOut typesInOut;
-
-		protected DefaultCommand(TypeList in, TypeList out) {
-			this.typesInOut = new TypesInOut(in, out);
-		}
-
+	private record BinaryCommand(AsmIR.BinOperation operation) implements Command {
 		public TypeList process(String name, Location location, TypeList input) {
-			final TypeList output = input.transform(typesInOut.in(), typesInOut.out());
+			final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
 			if (output == null) {
-				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesInOut.in() + " but got " + input);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
 			}
 
 			return output;
-		}
-
-		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			throw new IllegalStateException("not implemented yet " + name);
-		}
-	}
-
-	private static class BinaryCommand extends Command {
-		private final AsmIR.BinOperation operation;
-
-		public BinaryCommand(AsmIR.BinOperation operation) {
-			this.operation = operation;
 		}
 
 		@Override
@@ -479,22 +470,16 @@ public class BuiltinCommands {
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
+	}
 
+	private record RelationalCommand(AsmIR.BinOperation operation) implements Command {
 		public TypeList process(String name, Location location, TypeList input) {
-			final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
+			final TypeList output = input.transform(TypeList.INT2, TypeList.BOOL);
 			if (output == null) {
 				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
 			}
 
 			return output;
-		}
-	}
-
-	private final static class RelationalCommand extends Command {
-		private final AsmIR.BinOperation operation;
-
-		public RelationalCommand(AsmIR.BinOperation operation) {
-			this.operation = operation;
 		}
 
 		@Override
@@ -503,15 +488,6 @@ public class BuiltinCommands {
 			output.accept(AsmIRFactory.pop(REG_0, 2));
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
 			output.accept(AsmIRFactory.push(REG_0, 1));
-		}
-
-		public TypeList process(String name, Location location, TypeList input) {
-			final TypeList output = input.transform(TypeList.INT2, TypeList.BOOL);
-			if (output == null) {
-				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
-			}
-
-			return output;
 		}
 	}
 }
