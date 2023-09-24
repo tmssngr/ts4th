@@ -68,27 +68,10 @@ public class TypeCheckerImpl implements TypeChecker {
 	public TypeCheckerImpl() {
 	}
 
-	public void add(String name, TypesInOut typesInOut) {
-		add(name, typesInOut.in(), typesInOut.out());
-	}
-
-	public void add(String name, TypeList in, TypeList out) {
-		final TypesInOut inOut = nameToDef.get(name);
-		if (inOut != null) {
-			throw new IllegalStateException("Duplicate definition of function " + name);
-		}
-
-		if (BuiltinCommands.get(name) != null) {
-			throw new IllegalStateException("Can't override built-in function " + name);
-		}
-
-		nameToDef.put(name, new TypesInOut(in, out));
-	}
-
 	public TypeList checkType(Instruction instruction, TypeList input) {
 		if (instruction instanceof Instruction.Label
-		|| instruction instanceof Instruction.Jump
-		|| instruction instanceof Instruction.Ret) {
+		    || instruction instanceof Instruction.Jump
+		    || instruction instanceof Instruction.Ret) {
 			return input;
 		}
 
@@ -135,6 +118,23 @@ public class TypeCheckerImpl implements TypeChecker {
 		}
 
 		throw new IllegalStateException();
+	}
+
+	public void add(String name, TypesInOut typesInOut) {
+		add(name, typesInOut.in(), typesInOut.out());
+	}
+
+	public void add(String name, TypeList in, TypeList out) {
+		final TypesInOut inOut = nameToDef.get(name);
+		if (inOut != null) {
+			throw new IllegalStateException("Duplicate definition of function " + name);
+		}
+
+		if (BuiltinCommands.get(name) != null) {
+			throw new IllegalStateException("Can't override built-in function " + name);
+		}
+
+		nameToDef.put(name, new TypesInOut(in, out));
 	}
 
 	private static Map<String, Integer> determineJumpTargets(List<Instruction> instructions) {
