@@ -69,55 +69,39 @@ public class TypeCheckerImpl implements TypeChecker {
 	}
 
 	public TypeList checkType(Instruction instruction, TypeList input) {
-		if (instruction instanceof Instruction.Label
-		    || instruction instanceof Instruction.Jump
-		    || instruction instanceof Instruction.Ret) {
-			return input;
-		}
-
-		if (instruction instanceof Instruction.IntLiteral) {
-			return input.append(Type.Int);
-		}
-
-		if (instruction instanceof Instruction.BoolLiteral) {
-			return input.append(Type.Bool);
-		}
-
-		if (instruction instanceof Instruction.PtrLiteral) {
-			return input.append(Type.Ptr);
-		}
-
-		if (instruction instanceof Instruction.StringLiteral) {
-			return input.append(Type.Ptr).append(Type.Int);
-		}
-
-		if (instruction instanceof Instruction.Branch(_, _, Location location)) {
-			final TypeList output = input.transform(TypeList.BOOL, TypeList.EMPTY);
-			if (output == null) {
-				throw new InvalidTypeException(location, "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
-			}
-			return output;
-		}
-
-		if (instruction instanceof Instruction.Command(String name, Location location)) {
-			final TypesInOut types = nameToDef.get(name);
-			if (types != null) {
-				final TypeList output = input.transform(types.in(), types.out());
+		return switch (instruction) {
+			case Instruction.Label _,
+					Instruction.Jump _,
+					Instruction.Ret _ -> input;
+			case Instruction.IntLiteral _ -> input.append(Type.Int);
+			case Instruction.BoolLiteral _ -> input.append(Type.Bool);
+			case Instruction.PtrLiteral _ -> input.append(Type.Ptr);
+			case Instruction.StringLiteral _ -> input.append(Type.Ptr).append(Type.Int);
+			case Instruction.Branch(_, _, Location location) -> {
+				final TypeList output = input.transform(TypeList.BOOL, TypeList.EMPTY);
 				if (output == null) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
+					throw new InvalidTypeException(location, "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
 				}
-				return output;
+				yield output;
 			}
+			case Instruction.Command(String name, Location location) -> {
+				final TypesInOut types = nameToDef.get(name);
+				if (types != null) {
+					final TypeList output = input.transform(types.in(), types.out());
+					if (output == null) {
+						throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
+					}
+					yield output;
+				}
 
-			final BuiltinCommands.Command command = BuiltinCommands.get(name);
-			if (command == null) {
-				throw new InvalidTypeException(location, "Unknown command " + name);
+				final BuiltinCommands.Command command = BuiltinCommands.get(name);
+				if (command == null) {
+					throw new InvalidTypeException(location, "Unknown command " + name);
+				}
+
+				yield command.process(name, location, input);
 			}
-
-			return command.process(name, location, input);
-		}
-
-		throw new IllegalStateException();
+		};
 	}
 
 	public void add(String name, TypesInOut typesInOut) {
