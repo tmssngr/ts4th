@@ -1,9 +1,9 @@
 package de.regnis.ts4th;
 
-import org.jetbrains.annotations.*;
-
 import java.util.*;
 import java.util.function.*;
+
+import org.jetbrains.annotations.*;
 
 import static de.regnis.ts4th.AsmIR.BinOperation.boolTest;
 
@@ -19,26 +19,21 @@ public class AsmIRConverter {
 
 	@NotNull
 	public static AsmIRFunction convertToIR(Function function, TypeChecker typeChecker, AsmIRStringLiterals stringLiterals) {
-		final CfgFunction cfgFunction = new CfgFunction(function);
-		cfgFunction.checkTypes(typeChecker);
-
-		final List<Instruction> instructions = cfgFunction.flatten();
-		final List<Instruction> simplifiedInstructions = InstructionSimplifier.simplify(instructions);
-
-		final TypeList[] types = TypeCheckerImpl.determineTypes(simplifiedInstructions, function.typesInOut().in(), typeChecker);
+		final List<Instruction> instructions = InstructionSimplifier.simplify(function.instructions());
 
 		final List<AsmIR> asmInstructions = new ArrayList<>();
 		final AsmIRConverter converter = new AsmIRConverter(stringLiterals, asmInstructions::add);
-		for (int i = 0; i < simplifiedInstructions.size(); i++) {
-			final Instruction instruction = simplifiedInstructions.get(i);
-			converter.types = types[i];
-			if (converter.types != null) {
-				converter.process(instruction);
+
+		InstructionTypeEvaluator.iterate(instructions, function.typesInOut().in(), (instruction, types) -> {
+			if (instruction instanceof Instruction.Ret) {
+				final TypeList expectedOut = function.typesInOut().out();
+				if (!expectedOut.equals(types)) {
+					throw new InvalidTypeException(function.locationEnd(), "Function `" + function.name() + "` returns " + types + " but is expected to return " + expectedOut);
+				}
 			}
-			else {
-				System.out.println("Skipping instruction " + i + ": " + instruction);
-			}
-		}
+			converter.process(instruction, types);
+			return typeChecker.checkType(instruction, types);
+		});
 
 		final List<AsmIR> irInstructions = AsmIRSimplifier.simplify(asmInstructions);
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);
@@ -47,14 +42,12 @@ public class AsmIRConverter {
 	private final AsmIRStringLiterals stringLiterals;
 	private final Consumer<AsmIR> output;
 
-	private TypeList types;
-
 	public AsmIRConverter(@NotNull AsmIRStringLiterals stringLiterals, @NotNull Consumer<AsmIR> output) {
 		this.stringLiterals = stringLiterals;
 		this.output = output;
 	}
 
-	public void process(Instruction instruction) {
+	public void process(Instruction instruction, TypeList types) {
 		switch (instruction) {
 		case Instruction.Label(String name, _) -> output.accept(AsmIRFactory.label(name));
 		case Instruction.IntLiteral(int value) -> {

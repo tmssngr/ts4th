@@ -7,62 +7,6 @@ import java.util.*;
  */
 public class TypeCheckerImpl implements TypeChecker {
 
-	public static TypeList[] determineTypes(List<Instruction> instructions, TypeList input, TypeChecker typeChecker) {
-		final TypeList[] types = new TypeList[instructions.size()];
-		if (types.length == 0) {
-			return types;
-		}
-
-		final Map<String, Integer> labelToIndex = determineJumpTargets(instructions);
-
-		final Deque<Integer> pending = new ArrayDeque<>();
-		pending.add(0);
-		types[0] = input;
-
-		while (!pending.isEmpty()) {
-			final int index = pending.removeFirst();
-			final Instruction instruction = instructions.get(index);
-			input = Objects.requireNonNull(types[index]);
-			final TypeList output = typeChecker.checkType(instruction, input);
-			final List<String> targets;
-			if (instruction instanceof Instruction.Jump(String target, _)) {
-				targets = List.of(target);
-			}
-			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, _)) {
-				targets = List.of(ifTarget, elseTarget);
-			}
-			else {
-				if (index + 1 == types.length) {
-					continue;
-				}
-
-				types[index + 1] = output;
-				pending.add(index + 1);
-				continue;
-			}
-
-			for (String target : targets) {
-				final Integer targetIndex = labelToIndex.get(target);
-				if (targetIndex == null) {
-					throw new IllegalStateException("Target not found: " + target);
-				}
-
-				final TypeList existingTargetInput = types[targetIndex];
-				if (existingTargetInput == null) {
-					types[targetIndex] = output;
-					pending.add(targetIndex);
-					continue;
-				}
-
-				if (!existingTargetInput.equals(output)) {
-					throw new IllegalStateException("Different types reach target " + target + ": (" + output + ") vs. (" + existingTargetInput + ")");
-				}
-			}
-		}
-
-		return types;
-	}
-
 	private final Map<String, TypesInOut> nameToDef = new HashMap<>();
 
 	public TypeCheckerImpl() {
@@ -119,17 +63,5 @@ public class TypeCheckerImpl implements TypeChecker {
 		}
 
 		nameToDef.put(name, new TypesInOut(in, out));
-	}
-
-	private static Map<String, Integer> determineJumpTargets(List<Instruction> instructions) {
-		final Map<String, Integer> labelToIndex = new HashMap<>();
-		for (int i = 0; i < instructions.size(); i++) {
-			final Instruction instruction = instructions.get(i);
-			if (instruction instanceof Instruction.Label(String name, _)) {
-				labelToIndex.put(name, i);
-			}
-		}
-
-		return labelToIndex;
 	}
 }

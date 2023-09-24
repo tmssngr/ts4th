@@ -119,43 +119,4 @@ public class TypeCheckerImplTest {
 				label("endloop-2")
 		))).checkTypes(typeChecker);
 	}
-
-	@Test
-	public void testDetermineTypes() {
-		Assert.assertArrayEquals(new TypeList[]{
-				                         TypeList.INT, // start:
-				                         TypeList.INT, // 1
-				                         TypeList.INT2, // +
-				                         TypeList.INT, // dup
-				                         TypeList.INT2, // 10
-				                         TypeList.INT3, // <
-				                         TypeList.INT.append(Type.Bool), // branch
-				                         TypeList.INT // end:
-		                         },
-		                         TypeCheckerImpl.determineTypes(List.of(
-				                         label("start"),
-				                         literal(1),
-				                         add(),
-				                         dup(),
-				                         literal(10),
-				                         isLT(),
-				                         branch("start", "end"),
-				                         label("end")
-		                         ), TypeList.INT, new TypeCheckerImpl()));
-
-		Assert.assertArrayEquals(new TypeList[]{
-				                         TypeList.EMPTY, // jump skip
-				                         null, // 1
-				                         null, // +
-				                         TypeList.EMPTY, // skip:
-				                         TypeList.EMPTY // 3
-		                         },
-		                         TypeCheckerImpl.determineTypes(List.of(
-				                         jump("skip"),
-				                         literal(1),
-				                         add(),
-				                         label("skip"),
-				                         literal(3)
-		                         ), TypeList.EMPTY, new TypeCheckerImpl()));
-	}
 }
