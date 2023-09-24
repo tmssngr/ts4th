@@ -1,13 +1,5 @@
 const %0: 68 65 6c 6c 6f 20 77 6f 72 6c 64 00
 
-main:
-	r0 = constant 0
-	push r0 (8)
-	r0 = 12
-	call strlen
-	pop r0 (2)
-	printInt r0(2)
-	ret
 strlen:
 	pop r0 (8)
 	r1 = 0
@@ -37,4 +29,12 @@ while_1:
 	jump while_1
 endwhile_1:
 	pop r0 (8)
+	ret
+main:
+	r0 = constant 0
+	push r0 (8)
+	r0 = 12
+	call strlen
+	pop r0 (2)
+	printInt r0(2)
 	ret

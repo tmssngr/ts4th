@@ -32,14 +32,17 @@ public class Compiler {
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
 		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
-		final List<Function> usedFunctions = getUsedFunctions(nameToFunction);
+		final Function main = nameToFunction.get("main");
+		if (main == null) {
+			throw new CompilerException("no `main`-function found");
+		}
 
-		for (Function function : usedFunctions) {
+		for (Function function : program.functions()) {
 			final CfgFunction cfgFunction = new CfgFunction(function);
 			cfgFunction.checkTypes(typeChecker);
 		}
 
-		final List<Function> inlinedFunctions = Inliner.process(usedFunctions);
+		final List<Function> inlinedFunctions = Inliner.process(program.functions());
 
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
@@ -49,36 +52,6 @@ public class Compiler {
 		}
 
 		return new AsmIRProgram(processedFunctions, stringLiterals.getConstants(), program.vars());
-	}
-
-	private static List<Function> getUsedFunctions(NameToFunction nameToFunction) {
-		final List<Function> usedFunctions = new ArrayList<>();
-
-		final Set<String> invoked = new HashSet<>();
-		final Deque<String> pending = new ArrayDeque<>();
-		pending.add("main");
-		invoked.add("main");
-
-		while (!pending.isEmpty()) {
-			final String name = pending.removeFirst();
-			final Function function = nameToFunction.get(name);
-			if (function == null) {
-				throw new CompilerException("no function `" + name + "` found");
-			}
-
-			usedFunctions.add(function);
-
-			for (Instruction instruction : function.instructions()) {
-				if (instruction instanceof Instruction.Command(String command, _)) {
-					if (BuiltinCommands.get(command) == null
-					    && invoked.add(command)) {
-						pending.add(command);
-					}
-				}
-			}
-		}
-
-		return usedFunctions;
 	}
 
 	private static void writeAsmFile(Path asmFile, AsmIRProgram program) throws IOException {

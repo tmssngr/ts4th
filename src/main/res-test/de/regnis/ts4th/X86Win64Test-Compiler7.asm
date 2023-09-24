@@ -14,38 +14,6 @@ start:
         invoke ExitProcess, 0
 
 
-        ; -- proc main --
-tsf_main:
-        ; -- literal r0, "0 --
-        lea rcx, [string_0]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
-        ; -- literal r0, #12 --
-        mov cx, 12
-        ; -- strlen --
-        call tsf_strlen
-        ; -- pop 0 (2) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- printInt r0(2) --
-        movsx rcx, cx
-        test   rcx, rcx
-        jns    .1
-        neg    rcx
-        push   rcx
-          mov    cl, '-'
-          call   tsfbi_printChar
-        pop    rcx
-.1:
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_printChar
-        add  rsp, 8
-        ; -- ret --
-        ret
-
         ; -- proc strlen --
 tsf_strlen:
         ; -- pop 0 (8) --
@@ -116,6 +84,38 @@ tsf_endwhile_1:
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
+        ; -- ret --
+        ret
+
+        ; -- proc main --
+tsf_main:
+        ; -- literal r0, "0 --
+        lea rcx, [string_0]
+        ; -- push 0 (8) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal r0, #12 --
+        mov cx, 12
+        ; -- strlen --
+        call tsf_strlen
+        ; -- pop 0 (2) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- printInt r0(2) --
+        movsx rcx, cx
+        test   rcx, rcx
+        jns    .1
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_printChar
+        pop    rcx
+.1:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_printChar
+        add  rsp, 8
         ; -- ret --
         ret
 
