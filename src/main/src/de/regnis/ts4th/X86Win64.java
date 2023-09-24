@@ -243,41 +243,30 @@ public class X86Win64 {
 	}
 
 	private void write(AsmIR instruction) throws IOException {
-		if (instruction instanceof AsmIR.Label(String name)) {
+		switch (instruction) {
+		case AsmIR.Label(String name) -> {
 			writeLabel(LABEL_PREFIX + name);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.IntLiteral(int targetReg, int value)) {
+		case AsmIR.IntLiteral(int targetReg, int value) -> {
 			writeComment(STR."literal r\{targetReg}, #\{value}");
 			writeIndented(STR."mov \{getRegName(targetReg, 2)}, \{value}");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.BoolLiteral(int targetReg, boolean value)) {
+		case  AsmIR.BoolLiteral(int targetReg, boolean value) -> {
 			writeComment(STR."literal r\{ targetReg }, #\{ value }");
 			writeIndented(STR."mov \{getRegName(targetReg, 2)}, \{ value ? 1 : 0}");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.PtrLiteral(int targetReg, int index, String name)) {
+		case AsmIR.PtrLiteral(int targetReg, int index, String name) -> {
 			writeComment(STR."var r\{ targetReg }, @\{ name }");
 			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ VAR_PREFIX + index }]");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.StringLiteral(int targetReg, int index)) {
+		case  AsmIR.StringLiteral(int targetReg, int index) -> {
 			writeComment(STR."literal r\{ targetReg }, \"\{ index }");
 			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ STRING_PREFIX + index }]");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Jump(AsmIR.Condition condition, String target)) {
+		case AsmIR.Jump(AsmIR.Condition condition, String target) -> {
 			writeJump(condition, target);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Push(int sourceReg, int size)) {
+		case AsmIR.Push(int sourceReg, int size) -> {
 			writeComment(STR."push \{ sourceReg } (\{size})");
 
 			final String regName = getRegName(sourceReg, size);
@@ -285,10 +274,8 @@ public class X86Win64 {
 					              sub \{REG_DSP}, \{size}
 					              mov [\{REG_DSP}], \{regName}
 					              """);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Pop(int targetReg, int size)) {
+		case AsmIR.Pop(int targetReg, int size) -> {
 			writeComment(STR."pop \{ targetReg } (\{size})");
 
 			final String regName = getRegName(targetReg, size);
@@ -296,66 +283,44 @@ public class X86Win64 {
 					              mov \{regName}, [\{REG_DSP}]
 					              add \{REG_DSP}, \{size}
 					              """);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Move(int targetReg, int sourceReg, int size)) {
+		case AsmIR.Move(int targetReg, int sourceReg, int size) -> {
 			writeIndented(STR."mov \{getRegName(targetReg, size)}, \{getRegName(sourceReg, size)}");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Load(int valueReg, int pointerReg, int valueSize)) {
+		case AsmIR.Load(int valueReg, int pointerReg, int valueSize) -> {
 			writeComment(STR."load \{valueReg} (\{valueSize}), @\{pointerReg}");
 
 			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}]");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Store(int pointerReg, int valueReg, int valueSize)) {
+		case AsmIR.Store(int pointerReg, int valueReg, int valueSize) -> {
 			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{valueSize})");
 
 			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}], \{getRegName(valueReg, valueSize)}");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Ret) {
+		case AsmIR.Ret() -> {
 			writeRet();
-			return;
 		}
-
-		if (instruction instanceof AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2)) {
+		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2) -> {
 			writeBinCommand(operation, reg1, reg2);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.PrintInt p) {
+		case AsmIR.PrintInt p -> {
 			writePrintInt(p);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.PrintChar p) {
+		case AsmIR.PrintChar p -> {
 			writePrintChar(p);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.PrintString p) {
+		case AsmIR.PrintString p -> {
 			writePrintString(p);
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Mem) {
+		case AsmIR.Mem() -> {
 			writeComment("mem");
 			writeIndented(STR."lea \{getRegName(AsmIRConverter.REG_0, 8)}, [mem]");
-			return;
 		}
-
-		if (instruction instanceof AsmIR.Call(String name)) {
+		case AsmIR.Call(String name) -> {
 			writeComment(name);
 			writeIndented(STR."call \{LABEL_PREFIX}\{name}");
-			return;
 		}
-
-		throw new IllegalStateException(STR."not implemented yet \{instruction}");
+		}
 	}
 
 	private void write(String text) throws IOException {
