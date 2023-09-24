@@ -2,6 +2,7 @@ package de.regnis.ts4th;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.jetbrains.annotations.*;
 
@@ -65,13 +66,13 @@ public class X86Win64 {
 		writeUintPrint();
 		write(".end start");
 
-		final List<byte[]> constants = program.stringLiterals().getConstants();
-		if (constants.size() > 0) {
+		final List<Supplier<byte[]>> stringLiterals = program.stringLiterals();
+		if (stringLiterals.size() > 0) {
 			write("""
 					      ; string constants
 					      section '.data' data readable""");
-			for (int i = 0; i < constants.size(); i++) {
-				final String encoded = encode(constants.get(i));
+			for (int i = 0; i < stringLiterals.size(); i++) {
+				final String encoded = encode(stringLiterals.get(i).get());
 				writeIndented(STRING_PREFIX + i + " db " + encoded);
 			}
 		}

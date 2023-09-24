@@ -3,6 +3,7 @@ package de.regnis.ts4th;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.junit.*;
 
@@ -13,7 +14,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testSimple() throws IOException {
-		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
+		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final AsmIRProgram program = new AsmIRProgram(List.of(
 				new AsmIRFunction("main", stringLiterals, List.of(
 						AsmIRFactory.call("subr"),
@@ -22,7 +23,7 @@ public class X86Win64Test extends AbstractFileTest {
 				new AsmIRFunction("subr", stringLiterals, List.of(
 						AsmIRFactory.ret()
 				))
-		), stringLiterals, List.of());
+		), stringLiterals.getConstants(), List.of());
 
 		writeX86(program);
 	}
@@ -270,11 +271,10 @@ public class X86Win64Test extends AbstractFileTest {
 		}
 	}
 
-	private void writeIrConstants(AsmIRStringLiterals stringLiterals, BufferedWriter writer) throws IOException {
-		List<byte[]> constants = stringLiterals.getConstants();
-		for (int i = 0; i < constants.size(); i++) {
+	private void writeIrConstants(List<Supplier<byte[]>> stringLiterals, BufferedWriter writer) throws IOException {
+		for (int i = 0; i < stringLiterals.size(); i++) {
 			writer.write("const %" + i + ":");
-			final byte[] bytes = constants.get(i);
+			final byte[] bytes = stringLiterals.get(i).get();
 			for (byte value : bytes) {
 				writer.write(" ");
 				writer.write(Utils.toHex(value, 2));
@@ -282,7 +282,7 @@ public class X86Win64Test extends AbstractFileTest {
 			writer.newLine();
 		}
 
-		if (constants.size() > 0) {
+		if (stringLiterals.size() > 0) {
 			writer.newLine();
 		}
 	}

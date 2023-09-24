@@ -39,14 +39,14 @@ public class Compiler {
 
 		final List<Function> inlinedFunctions = Inliner.process(usedFunctions);
 
-		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
+		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
 		for (Function function : inlinedFunctions) {
 			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
 			processedFunctions.add(irFunction);
 		}
 
-		return new AsmIRProgram(processedFunctions, stringLiterals, program.vars());
+		return new AsmIRProgram(processedFunctions, stringLiterals.getConstants(), program.vars());
 	}
 
 	private static List<Function> getUsedFunctions(Program program) {

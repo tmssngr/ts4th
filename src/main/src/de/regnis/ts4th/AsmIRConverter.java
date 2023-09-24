@@ -69,10 +69,11 @@ public class AsmIRConverter {
 			output.accept(AsmIRFactory.ptrLiteral(REG_0, index, varName));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
 		}
-		case Instruction.StringLiteral(String value) -> {
-			output.accept(AsmIRFactory.stringLiteral(REG_0, stringLiterals.getConstantIndex(value)));
+		case Instruction.StringLiteral(String text) -> {
+			final AsmIRStringLiterals.Entry entry = stringLiterals.addEntry(text);
+			output.accept(AsmIRFactory.stringLiteral(REG_0, entry.index()));
 			output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
-			output.accept(AsmIRFactory.literal(REG_0, stringLiterals.getLength(value)));
+			output.accept(AsmIRFactory.literal(REG_0, entry.length()));
 			output.accept(AsmIRFactory.push(REG_0, 2));
 		}
 		case Instruction.Jump(String target, _) -> output.accept(AsmIRFactory.jump(target));

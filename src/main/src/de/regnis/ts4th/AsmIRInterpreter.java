@@ -3,6 +3,7 @@ package de.regnis.ts4th;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.jetbrains.annotations.*;
 
@@ -18,7 +19,7 @@ public class AsmIRInterpreter {
 		final Program program = Program.fromDeclarations(declarations);
 		final TypeChecker typeChecker = createTypeChecker(program);
 
-		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
+		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIR> programInstructions = new ArrayList<>();
 		int startIp = 0;
 		for (Function function : program.functions()) {
@@ -45,7 +46,7 @@ public class AsmIRInterpreter {
 
 		final TypeChecker typeChecker = createTypeChecker(program);
 
-		final AsmIRStringLiterals stringLiterals = new AsmIRStringLiterals();
+		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIR> programInstructions = new ArrayList<>();
 		int startIp = 0;
 		for (Function function : program.functions()) {
@@ -75,7 +76,7 @@ public class AsmIRInterpreter {
 	private boolean flagZ;
 	private int ip;
 
-	public AsmIRInterpreter(List<AsmIR> instructions, AsmIRStringLiterals stringLiterals, int startIp) {
+	public AsmIRInterpreter(List<AsmIR> instructions, AsmIRStringLiteralsImpl stringLiterals, int startIp) {
 		this.instructions = instructions;
 		this.startIp = startIp;
 		int index = 0;
@@ -88,10 +89,10 @@ public class AsmIRInterpreter {
 			index++;
 		}
 
-		final List<byte[]> constants = stringLiterals.getConstants();
+		final List<Supplier<byte[]>> constants = stringLiterals.getConstants();
 		for (int i = 0; i < constants.size(); i++) {
 			stringIndexToMem.put(i, mem);
-			for (byte b : constants.get(i)) {
+			for (byte b : constants.get(i).get()) {
 				memAddressToValue.put(mem++, (int)b);
 			}
 		}
