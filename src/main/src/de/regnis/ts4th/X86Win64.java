@@ -303,14 +303,14 @@ public class X86Win64 {
 		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2) -> {
 			writeBinCommand(operation, reg1, reg2);
 		}
-		case AsmIR.PrintInt p -> {
-			writePrintInt(p);
+		case AsmIR.PrintInt(int size) -> {
+			writePrintInt(size);
 		}
-		case AsmIR.PrintChar p -> {
-			writePrintChar(p);
+		case AsmIR.PrintChar() -> {
+			writePrintChar();
 		}
-		case AsmIR.PrintString p -> {
-			writePrintString(p);
+		case AsmIR.PrintString(int ptrReg, int sizeReg) -> {
+			writePrintString(ptrReg, sizeReg);
 		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");
@@ -498,10 +498,9 @@ public class X86Win64 {
 		}
 	}
 
-	private void writePrintInt(AsmIR.PrintInt c) throws IOException {
-		writeComment(c.toString());
+	private void writePrintInt(int size) throws IOException {
+		writeComment("printInt r0(" + size + ")");
 
-		final int size = c.size();
 		if (size != 8) {
 			writeIndented(STR."movsx rcx, \{getRegName(0, size)}");
 		}
@@ -526,8 +525,8 @@ public class X86Win64 {
 				              """);
 	}
 
-	private void writePrintChar(AsmIR.PrintChar p) throws IOException {
-		writeComment(p.toString());
+	private void writePrintChar() throws IOException {
+		writeComment("printChar");
 		// expects char in cl
 		writeIndented(STR."""
 				              sub rsp, 8
@@ -536,14 +535,15 @@ public class X86Win64 {
 				              """);
 	}
 
-	private void writePrintString(AsmIR.PrintString p) throws IOException {
-		writeComment(p.toString());
-		final String ptrReg = getRegName(p.ptrReg(), 8);
-		final String sizeReg = getRegName(p.sizeReg(), 2);
+	private void writePrintString(int ptrReg, int sizeReg) throws IOException {
+		writeComment(STR."printString r\{ ptrReg } (\{ sizeReg })");
+
+		final String ptrRegName = getRegName(ptrReg, 8);
+		final String sizeRegName = getRegName(sizeReg, 2);
 		// expects ptr in rcx, size in rdx
 		writeIndented(STR."""
-				              movsx rdx, \{sizeReg}
-				              mov rcx, \{ptrReg}
+				              movsx rdx, \{ sizeRegName}
+				              mov rcx, \{ ptrRegName}
 				              sub rsp, 8
 				                call \{PRINT_STRING}
 				              add rsp, 8
