@@ -27,10 +27,12 @@ public class Compiler {
 
 	@NotNull
 	public static AsmIRProgram compile(Program program) {
+		final NameToFunction nameToFunction = new NameToFunction(program);
+
 		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
 		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
 
-		final List<Function> usedFunctions = getUsedFunctions(program);
+		final List<Function> usedFunctions = getUsedFunctions(nameToFunction);
 
 		for (Function function : usedFunctions) {
 			final CfgFunction cfgFunction = new CfgFunction(function);
@@ -49,7 +51,7 @@ public class Compiler {
 		return new AsmIRProgram(processedFunctions, stringLiterals.getConstants(), program.vars());
 	}
 
-	private static List<Function> getUsedFunctions(Program program) {
+	private static List<Function> getUsedFunctions(NameToFunction nameToFunction) {
 		final List<Function> usedFunctions = new ArrayList<>();
 
 		final Set<String> invoked = new HashSet<>();
@@ -59,7 +61,7 @@ public class Compiler {
 
 		while (!pending.isEmpty()) {
 			final String name = pending.removeFirst();
-			final Function function = program.get(name);
+			final Function function = nameToFunction.get(name);
 			if (function == null) {
 				throw new CompilerException("no function `" + name + "` found");
 			}

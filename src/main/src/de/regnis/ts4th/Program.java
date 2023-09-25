@@ -2,8 +2,6 @@ package de.regnis.ts4th;
 
 import java.util.*;
 
-import org.jetbrains.annotations.*;
-
 /**
  * @author Thomas Singer
  */
@@ -52,16 +50,6 @@ public record Program(List<Function> functions, List<Var> vars) {
 		}
 
 		return new Program(functionsWithInlinedConsts, vars);
-	}
-
-	@Nullable
-	public Function get(String name) {
-		for (Function function : functions) {
-			if (function.name().equals(name)) {
-				return function;
-			}
-		}
-		return null;
 	}
 
 	private static List<Instruction> inlineConstsAndVars(List<Instruction> instructions, Map<String, Instruction> nameToConst, Map<String, Var> nameToVar) {
