@@ -29,9 +29,6 @@ public class Compiler {
 	public static AsmIRProgram compile(Program program) {
 		final NameToFunction nameToFunction = new NameToFunction(program);
 
-		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
-
 		final Function main = nameToFunction.get("main");
 		if (main == null) {
 			throw new CompilerException("no `main`-function found");
@@ -42,7 +39,7 @@ public class Compiler {
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
 		for (Function function : inlinedFunctions) {
-			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
+			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, nameToFunction, stringLiterals);
 			processedFunctions.add(irFunction);
 		}
 

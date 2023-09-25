@@ -18,11 +18,11 @@ public class AsmIRConverter {
 	public static final int PTR_SIZE = 8;
 
 	@NotNull
-	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull TypeChecker typeChecker, @NotNull AsmIRStringLiterals stringLiterals) {
+	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull NameToFunction nameToFunction, @NotNull AsmIRStringLiterals stringLiterals) {
 		final List<Instruction> instructions = InstructionSimplifier.simplify(function.instructions());
 
 		final List<AsmIR> asmInstructions = new ArrayList<>();
-		final AsmIRConverter converter = new AsmIRConverter(typeChecker, function, stringLiterals, asmInstructions::add);
+		final AsmIRConverter converter = new AsmIRConverter(nameToFunction, function, stringLiterals, asmInstructions::add);
 
 		InstructionTypeEvaluator.iterate(instructions, function.typesInOut().in(), converter::process);
 
@@ -30,13 +30,13 @@ public class AsmIRConverter {
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);
 	}
 
-	private final TypeChecker typeChecker;
+	private final NameToFunction nameToFunction;
 	private final Function function;
 	private final AsmIRStringLiterals stringLiterals;
 	private final Consumer<AsmIR> output;
 
-	private AsmIRConverter(@NotNull TypeChecker typeChecker, @NotNull Function function, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Consumer<AsmIR> output) {
-		this.typeChecker = typeChecker;
+	private AsmIRConverter(@NotNull NameToFunction nameToFunction, @NotNull Function function, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Consumer<AsmIR> output) {
+		this.nameToFunction = nameToFunction;
 		this.function = function;
 		this.stringLiterals = stringLiterals;
 		this.output = output;
@@ -100,15 +100,26 @@ public class AsmIRConverter {
 				output.accept(AsmIRFactory.ret());
 				yield input;
 			}
-			case Instruction.Command(String name, _) -> {
+			case Instruction.Command(String name, Location location) -> {
 				final BuiltinCommands.Command command = BuiltinCommands.get(name);
 				if (command != null) {
 					command.toIR(name, input, output);
+					yield command.process(name, location, input);
 				}
-				else {
+
+				final Function function = nameToFunction.get(name);
+				if (function != null) {
+					final TypesInOut types = function.typesInOut();
+					final TypeList out = input.transform(types.in(), types.out());
+					if (out == null) {
+						throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + types.in() + " but got " + input);
+					}
+
 					output.accept(AsmIRFactory.call(name));
+					yield out;
 				}
-				yield typeChecker.checkType(instruction, input);
+
+				throw new CompilerException(location, STR. "Unknown command \{ name }" );
 			}
 		};
 	}

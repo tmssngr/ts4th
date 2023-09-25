@@ -17,7 +17,7 @@ public class AsmIRInterpreter {
 
 		final List<Declaration> declarations = Parser.parseFile(forthFile);
 		final Program program = Program.fromDeclarations(declarations);
-		final TypeChecker typeChecker = createTypeChecker(program);
+		final NameToFunction nameToFunction = new NameToFunction(program);
 
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIR> programInstructions = new ArrayList<>();
@@ -29,7 +29,7 @@ public class AsmIRInterpreter {
 				startIp = programInstructions.size();
 			}
 
-			convertToIR(function, typeChecker, stringLiterals, programInstructions);
+			convertToIR(function, nameToFunction, stringLiterals, programInstructions);
 		}
 
 		final AsmIRInterpreter interpreter = new AsmIRInterpreter(programInstructions, stringLiterals, startIp);
@@ -43,8 +43,7 @@ public class AsmIRInterpreter {
 	public static AsmIRInterpreter parseAndCreate(String code) {
 		final List<Declaration> declarations = Parser.parseString(code);
 		final Program program = Program.fromDeclarations(declarations);
-
-		final TypeChecker typeChecker = createTypeChecker(program);
+		final NameToFunction nameToFunction = new NameToFunction(program);
 
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIR> programInstructions = new ArrayList<>();
@@ -54,7 +53,7 @@ public class AsmIRInterpreter {
 				startIp = programInstructions.size();
 			}
 
-			convertToIR(function, typeChecker, stringLiterals, programInstructions);
+			convertToIR(function, nameToFunction, stringLiterals, programInstructions);
 		}
 
 		return new AsmIRInterpreter(programInstructions, stringLiterals, startIp);
@@ -307,15 +306,8 @@ public class AsmIRInterpreter {
 		ip = labelToIndex.get(target);
 	}
 
-	@NotNull
-	private static TypeChecker createTypeChecker(Program program) {
-		final TypeCheckerImpl typeChecker = new TypeCheckerImpl();
-		program.functions().forEach(function -> typeChecker.add(function.name(), function.typesInOut()));
-		return typeChecker;
-	}
-
-	private static void convertToIR(Function function, TypeChecker typeChecker, AsmIRStringLiterals stringLiterals, List<AsmIR> programInstructions) {
-		final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, typeChecker, stringLiterals);
+	private static void convertToIR(Function function, @NotNull NameToFunction nameToFunction, AsmIRStringLiterals stringLiterals, List<AsmIR> programInstructions) {
+		final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, nameToFunction, stringLiterals);
 		programInstructions.add(AsmIRFactory.label(irFunction.name() + "_0"));
 		programInstructions.addAll(irFunction.instructions());
 	}
