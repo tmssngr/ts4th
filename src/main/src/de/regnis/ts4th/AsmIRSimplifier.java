@@ -171,19 +171,28 @@ public class AsmIRSimplifier {
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _)
 				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
-					Utils.assertTrue(targetRegLit != targetRegPop);
-					remove();
-					remove();
-					insert(i1);
-					insert(i2);
+					if (targetRegLit == targetRegPop) {
+						// might happen after pushing a string literal and dropping the size
+						remove();
+					}
+					else {
+						remove();
+						remove();
+						insert(i1);
+						insert(i2);
+					}
 				}
 				else if (i1 instanceof AsmIR.BoolLiteral(int targetRegLit, _)
-				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
-					Utils.assertTrue(targetRegLit != targetRegPop);
-					remove();
-					remove();
-					insert(i1);
-					insert(i2);
+				         && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
+					if (targetRegLit == targetRegPop) {
+						remove();
+					}
+					else {
+						remove();
+						remove();
+						insert(i1);
+						insert(i2);
+					}
 				}
 			}
 		}.process("swap literal pop");

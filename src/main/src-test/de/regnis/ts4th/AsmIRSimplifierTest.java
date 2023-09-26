@@ -162,6 +162,27 @@ public class AsmIRSimplifierTest {
 				             literal(1, 5),
 				             pop(0, 2)
 		             ));
+
+		testSimplify(List.of(
+				             stringLiteral(1, 0),
+				             pop(0, 2),
+				             push(1, 8),
+				             push(0, 2)
+		             ),
+		             List.of(
+				             // " *"
+				             stringLiteral(0, 0),
+				             push(0, 8),
+				             literal(0, 2),
+				             push(0, 2),
+				             // drop
+				             pop(0, 2),
+				             // swap
+				             pop(1, 8),
+				             pop(0, 2),
+				             push(1, 8),
+				             push(0, 2)
+		             ));
 	}
 
 	private static void testSimplify(List<AsmIR> expected, List<AsmIR> input) {
