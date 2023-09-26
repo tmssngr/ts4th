@@ -205,6 +205,15 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testShift() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				               1 2 shl print
+				               1024 1 shr print
+				             end""");
+	}
+
+	@Test
 	public void testConst() throws IOException {
 		compileWrite("""
 				             const width 40 end
