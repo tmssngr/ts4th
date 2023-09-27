@@ -16,16 +16,10 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal r0, #1 --
-        mov cx, 1
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
+        ; -- literal r1, #1 --
+        mov ax, 1
         ; -- literal r0, #2 --
         mov cx, 2
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
         ; -- shl 1 0 --
         shl ax, cl
         mov cx, ax
@@ -44,16 +38,10 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
-        ; -- literal r0, #1024 --
-        mov cx, 1024
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
+        ; -- literal r1, #1024 --
+        mov ax, 1024
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- pop 1 (2) --
-        mov ax, [r15]
-        add r15, 2
         ; -- shr 1 0 --
         shr ax, cl
         mov cx, ax

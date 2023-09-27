@@ -1,8 +1,6 @@
 main:
 	r0 = 1024
-	push r0 (2)
 	r1 = 2048
-	pop r0 (2)
 	sub r0, r1
 	printInt r0(2)
 	ret

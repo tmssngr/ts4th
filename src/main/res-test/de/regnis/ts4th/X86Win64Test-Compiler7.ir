@@ -9,8 +9,8 @@ main:
 	printInt r0(2)
 	ret
 strlen:
-	r1 = 0
 	pop r0 (8)
+	r1 = 0
 	push r1 (2)
 	push r0 (8)
 while_1:
@@ -19,25 +19,19 @@ while_1:
 	move 1, 0 (8)
 	r0 = 0
 	load r0(1), @r1
-	push r0 (2)
 	r1 = 0
-	pop r0 (2)
 	neq r0, r1
 	boolTest r0, r0
 	jump z, endwhile_1
 	pop r1 (8)
 	pop r0 (2)
 	push r1 (8)
-	push r0 (2)
 	r1 = 1
-	pop r0 (2)
 	add r0, r1
 	move 1, 0 (2)
 	pop r0 (8)
 	push r1 (2)
-	push r0 (8)
 	r1 = 1
-	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
 	jump while_1

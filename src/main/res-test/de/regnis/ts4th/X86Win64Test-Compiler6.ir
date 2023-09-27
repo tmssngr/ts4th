@@ -1,47 +1,40 @@
 main:
 	r0 = mem
 	push r0 (8)
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 49
-	pop r1 (8)
 	store @r1, r0(1)
-	r1 = 1
 	pop r0 (8)
+	r1 = 1
 	add_ptr r0, r1
 	push r0 (8)
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 48
-	pop r1 (8)
 	store @r1, r0(1)
-	r1 = 1
 	pop r0 (8)
+	r1 = 1
 	add_ptr r0, r1
 	push r0 (8)
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 50
-	pop r1 (8)
 	store @r1, r0(1)
-	r1 = 1
 	pop r0 (8)
+	r1 = 1
 	add_ptr r0, r1
 	push r0 (8)
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 52
-	pop r1 (8)
 	store @r1, r0(1)
-	r1 = 1
 	pop r0 (8)
+	r1 = 1
 	add_ptr r0, r1
 	push r0 (8)
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 13
-	pop r1 (8)
 	store @r1, r0(1)
 	pop r0 (8)
 	r0 = mem
-	push r0 (8)
 	r1 = 10
-	pop r0 (8)
 	add_ptr r0, r1
 	push r0 (8)
 	r0 = 104
@@ -61,18 +54,14 @@ main:
 	call appendChar
 	pop r0 (8)
 	r0 = mem
-	push r0 (8)
 	r1 = 10
-	pop r0 (8)
 	add_ptr r0, r1
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 5
-	pop r1 (8)
 	printString r1 (0)
 	r0 = mem
-	push r0 (8)
+	move 1, 0 (8)
 	r0 = 5
-	pop r1 (8)
 	printString r1 (0)
 	ret
 appendChar:
@@ -83,8 +72,8 @@ appendChar:
 	move 1, 0 (8)
 	pop r0 (2)
 	store @r1, r0(1)
-	r1 = 1
 	pop r0 (8)
+	r1 = 1
 	add_ptr r0, r1
 	push r0 (8)
 	ret

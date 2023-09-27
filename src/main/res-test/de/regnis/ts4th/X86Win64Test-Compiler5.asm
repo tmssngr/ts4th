@@ -18,95 +18,52 @@ start:
 tsf_main:
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #49 --
         mov cx, 49
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- pop 0 (8) --
-        mov rcx, [r15]
-        add r15, 8
         ; -- add_ptr 0 1 --
         movsx rax, ax
         add   rcx, rax
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #48 --
         mov cx, 48
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
         ; -- literal r1, #2 --
         mov ax, 2
-        ; -- pop 0 (8) --
-        mov rcx, [r15]
-        add r15, 8
         ; -- add_ptr 0 1 --
         movsx rax, ax
         add   rcx, rax
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #50 --
         mov cx, 50
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
         ; -- literal r1, #3 --
         mov ax, 3
-        ; -- pop 0 (8) --
-        mov rcx, [r15]
-        add r15, 8
         ; -- add_ptr 0 1 --
         movsx rax, ax
         add   rcx, rax
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #52 --
         mov cx, 52
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #4 --
         mov cx, 4
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
@@ -158,30 +115,19 @@ tsf_main:
         add r15, 8
         ; -- mem --
         lea rcx, [mem]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        mov rax, rcx
         ; -- literal r0, #5 --
         mov cx, 5
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
         sub rsp, 8
           call tsfbi_printString
         add rsp, 8
-        ; -- literal r0, "0 --
-        lea rcx, [string_0]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        ; -- literal r1, "0 --
+        lea rax, [string_0]
         ; -- literal r0, #15 --
         mov cx, 15
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
@@ -211,11 +157,11 @@ tsf_appendChar:
         add r15, 2
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
-        ; -- literal r1, #1 --
-        mov ax, 1
         ; -- pop 0 (8) --
         mov rcx, [r15]
         add r15, 8
+        ; -- literal r1, #1 --
+        mov ax, 1
         ; -- add_ptr 0 1 --
         movsx rax, ax
         add   rcx, rax

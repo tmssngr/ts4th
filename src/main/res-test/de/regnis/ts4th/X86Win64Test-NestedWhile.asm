@@ -28,14 +28,8 @@ tsf_while_1:
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- pop 0 (2) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt 0 1 --
         cmp   cx, ax
         mov   cx, 0
@@ -57,14 +51,8 @@ tsf_while_2:
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
         ; -- literal r1, #20 --
         mov ax, 20
-        ; -- pop 0 (2) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt 0 1 --
         cmp   cx, ax
         mov   cx, 0
@@ -103,11 +91,11 @@ tsf_while_2:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
-        ; -- literal r1, #1 --
-        mov ax, 1
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
+        ; -- literal r1, #1 --
+        mov ax, 1
         ; -- add 0 1 --
         add cx, ax
         ; -- push 0 (2) --
@@ -125,11 +113,11 @@ tsf_endwhile_2:
         sub rsp, 8
           call tsfbi_printChar
         add rsp, 8
-        ; -- literal r1, #1 --
-        mov ax, 1
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
+        ; -- literal r1, #1 --
+        mov ax, 1
         ; -- add 0 1 --
         add cx, ax
         ; -- push 0 (2) --

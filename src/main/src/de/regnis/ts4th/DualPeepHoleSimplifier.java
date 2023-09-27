@@ -33,9 +33,13 @@ abstract class DualPeepHoleSimplifier<I> {
 		instructions.remove(i + 1);
 	}
 
+	protected void insert(I command) {
+		instructions.add(i, command);
+	}
+
 	protected void replace(I command) {
 		remove();
-		instructions.add(i, command);
+		insert(command);
 	}
 
 	protected void again() {

@@ -13,6 +13,7 @@ public class AsmIRSimplifier {
 			newInstructions = removeCommandsAfterJump(newInstructions);
 			newInstructions = removePushPop(newInstructions);
 			newInstructions = removeLiteralMove(newInstructions);
+			newInstructions = swapLitPop(newInstructions);
 			removeUnusedLabels(newInstructions);
 			if (newInstructions.equals(instructions)) {
 				return instructions;
@@ -155,6 +156,34 @@ public class AsmIRSimplifier {
 						removeNext();
 						replace(new AsmIR.StringLiteral(targetReg, index));
 					}
+				}
+			}
+		}.process();
+
+		return newInstructions;
+	}
+
+	private static List<AsmIR> swapLitPop(List<AsmIR> instructions) {
+		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
+
+		new DualPeepHoleSimplifier<>(newInstructions) {
+			@Override
+			protected void handle(AsmIR i1, AsmIR i2) {
+				if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _)
+				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
+					Utils.assertTrue(targetRegLit != targetRegPop);
+					remove();
+					remove();
+					insert(i1);
+					insert(i2);
+				}
+				else if (i1 instanceof AsmIR.BoolLiteral(int targetRegLit, _)
+				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
+					Utils.assertTrue(targetRegLit != targetRegPop);
+					remove();
+					remove();
+					insert(i1);
+					insert(i2);
 				}
 			}
 		}.process();

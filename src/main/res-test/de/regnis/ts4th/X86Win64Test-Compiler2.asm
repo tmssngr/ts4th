@@ -18,14 +18,8 @@ start:
 tsf_main:
         ; -- literal r0, #1024 --
         mov cx, 1024
-        ; -- push 0 (2) --
-        sub r15, 2
-        mov [r15], cx
         ; -- literal r1, #768 --
         mov ax, 768
-        ; -- pop 0 (2) --
-        mov cx, [r15]
-        add r15, 2
         ; -- push 0 (2) --
         sub r15, 2
         mov [r15], cx

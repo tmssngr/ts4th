@@ -1,10 +1,10 @@
 package de.regnis.ts4th;
 
-import org.junit.*;
-
 import java.util.*;
 
-import static de.regnis.ts4th.AsmIR.*;
+import org.junit.*;
+
+import static de.regnis.ts4th.AsmIR.Condition;
 import static de.regnis.ts4th.AsmIRFactory.*;
 import static org.junit.Assert.*;
 
@@ -125,17 +125,42 @@ public class AsmIRSimplifierTest {
 				             move(1, 0, 2)
 		             ),
 		             List.of(
-							 push(0, 2),
-							 pop(1, 2)
+				             push(0, 2),
+				             pop(1, 2)
 		             ));
 
 		testSimplify(List.of(
 				             literal(1, 0)
 		             ),
 		             List.of(
-							 literal(0, 0),
-							 push(0, 2),
-							 pop(1, 2)
+				             literal(0, 0),
+				             push(0, 2),
+				             pop(1, 2)
+		             ));
+	}
+
+	@Test
+	public void testSwapLitPop() {
+		testSimplify(List.of(
+				             push(0, 2),
+				             print(2),
+				             pop(0, 2),
+				             literal(1, 5)
+		             ),
+		             List.of(
+				             push(0, 2),
+				             print(2),
+				             literal(1, 5),
+				             pop(0, 2)
+		             ));
+
+		testSimplify(List.of(
+				             literal(1, 5)
+		             ),
+		             List.of(
+				             push(0, 2),
+				             literal(1, 5),
+				             pop(0, 2)
 		             ));
 	}
 

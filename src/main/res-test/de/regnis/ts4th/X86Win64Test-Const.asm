@@ -33,16 +33,10 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_printChar
         add  rsp, 8
-        ; -- literal r0, "0 --
-        lea rcx, [string_0]
-        ; -- push 0 (8) --
-        sub r15, 8
-        mov [r15], rcx
+        ; -- literal r1, "0 --
+        lea rax, [string_0]
         ; -- literal r0, #4 --
         mov cx, 4
-        ; -- pop 1 (8) --
-        mov rax, [r15]
-        add r15, 8
         ; -- printString r1 (0) --
         movsx rdx, cx
         mov rcx, rax
