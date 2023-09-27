@@ -138,7 +138,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 					continue;
 				}
 
-				throw new ParseCancellationException("%1$d:%2$d invalid type %3$s".formatted(node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), text));
+				throw new CompilerException(createLocation(node), "invalid type " + text);
 			}
 		}
 		return typeList;
@@ -165,7 +165,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		else if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
 			final String unescape = unescape(text.substring(1, text.length() - 1));
 			if (unescape.length() != 1) {
-				throw new ParseCancellationException("%1$d:%2$d invalid char %3$s".formatted(node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), text));
+				throw new CompilerException(createLocation(node), "invalid char " + text);
 			}
 			value = unescape.charAt(0);
 		}
@@ -290,7 +290,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Instruction> visitBreak(TS4thParser.BreakContext ctx) {
 		if (breakLabel == null) {
 			final Token token = ctx.Break().getSymbol();
-			throw new ParseCancellationException("%1$d:%2$d break only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
+			throw new CompilerException(createLocation(token), "break only can be used inside while-do-end between do and end");
 		}
 		return List.of(InstructionFactory.jump(breakLabel));
 	}
@@ -299,7 +299,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Instruction> visitContinue(TS4thParser.ContinueContext ctx) {
 		if (continueLabel == null) {
 			final Token token = ctx.Continue().getSymbol();
-			throw new ParseCancellationException("%1$d:%2$d continue only can be used inside while-do-end between do and end".formatted(token.getLine(), token.getCharPositionInLine()));
+			throw new CompilerException(createLocation(token), "continue only can be used inside while-do-end between do and end");
 		}
 		return List.of(InstructionFactory.jump(continueLabel));
 	}
@@ -362,7 +362,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		parser.addErrorListener(new BaseErrorListener() {
 			@Override
 			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-				throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
+				throw new CompilerException(new Location(line, charPositionInLine), "parsing failed: " + msg);
 			}
 		});
 

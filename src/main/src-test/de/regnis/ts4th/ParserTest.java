@@ -274,7 +274,7 @@ public final class ParserTest {
 			);
 			Assert.fail();
 		}
-		catch (ParseCancellationException ignored) {
+		catch (CompilerException ignored) {
 		}
 	}
 
