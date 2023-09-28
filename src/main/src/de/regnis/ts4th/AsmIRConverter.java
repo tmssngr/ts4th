@@ -103,8 +103,9 @@ public class AsmIRConverter {
 			case Instruction.Command(String name, Location location) -> {
 				final BuiltinCommands.Command command = BuiltinCommands.get(name);
 				if (command != null) {
+					final TypeList out = command.process(name, location, input);
 					command.toIR(name, input, output);
-					yield command.process(name, location, input);
+					yield out;
 				}
 
 				final Function function = nameToFunction.get(name);
