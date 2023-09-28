@@ -1,11 +1,13 @@
 package de.regnis.ts4th;
 
+import java.io.*;
 import java.util.*;
 
 /**
  * @author Thomas Singer
  */
 abstract class DualPeepHoleSimplifier<I> {
+
 	protected abstract void handle(I i1, I i2);
 
 	private final List<I> items;
@@ -16,7 +18,9 @@ abstract class DualPeepHoleSimplifier<I> {
 		this.items = items;
 	}
 
-	public void process() {
+	public void process(String name) {
+		debug("before " + name);
+
 		i = 0;
 		for (; i < items.size() - 1; i++) {
 			final I i1 = items.get(i);
@@ -46,9 +50,34 @@ abstract class DualPeepHoleSimplifier<I> {
 		i--;
 	}
 
-	protected void print() {
+	protected void debug(String name) {
+		//print(name);
+	}
+
+	protected void printError() {
+		print("error", true, System.err);
+	}
+
+	private void print(String name) {
+		print(name, false, System.out);
+	}
+
+	private void print(String name, boolean printCurrentPosition, PrintStream stream) {
+		stream.println(name);
+
+		int index = 0;
 		for (I item : items) {
-			System.err.println(item);
+//			stream.print(index);
+//			stream.print(" ");
+			stream.print(item);
+			if (printCurrentPosition) {
+				if (index == i) {
+					stream.print("   // <-- current");
+				}
+			}
+			stream.println();
+			index++;
 		}
+		stream.println();
 	}
 }

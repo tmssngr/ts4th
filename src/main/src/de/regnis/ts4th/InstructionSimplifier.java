@@ -32,7 +32,7 @@ public class InstructionSimplifier {
 					remove();
 				}
 			}
-		}.process();
+		}.process("remove jump to next");
 
 		return newInstructions;
 	}
@@ -49,7 +49,7 @@ public class InstructionSimplifier {
 					fromTo.put(label, target);
 				}
 			}
-		}.process();
+		}.process("remove indirect label");
 
 		if (fromTo.isEmpty()) {
 			return instructions;
@@ -95,7 +95,7 @@ public class InstructionSimplifier {
 					again();
 				}
 			}
-		}.process();
+		}.process("remove commands after jump");
 
 		return newInstructions;
 	}
@@ -112,7 +112,7 @@ public class InstructionSimplifier {
 					removeNext();
 				}
 			}
-		}.process();
+		}.process("remove false-branch");
 
 		return newInstructions;
 	}

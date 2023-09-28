@@ -17,14 +17,31 @@ public class AsmIRConverter {
 	public static final int REG_2 = 2;
 	public static final int PTR_SIZE = 8;
 
+	private static boolean debug = false;
+
 	@NotNull
 	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull NameToFunction nameToFunction, @NotNull AsmIRStringLiterals stringLiterals) {
 		final List<Instruction> instructions = InstructionSimplifier.simplify(function.instructions());
 
 		final List<AsmIR> asmInstructions = new ArrayList<>();
-		final AsmIRConverter converter = new AsmIRConverter(nameToFunction, function, stringLiterals, asmInstructions::add);
+		final AsmIRConverter converter = new AsmIRConverter(nameToFunction, function, stringLiterals, ir -> {
+			if (debug) {
+				System.out.println(ir);
+			}
+			asmInstructions.add(ir);
+		});
 
-		InstructionTypeEvaluator.iterate(instructions, function.typesInOut().in(), converter::process);
+		InstructionTypeEvaluator.iterate(instructions, function.typesInOut().in(), (instruction, input) -> {
+			if (debug) {
+				System.out.print("; ");
+				System.out.println(instruction);
+			}
+			return converter.process(instruction, input);
+		});
+
+		if (debug) {
+			System.out.println();
+		}
 
 		final List<AsmIR> irInstructions = AsmIRSimplifier.simplify(asmInstructions);
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);

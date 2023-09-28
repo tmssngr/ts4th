@@ -34,7 +34,7 @@ public class AsmIRSimplifier {
 					remove();
 				}
 			}
-		}.process();
+		}.process("remove jump to next");
 
 		return newInstructions;
 	}
@@ -51,7 +51,7 @@ public class AsmIRSimplifier {
 					fromTo.put(name, target);
 				}
 			}
-		}.process();
+		}.process("remove indirect label");
 
 		if (fromTo.isEmpty()) {
 			return instructions;
@@ -95,7 +95,7 @@ public class AsmIRSimplifier {
 					again();
 				}
 			}
-		}.process();
+		}.process("remove commands after jump");
 
 		return newInstructions;
 	}
@@ -120,7 +120,7 @@ public class AsmIRSimplifier {
 					}
 				}
 			}
-		}.process();
+		}.process("remove/replace push pop");
 
 		return newInstructions;
 	}
@@ -158,7 +158,7 @@ public class AsmIRSimplifier {
 					}
 				}
 			}
-		}.process();
+		}.process("replace moved literal");
 
 		return newInstructions;
 	}
@@ -186,7 +186,7 @@ public class AsmIRSimplifier {
 					insert(i2);
 				}
 			}
-		}.process();
+		}.process("swap literal pop");
 
 		return newInstructions;
 	}
