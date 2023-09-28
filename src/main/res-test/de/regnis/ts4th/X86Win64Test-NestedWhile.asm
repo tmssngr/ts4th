@@ -141,6 +141,8 @@ tsfbi_printChar:
         ret
 
 tsfbi_printString:
+        mov     rdi, rsp
+        and     spl, 0xf0
         push    rcx
           push    rdx
 
@@ -159,7 +161,8 @@ tsfbi_printString:
           sub     rsp, 20h
             call    [WriteFile]
           add     rsp, 20h
-        add     rsp, 8
+        ; add     rsp, 8
+        mov     rsp, rdi
         ret
 
 tsfbi_printUint:

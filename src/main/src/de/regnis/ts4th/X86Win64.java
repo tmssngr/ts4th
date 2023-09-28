@@ -145,6 +145,8 @@ public class X86Win64 {
 		//);
 		writeLabel(PRINT_STRING);
 		writeIndented("""
+				              mov     rdi, rsp
+				              and     spl, 0xf0
 				              push    rcx
 				                push    rdx
 
@@ -163,7 +165,8 @@ public class X86Win64 {
 				                sub     rsp, 20h
 				                  call    [WriteFile]
 				                add     rsp, 20h
-				              add     rsp, 8
+				              ; add     rsp, 8
+				              mov     rsp, rdi
 				              ret
 				              """);
 	}
@@ -319,6 +322,22 @@ public class X86Win64 {
 		case AsmIR.Call(String name) -> {
 			writeComment(name);
 			writeIndented(STR."call \{LABEL_PREFIX}\{name}");
+		}
+		case AsmIR.PushVar(int sourceReg, int size) -> {
+			writeComment(STR."push var r\{sourceReg} (\{size})");
+			writeIndented(STR. "push \{getRegName(sourceReg, size)}");
+		}
+		case AsmIR.LocalVarRead(int targetReg, int size, int offset) -> {
+			writeComment(STR."read var r\{targetReg}, [\{offset} (\{size})]");
+			writeIndented(STR. "mov \{getRegName(targetReg, size)}, [rsp+\{offset}]");
+		}
+		case AsmIR.LocalVarWrite(int sourceReg, int size, int offset) -> {
+			writeComment(STR."write var [\{offset} (\{size})], \{sourceReg}");
+			writeIndented(STR. "mov [rsp+\{offset}], \{getRegName(sourceReg, size)}");
+		}
+		case AsmIR.DropVars(int size) -> {
+			writeComment(STR."drop vars \{size}");
+			writeIndented(STR. "add rsp, \{size}");
 		}
 		}
 	}

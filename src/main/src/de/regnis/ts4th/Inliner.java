@@ -88,10 +88,10 @@ public class Inliner {
 	private void inline(Function function, boolean skipRet, Consumer<Instruction> consumer) {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Command(String command, Location location)) {
+			if (instruction instanceof Instruction.Command(String command, _)) {
 				if (BuiltinCommands.get(command) == null) {
-					final Function invokedFunction = Objects.requireNonNull(nameToFunction.get(command));
-					if (invokedFunction.isInline()) {
+					final Function invokedFunction = nameToFunction.get(command);
+					if (invokedFunction != null && invokedFunction.isInline()) {
 						inline(invokedFunction, true, consumer);
 						continue;
 					}

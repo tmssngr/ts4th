@@ -597,7 +597,7 @@ public class TS4thParser extends Parser {
 				setState(69); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << If) | (1L << While) | (1L << Break) | (1L << Continue) | (1L << True) | (1L << False) | (1L << Number) | (1L << String) | (1L << Identifier))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Var) | (1L << If) | (1L << While) | (1L << Break) | (1L << Continue) | (1L << True) | (1L << False) | (1L << Number) | (1L << String) | (1L << Identifier))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -704,6 +704,32 @@ public class TS4thParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof TS4thVisitor ) return ((TS4thVisitor<? extends T>)visitor).visitContinue(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class VarContext extends InstructionContext {
+		public TerminalNode Var() { return getToken(TS4thParser.Var, 0); }
+		public TerminalNode Do() { return getToken(TS4thParser.Do, 0); }
+		public InstructionsContext instructions() {
+			return getRuleContext(InstructionsContext.class,0);
+		}
+		public TerminalNode End() { return getToken(TS4thParser.End, 0); }
+		public List<TerminalNode> Identifier() { return getTokens(TS4thParser.Identifier); }
+		public TerminalNode Identifier(int i) {
+			return getToken(TS4thParser.Identifier, i);
+		}
+		public VarContext(InstructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).enterVar(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TS4thListener ) ((TS4thListener)listener).exitVar(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof TS4thVisitor ) return ((TS4thVisitor<? extends T>)visitor).visitVar(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -820,10 +846,11 @@ public class TS4thParser extends Parser {
 	public final InstructionContext instruction() throws RecognitionException {
 		InstructionContext _localctx = new InstructionContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_instruction);
+		int _la;
 		try {
-			setState(94);
+			setState(104);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				_localctx = new NumberContext(_localctx);
 				enterOuterAlt(_localctx, 1);
@@ -924,6 +951,34 @@ public class TS4thParser extends Parser {
 				match(Continue);
 				}
 				break;
+			case 11:
+				_localctx = new VarContext(_localctx);
+				enterOuterAlt(_localctx, 11);
+				{
+				setState(94);
+				match(Var);
+				setState(96); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(95);
+					match(Identifier);
+					}
+					}
+					setState(98); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( _la==Identifier );
+				setState(100);
+				match(Do);
+				setState(101);
+				instructions();
+				setState(102);
+				match(End);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -938,31 +993,33 @@ public class TS4thParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32c\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32m\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
 		"\n\2\f\2\16\2\31\13\2\3\2\3\2\3\3\3\3\3\3\3\3\5\3!\n\3\3\4\3\4\3\4\3\5"+
 		"\3\5\5\5(\n\5\3\5\3\5\3\5\3\5\3\5\5\5/\n\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6"+
 		"\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\b\7\b@\n\b\f\b\16\bC\13\b\3\t\6\tF\n\t"+
 		"\r\t\16\tG\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n"+
-		"\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\na\n\n\3\n\2\2\13\2\4\6\b\n\f\16\20"+
-		"\22\2\2\2j\2\27\3\2\2\2\4 \3\2\2\2\6\"\3\2\2\2\b%\3\2\2\2\n\64\3\2\2\2"+
-		"\f9\3\2\2\2\16A\3\2\2\2\20E\3\2\2\2\22`\3\2\2\2\24\26\5\4\3\2\25\24\3"+
-		"\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\32\3\2\2\2\31\27\3"+
-		"\2\2\2\32\33\7\2\2\3\33\3\3\2\2\2\34!\5\6\4\2\35!\5\b\5\2\36!\5\n\6\2"+
-		"\37!\5\f\7\2 \34\3\2\2\2 \35\3\2\2\2 \36\3\2\2\2 \37\3\2\2\2!\5\3\2\2"+
-		"\2\"#\7\4\2\2#$\7\25\2\2$\7\3\2\2\2%\'\7\5\2\2&(\7\21\2\2\'&\3\2\2\2\'"+
-		"(\3\2\2\2()\3\2\2\2)*\7\26\2\2*+\7\22\2\2+.\5\16\b\2,-\7\3\2\2-/\5\16"+
-		"\b\2.,\3\2\2\2./\3\2\2\2/\60\3\2\2\2\60\61\7\23\2\2\61\62\5\20\t\2\62"+
-		"\63\7\b\2\2\63\t\3\2\2\2\64\65\7\6\2\2\65\66\7\26\2\2\66\67\5\20\t\2\67"+
-		"8\7\b\2\28\13\3\2\2\29:\7\7\2\2:;\7\26\2\2;<\5\20\t\2<=\7\b\2\2=\r\3\2"+
-		"\2\2>@\7\26\2\2?>\3\2\2\2@C\3\2\2\2A?\3\2\2\2AB\3\2\2\2B\17\3\2\2\2CA"+
-		"\3\2\2\2DF\5\22\n\2ED\3\2\2\2FG\3\2\2\2GE\3\2\2\2GH\3\2\2\2H\21\3\2\2"+
-		"\2Ia\7\24\2\2Ja\7\25\2\2Ka\7\17\2\2La\7\20\2\2Ma\7\26\2\2NO\7\t\2\2OP"+
-		"\5\20\t\2PQ\7\b\2\2Qa\3\2\2\2RS\7\t\2\2ST\5\20\t\2TU\7\n\2\2UV\5\20\t"+
-		"\2VW\7\b\2\2Wa\3\2\2\2XY\7\f\2\2YZ\5\20\t\2Z[\7\13\2\2[\\\5\20\t\2\\]"+
-		"\7\b\2\2]a\3\2\2\2^a\7\r\2\2_a\7\16\2\2`I\3\2\2\2`J\3\2\2\2`K\3\2\2\2"+
-		"`L\3\2\2\2`M\3\2\2\2`N\3\2\2\2`R\3\2\2\2`X\3\2\2\2`^\3\2\2\2`_\3\2\2\2"+
-		"a\23\3\2\2\2\t\27 \'.AG`";
+		"\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\6\nc\n\n\r\n\16\nd\3\n\3\n\3"+
+		"\n\3\n\5\nk\n\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\2\2v\2\27\3\2\2\2\4"+
+		" \3\2\2\2\6\"\3\2\2\2\b%\3\2\2\2\n\64\3\2\2\2\f9\3\2\2\2\16A\3\2\2\2\20"+
+		"E\3\2\2\2\22j\3\2\2\2\24\26\5\4\3\2\25\24\3\2\2\2\26\31\3\2\2\2\27\25"+
+		"\3\2\2\2\27\30\3\2\2\2\30\32\3\2\2\2\31\27\3\2\2\2\32\33\7\2\2\3\33\3"+
+		"\3\2\2\2\34!\5\6\4\2\35!\5\b\5\2\36!\5\n\6\2\37!\5\f\7\2 \34\3\2\2\2 "+
+		"\35\3\2\2\2 \36\3\2\2\2 \37\3\2\2\2!\5\3\2\2\2\"#\7\4\2\2#$\7\25\2\2$"+
+		"\7\3\2\2\2%\'\7\5\2\2&(\7\21\2\2\'&\3\2\2\2\'(\3\2\2\2()\3\2\2\2)*\7\26"+
+		"\2\2*+\7\22\2\2+.\5\16\b\2,-\7\3\2\2-/\5\16\b\2.,\3\2\2\2./\3\2\2\2/\60"+
+		"\3\2\2\2\60\61\7\23\2\2\61\62\5\20\t\2\62\63\7\b\2\2\63\t\3\2\2\2\64\65"+
+		"\7\6\2\2\65\66\7\26\2\2\66\67\5\20\t\2\678\7\b\2\28\13\3\2\2\29:\7\7\2"+
+		"\2:;\7\26\2\2;<\5\20\t\2<=\7\b\2\2=\r\3\2\2\2>@\7\26\2\2?>\3\2\2\2@C\3"+
+		"\2\2\2A?\3\2\2\2AB\3\2\2\2B\17\3\2\2\2CA\3\2\2\2DF\5\22\n\2ED\3\2\2\2"+
+		"FG\3\2\2\2GE\3\2\2\2GH\3\2\2\2H\21\3\2\2\2Ik\7\24\2\2Jk\7\25\2\2Kk\7\17"+
+		"\2\2Lk\7\20\2\2Mk\7\26\2\2NO\7\t\2\2OP\5\20\t\2PQ\7\b\2\2Qk\3\2\2\2RS"+
+		"\7\t\2\2ST\5\20\t\2TU\7\n\2\2UV\5\20\t\2VW\7\b\2\2Wk\3\2\2\2XY\7\f\2\2"+
+		"YZ\5\20\t\2Z[\7\13\2\2[\\\5\20\t\2\\]\7\b\2\2]k\3\2\2\2^k\7\r\2\2_k\7"+
+		"\16\2\2`b\7\7\2\2ac\7\26\2\2ba\3\2\2\2cd\3\2\2\2db\3\2\2\2de\3\2\2\2e"+
+		"f\3\2\2\2fg\7\13\2\2gh\5\20\t\2hi\7\b\2\2ik\3\2\2\2jI\3\2\2\2jJ\3\2\2"+
+		"\2jK\3\2\2\2jL\3\2\2\2jM\3\2\2\2jN\3\2\2\2jR\3\2\2\2jX\3\2\2\2j^\3\2\2"+
+		"\2j_\3\2\2\2j`\3\2\2\2k\23\3\2\2\2\n\27 \'.AGdj";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

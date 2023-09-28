@@ -2,7 +2,6 @@ package de.regnis.ts4th;
 
 import java.util.*;
 
-import org.antlr.v4.runtime.misc.*;
 import org.junit.*;
 
 import static de.regnis.ts4th.InstructionFactory.*;
@@ -321,5 +320,67 @@ public final class ParserTest {
 				"""
 						var width 2 end
 						var buffer 256 end"""));
+	}
+
+	@Test
+	public void testLocalVars() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("swap", TypeList.INT2, TypeList.INT2,
+				             false, List.of(
+						bindVars(List.of("a", "b")),
+						command("b"),
+						command("a"),
+						releaseVars(2),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn swap(int int -- int int)
+							var a b do
+								b a
+							end
+						end"""
+		));
+
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("foo", TypeList.EMPTY, TypeList.EMPTY,
+				             false, List.of(
+						literal(1),
+						label("while_1"),
+						command("dup"),
+						literal(10),
+						command("<"),
+						branch("whilebody_1", "endwhile_1"),
+						label("whilebody_1"),
+						bindVars(List.of("i")),
+						command("i"),
+						command("i"),
+						literal(5),
+						command("=="),
+						branch("if_2", "endif_2"),
+						label("if_2"),
+						releaseVars(1), // << this is important here
+						jump("while_1"),
+						label("endif_2"),
+						releaseVars(1),
+						jump("while_1"),
+						label("endwhile_1"),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn foo()
+							1 while dup 10 < do
+								var i do
+									i
+									i 5 == if
+										continue
+									end
+								end
+							end
+						end"""
+		));
 	}
 }

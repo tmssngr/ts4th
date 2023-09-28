@@ -51,6 +51,7 @@ instruction
     | While condition=instructions Do body=instructions End         #while
     | Break                                                         #break
     | Continue                                                      #continue
+    | Var Identifier+ Do instructions End                           #var
     ;
 
 TypeSeparator: '--';

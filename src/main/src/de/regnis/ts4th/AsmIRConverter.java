@@ -47,6 +47,7 @@ public class AsmIRConverter {
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);
 	}
 
+	private final List<LocalVar> vars = new ArrayList<>();
 	private final NameToFunction nameToFunction;
 	private final Function function;
 	private final AsmIRStringLiterals stringLiterals;
@@ -137,8 +138,90 @@ public class AsmIRConverter {
 					yield out;
 				}
 
+				final String writeSuffix = "!";
+				final boolean isWrite = name.endsWith(writeSuffix);
+				if (isWrite) {
+					name = name.substring(0, name.length() - 1);
+				}
+
+				int offset = 0;
+				for (ListIterator<LocalVar> it = vars.listIterator(vars.size()); it.hasPrevious(); ) {
+					final LocalVar var = it.previous();
+					final Type type = var.type();
+					final int size = typeToSize(type);
+					if (var.name().equals(name)) {
+						if (isWrite) {
+							if (input.size() == 0) {
+								throw new InvalidTypeException(location, "Variable " + name + " is of type " + type + ", but the stack is empty.");
+							}
+							if (!Objects.equals(input.type(), type)) {
+								throw new InvalidTypeException(location, "Variable " + name + " is of type " + type + ", but got " + input);
+							}
+
+							output.accept(AsmIRFactory.pop(REG_0, size));
+							output.accept(AsmIRFactory.localVarWrite(REG_0, size, offset));
+							yield input.prev();
+						}
+						else {
+							output.accept(AsmIRFactory.localVarRead(REG_0, size, offset));
+							output.accept(AsmIRFactory.push(REG_0, size));
+							yield input.append(type);
+						}
+					}
+					offset += size;
+				}
 				throw new CompilerException(location, STR. "Unknown command \{ name }" );
+			}
+			case Instruction.BindVars(List<String> varNames, Location location) -> {
+				int varCount = varNames.size();
+				final int inputCount = input.size();
+				if (inputCount < varCount) {
+					throw new InvalidTypeException(location, STR. "Expected \{ varCount } stack entries, but got only \{ inputCount }: \{ input }" );
+				}
+
+				final ListIterator<String> it = varNames.listIterator(varNames.size());
+				TypeList types = input;
+				while (it.hasPrevious()) {
+					final String name = it.previous();
+					if (BuiltinCommands.get(name) != null) {
+						throw new CompilerException(location, STR."There already is a built-in command defined with the name \{name}.");
+					}
+					if (nameToFunction.get(name) != null) {
+						throw new CompilerException(location, STR."There already is a function defined with the name \{name}.");
+					}
+
+					final Type type = types.type();
+					vars.addLast(new LocalVar(name, type));
+
+					final int size = typeToSize(type);
+					output.accept(AsmIRFactory.pop(REG_0, size));
+					output.accept(AsmIRFactory.pushVar(REG_0, size));
+
+					types = types.prev();
+				}
+
+				yield types;
+			}
+			case Instruction.ReleaseVars(int count) -> {
+				int byteCount = 0;
+				while (count-- > 0) {
+					final LocalVar var = vars.removeLast();
+					final int size = typeToSize(var.type);
+					byteCount += size;
+				}
+				output.accept(AsmIRFactory.dropVar(byteCount));
+				yield input;
 			}
 		};
 	}
+
+	private static int typeToSize(Type type) {
+		return switch (type) {
+			case Bool -> 1;
+			case Int -> 2;
+			case Ptr -> PTR_SIZE;
+		};
+	}
+
+	private record LocalVar(@NotNull String name, @NotNull Type type) {}
 }

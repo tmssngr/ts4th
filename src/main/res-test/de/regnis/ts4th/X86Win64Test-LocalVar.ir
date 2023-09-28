@@ -1,0 +1,13 @@
+main:
+	r0 = 1
+	push r0 (2)
+	r0 = 2
+	pushVar r0 (2)
+	pop r0 (2)
+	pushVar r0 (2)
+	read r0, var[0(2)]
+	printInt r0(2)
+	read r0, var[2(2)]
+	printInt r0(2)
+	dropVars 4
+	ret

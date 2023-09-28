@@ -128,4 +128,11 @@ public interface TS4thVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitContinue(TS4thParser.ContinueContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code var}
+	 * labeled alternative in {@link TS4thParser#instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVar(TS4thParser.VarContext ctx);
 }

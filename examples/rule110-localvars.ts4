@@ -1,0 +1,81 @@
+// https://gist.github.com/rexim/c595009436f87ca076e7c4a2fb92ce10
+const BOARD_CAP 30 end
+var board BOARD_CAP end
+
+fn fill(ptr int int --)
+	var target size value do
+		while
+			size 0 >
+		do
+			value target !8
+			target 1 + target!
+			size 1 - size!
+		end
+	end
+end
+
+/*
+for (size_t j = 0; j < BOARD_CAP; ++j) {
+    fputc(" *"[board[j]], stdout);
+}
+fputc('\n', stdout);
+*/
+fn printBoard(--)
+	'|' printChar
+	0 var i do
+		while i BOARD_CAP 2 - < do
+			" *" drop
+			  board i + @8
+			+ @8
+			printChar
+			i 1 + i!
+		end
+	end
+	'|'  printChar
+	0x0a printChar
+end
+
+fn main(--)
+	board BOARD_CAP 0 fill
+	// board[BOARD_CAP - 2] = 1;
+	board BOARD_CAP 2 - + 1 !8
+	0
+	while dup BOARD_CAP 2 - < do
+		printBoard
+
+		/*
+        int pattern = (board[0] << 1) | board[1];
+        for (size_t j = 1; j < BOARD_CAP - 1; ++j) {
+            pattern = ((pattern << 1) & 7) | board[j + 1];
+            board[j] = (110 >> pattern) & 1;
+        }
+        */
+		board     @8
+		board 1 + @8
+		    or      1
+		// for (size_t j = 1; j < BOARD_CAP - 1; ++j) {
+		var pattern j do
+			while j BOARD_CAP 1 - < do
+				// ((pattern << 1) & 7)
+				pattern 1 shl 7 and
+				// ... | board[j + 1];
+				board j 1 + + @8
+				or
+				// pattern = 
+				pattern!
+
+				// board[j] = (110 >> pattern) & 1;
+				110 pattern shr
+				1 and
+
+				// board[j] =
+				board j +
+				!8
+				j 1 + j!
+			end
+		end
+
+		1 +
+	end
+	drop
+end

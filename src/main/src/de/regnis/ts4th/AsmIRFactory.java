@@ -32,6 +32,22 @@ public class AsmIRFactory {
 		return new AsmIR.Pop(reg, size);
 	}
 
+	public static AsmIR pushVar(int reg, int size) {
+		return new AsmIR.PushVar(reg, size);
+	}
+
+	public static AsmIR localVarRead(int reg, int size, int offset) {
+		return new AsmIR.LocalVarRead(reg, size, offset);
+	}
+
+	public static AsmIR localVarWrite(int reg, int size, int offset) {
+		return new AsmIR.LocalVarWrite(reg, size, offset);
+	}
+
+	public static AsmIR dropVar(int size) {
+		return new AsmIR.DropVars(size);
+	}
+
 	public static AsmIR move(int target, int source, int size) {
 		return new AsmIR.Move(target, source, size);
 	}

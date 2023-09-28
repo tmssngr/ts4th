@@ -1,5 +1,7 @@
 package de.regnis.ts4th;
 
+import java.util.*;
+
 import org.jetbrains.annotations.*;
 
 /**
@@ -33,6 +35,14 @@ public class InstructionFactory {
 
 	public static Instruction ret() {
 		return new Instruction.Ret();
+	}
+
+	public static Instruction bindVars(List<String> names) {
+		return new Instruction.BindVars(names, Location.DUMMY);
+	}
+
+	public static Instruction releaseVars(int count) {
+		return new Instruction.ReleaseVars(count);
 	}
 
 	@NotNull

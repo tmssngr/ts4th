@@ -7,6 +7,7 @@ public sealed interface AsmIR permits
 		AsmIR.Label,
 		AsmIR.IntLiteral, AsmIR.BoolLiteral, AsmIR.PtrLiteral, AsmIR.StringLiteral,
 		AsmIR.Push, AsmIR.Pop, AsmIR.Move,
+		AsmIR.PushVar, AsmIR.LocalVarRead, AsmIR.LocalVarWrite, AsmIR.DropVars,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
 		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.PrintChar, AsmIR.Mem, AsmIR.Ret {
@@ -69,6 +70,34 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return "pop r" + targetReg + " (" + size + ")";
+		}
+	}
+
+	record PushVar(int sourceReg, int size) implements AsmIR {
+		@Override
+		public String toString() {
+			return "pushVar r" + sourceReg + " (" + size + ")";
+		}
+	}
+
+	record LocalVarRead(int targetReg, int size, int offset) implements AsmIR {
+		@Override
+		public String toString() {
+			return "read r" + targetReg + ", var[" + offset + "(" + size + ")]";
+		}
+	}
+
+	record LocalVarWrite(int sourceReg, int size, int offset) implements AsmIR {
+		@Override
+		public String toString() {
+			return "write [" + offset + "(" + size + ")], r" + sourceReg;
+		}
+	}
+
+	record DropVars(int size) implements AsmIR {
+		@Override
+		public String toString() {
+			return "dropVars " + size;
 		}
 	}
 

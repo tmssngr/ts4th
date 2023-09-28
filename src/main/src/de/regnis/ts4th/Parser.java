@@ -34,9 +34,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		return parse(CharStreams.fromString(s), includeHandler);
 	}
 
+	private final Stack<ControlFlowStructure> stack = new Stack<ControlFlowStructure>();
 	private final IncludeHandler includeHandler;
-	private String continueLabel;
-	private String breakLabel;
+
 	private int index;
 
 	private Parser(IncludeHandler includeHandler) {
@@ -46,8 +46,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	@Override
 	public List<Declaration> visitRoot(TS4thParser.RootContext ctx) {
 		index = 0;
-		breakLabel = null;
-		continueLabel = null;
+		stack.clear();
 
 		final List<Declaration> declarations = new ArrayList<>();
 		for (TS4thParser.RootItemContext rootItemContext : ctx.rootItem()) {
@@ -251,57 +250,107 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	@Override
 	public List<Instruction> visitWhile(TS4thParser.WhileContext ctx) {
 		index++;
-		final String prevBreakLabel = breakLabel;
-		final String prevContinueLabel = continueLabel;
 		final String labelWhile = "while_" + index;
 		final String labelWhileBody = "whilebody_" + index;
 		final String labelWhileEnd = "endwhile_" + index;
 
+		final List<Instruction> instructions = new ArrayList<>();
+
+		stack.push(new WhileCondition());
 		try {
-			final List<Instruction> instructions = new ArrayList<>();
 			instructions.add(new Instruction.Label(labelWhile, createLocation(ctx.While())));
 
-			breakLabel = null;
-			continueLabel = null;
-
 			instructions.addAll(visitInstructions(ctx.condition));
-
-			final Location doLocation = createLocation(ctx.Do());
-			instructions.add(new Instruction.Branch(labelWhileBody, labelWhileEnd, doLocation));
-
-			instructions.add(new Instruction.Label(labelWhileBody, doLocation));
-
-			breakLabel = labelWhileEnd;
-			continueLabel = labelWhile;
-
-			instructions.addAll(visitInstructions(ctx.body));
-			instructions.add(InstructionFactory.jump(labelWhile));
-
-			instructions.add(new Instruction.Label(labelWhileEnd, createLocation(ctx.End())));
-			return instructions;
 		}
 		finally {
-			breakLabel = prevBreakLabel;
-			continueLabel = prevContinueLabel;
+			stack.pop();
 		}
+
+		final Location doLocation = createLocation(ctx.Do());
+		instructions.add(new Instruction.Branch(labelWhileBody, labelWhileEnd, doLocation));
+
+		instructions.add(new Instruction.Label(labelWhileBody, doLocation));
+
+		stack.push(new WhileBody(labelWhile, labelWhileEnd));
+		try {
+			instructions.addAll(visitInstructions(ctx.body));
+			instructions.add(InstructionFactory.jump(labelWhile));
+		}
+		finally {
+			stack.pop();
+		}
+
+		instructions.add(new Instruction.Label(labelWhileEnd, createLocation(ctx.End())));
+		return instructions;
+	}
+
+	@Override
+	public List<Instruction> visitVar(TS4thParser.VarContext ctx) {
+		final List<String> varNames = new ArrayList<>();
+		for (TerminalNode identifier : ctx.Identifier()) {
+			final String varName = identifier.getText();
+			if (!varName.matches("[a-z_][a-zA-Z0-9_]*")) {
+				throw new CompilerException(createLocation(identifier), "invalid variable name '" + varName + "'");
+			}
+			varNames.add(varName);
+		}
+		final int count = varNames.size();
+
+		final List<Instruction> instructions = new ArrayList<>();
+		instructions.add(new Instruction.BindVars(varNames, createLocation(ctx.Var())));
+
+		stack.push(new LocalVarsBlock(count));
+		try {
+			instructions.addAll(visitInstructions(ctx.instructions()));
+		}
+		finally {
+			stack.pop();
+		}
+
+		instructions.add(new Instruction.ReleaseVars(count));
+		return instructions;
 	}
 
 	@Override
 	public List<Instruction> visitBreak(TS4thParser.BreakContext ctx) {
-		if (breakLabel == null) {
-			final Token token = ctx.Break().getSymbol();
-			throw new CompilerException(createLocation(token), "break only can be used inside while-do-end between do and end");
+		final Token token = ctx.Break().getSymbol();
+		final List<Instruction> instructions = new ArrayList<>();
+		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
+			switch (cfs) {
+			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
+			case WhileBody(_, String breakLabel) -> {
+				instructions.add(new Instruction.Jump(breakLabel));
+				return instructions;
+			}
+			case WhileCondition _ -> throw new CompilerException(createLocation(token), "`break` only can be used inside `while-do-end` between `do` and `end`");
+			}
 		}
-		return List.of(InstructionFactory.jump(breakLabel));
+
+		throw new CompilerException(createLocation(token), "`break` needs an outer `while` loop");
 	}
 
 	@Override
 	public List<Instruction> visitContinue(TS4thParser.ContinueContext ctx) {
-		if (continueLabel == null) {
-			final Token token = ctx.Continue().getSymbol();
-			throw new CompilerException(createLocation(token), "continue only can be used inside while-do-end between do and end");
+		final Token token = ctx.Continue().getSymbol();
+		final List<Instruction> instructions = new ArrayList<>();
+		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
+			switch (cfs) {
+			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
+			case WhileBody(String continueLabel, String breakLabel) -> {
+				instructions.add(new Instruction.Jump(continueLabel));
+				return instructions;
+			}
+			case WhileCondition _ -> throw new CompilerException(createLocation(token), "`continue` only can be used inside `while-do-end` between `do` and `end`");
+			}
 		}
-		return List.of(InstructionFactory.jump(continueLabel));
+
+		throw new CompilerException(createLocation(token), "`continue` needs an outer `while` loop");
+	}
+
+	private Iterable<ControlFlowStructure> getStackInReverseOrder() {
+		final List<ControlFlowStructure> list = new ArrayList<>(stack);
+		Collections.reverse(list);
+		return Collections.unmodifiableList(list);
 	}
 
 	private String parseStringLiteral(TerminalNode node) {
@@ -388,6 +437,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		List<Declaration> include(String fileString);
 	}
 
+	private sealed interface ControlFlowStructure permits WhileCondition, WhileBody, LocalVarsBlock {
+	}
+
 	private static class FileIncludeHandler implements IncludeHandler {
 		private final Path file;
 		private final Set<Path> files;
@@ -430,5 +482,13 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 				throw new ParseCancellationException("Failed to parse file " + file, ex);
 			}
 		}
+	}
+
+	private record WhileCondition() implements ControlFlowStructure {}
+
+	private record WhileBody(String continueLabel, String breakLabel) implements ControlFlowStructure {
+	}
+
+	private record LocalVarsBlock(int count) implements ControlFlowStructure {
 	}
 }

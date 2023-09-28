@@ -16,13 +16,56 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- subr --
-        call tsf_subr
-        ; -- ret --
-        ret
-
-        ; -- proc subr --
-tsf_subr:
+        ; -- literal r0, #1 --
+        mov cx, 1
+        ; -- push 0 (2) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- literal r0, #2 --
+        mov cx, 2
+        ; -- push var r0 (2) --
+        push cx
+        ; -- pop 0 (2) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push var r0 (2) --
+        push cx
+        ; -- read var r0, [0 (2)] --
+        mov cx, [rsp+0]
+        ; -- printInt r0(2) --
+        movsx rcx, cx
+        test   rcx, rcx
+        jns    .1
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_printChar
+        pop    rcx
+.1:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_printChar
+        add  rsp, 8
+        ; -- read var r0, [2 (2)] --
+        mov cx, [rsp+2]
+        ; -- printInt r0(2) --
+        movsx rcx, cx
+        test   rcx, rcx
+        jns    .2
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_printChar
+        pop    rcx
+.2:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_printChar
+        add  rsp, 8
+        ; -- drop vars 4 --
+        add rsp, 4
         ; -- ret --
         ret
 

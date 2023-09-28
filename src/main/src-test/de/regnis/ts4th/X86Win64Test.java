@@ -5,7 +5,10 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.function.*;
 
+import org.jetbrains.annotations.*;
 import org.junit.*;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Thomas Singer
@@ -247,10 +250,115 @@ public class X86Win64Test extends AbstractFileTest {
 				             end""");
 	}
 
-	private void compileWrite(String s) throws IOException {
+	@Test
+	public void testLocalVar() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				             	1 2
+				             	var a b do
+				             		a print
+				             		b print
+				             	end
+				             end""");
+
+		try {
+			compile("""
+					        fn main(--)
+					            1
+					            var .a do
+					                1 print
+					            end
+					        end""");
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+
+		try {
+			compile("""
+					        fn main(--)
+					            1
+					            var print do
+					                1 print
+					            end
+					        end""");
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+
+		try {
+			compile("""
+					        fn fun(int)
+					            1 drop
+					        end
+
+					        fn main(--)
+					            1
+					            var fun do
+					                1 print
+					            end
+					        end""");
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+
+		if (false) {
+			try {
+				compile("""
+						        const a 1 end
+
+						        fn main(--)
+						            1
+						            var a do
+						                a print
+						            end
+						        end""");
+				fail();
+			}
+			catch (CompilerException _) {
+			}
+
+			try {
+				compile("""
+						        var a 1 end
+
+						        fn main(--)
+						            1
+						            var a do
+						                a print
+						            end
+						        end""");
+				fail();
+			}
+			catch (CompilerException _) {
+			}
+		}
+	}
+
+	@Test
+	public void testLocalVarWrite() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				               0 var i do
+				                 while i 10 < do
+				                   i print
+				                   i 1 + i!
+				                 end
+				               end
+				             end""");
+	}
+
+	@NotNull
+	private AsmIRProgram compile(String s) {
 		final List<Declaration> declarations = Parser.parseString(s);
 		final Program program = Program.fromDeclarations(declarations);
-		final AsmIRProgram irProgram = Compiler.compile(program);
+		return Compiler.compile(program);
+	}
+
+	private void compileWrite(String s) throws IOException {
+		final AsmIRProgram irProgram = compile(s);
 		writeIr(irProgram);
 		writeX86(irProgram);
 	}

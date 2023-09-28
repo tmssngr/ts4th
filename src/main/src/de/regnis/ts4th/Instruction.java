@@ -1,12 +1,15 @@
 package de.regnis.ts4th;
 
+import java.util.*;
+
 /**
  * @author Thomas Singer
  */
 public sealed interface Instruction permits
 		Instruction.Label,
 		Instruction.IntLiteral, Instruction.BoolLiteral, Instruction.PtrLiteral, Instruction.StringLiteral,
-		Instruction.Command, Instruction.Jump, Instruction.Branch, Instruction.Ret {
+		Instruction.Command, Instruction.Jump, Instruction.Branch, Instruction.Ret,
+		Instruction.BindVars, Instruction.ReleaseVars {
 
 	record Label(String name, Location location) implements Instruction {
 		public Label(String name) {
@@ -84,6 +87,20 @@ public sealed interface Instruction permits
 		@Override
 		public String toString() {
 			return "ret";
+		}
+	}
+
+	record BindVars(List<String> varNames, Location location) implements Instruction {
+		@Override
+		public String toString() {
+			return "bindVars " + varNames;
+		}
+	}
+
+	record ReleaseVars(int count) implements Instruction {
+		@Override
+		public String toString() {
+			return "releaseVars " + count;
 		}
 	}
 }
