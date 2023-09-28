@@ -37,11 +37,6 @@ public class Compiler {
 			throw new CompilerException("no `main`-function found");
 		}
 
-		for (Function function : program.functions()) {
-			final CfgFunction cfgFunction = new CfgFunction(function);
-			cfgFunction.checkTypes(typeChecker);
-		}
-
 		final List<Function> inlinedFunctions = Inliner.process(program.functions());
 
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
