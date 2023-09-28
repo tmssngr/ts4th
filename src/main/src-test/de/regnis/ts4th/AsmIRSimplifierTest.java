@@ -185,6 +185,26 @@ public class AsmIRSimplifierTest {
 		             ));
 	}
 
+	@Test
+	public void testDropVars() {
+		testSimplify(List.of(
+				             dropVar(5)
+		             ),
+		             List.of(
+				             dropVar(2),
+				             dropVar(3)
+		             ));
+
+		testSimplify(List.of(
+				             dropVar(9)
+		             ),
+		             List.of(
+				             dropVar(2),
+				             dropVar(3),
+				             dropVar(4)
+		             ));
+	}
+
 	private static void testSimplify(List<AsmIR> expected, List<AsmIR> input) {
 		assertEquals(expected,
 		             AsmIRSimplifier.simplify(input));

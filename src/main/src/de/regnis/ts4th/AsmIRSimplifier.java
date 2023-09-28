@@ -14,6 +14,7 @@ public class AsmIRSimplifier {
 			newInstructions = removePushPop(newInstructions);
 			newInstructions = removeLiteralMove(newInstructions);
 			newInstructions = swapLitPop(newInstructions);
+			newInstructions = squashDropVars(newInstructions);
 			removeUnusedLabels(newInstructions);
 			if (newInstructions.equals(instructions)) {
 				return instructions;
@@ -196,6 +197,24 @@ public class AsmIRSimplifier {
 				}
 			}
 		}.process("swap literal pop");
+
+		return newInstructions;
+	}
+
+	private static List<AsmIR> squashDropVars(List<AsmIR> instructions) {
+		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
+
+		new DualPeepHoleSimplifier<>(newInstructions) {
+			@Override
+			protected void handle(AsmIR i1, AsmIR i2) {
+				if (i1 instanceof AsmIR.DropVars(int size1)
+				    && i2 instanceof AsmIR.DropVars(int size2)) {
+					removeNext();
+					replace(new AsmIR.DropVars(size1 + size2));
+					again();
+				}
+			}
+		}.process("squash drop-vars");
 
 		return newInstructions;
 	}
