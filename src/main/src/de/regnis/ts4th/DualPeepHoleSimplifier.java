@@ -8,41 +8,47 @@ import java.util.*;
 abstract class DualPeepHoleSimplifier<I> {
 	protected abstract void handle(I i1, I i2);
 
-	private final List<I> instructions;
+	private final List<I> items;
 
 	private int i;
 
-	protected DualPeepHoleSimplifier(List<I> instructions) {
-		this.instructions = instructions;
+	protected DualPeepHoleSimplifier(List<I> items) {
+		this.items = items;
 	}
 
 	public void process() {
 		i = 0;
-		for (; i < instructions.size() - 1; i++) {
-			final I i1 = instructions.get(i);
-			final I i2 = instructions.get(i + 1);
+		for (; i < items.size() - 1; i++) {
+			final I i1 = items.get(i);
+			final I i2 = items.get(i + 1);
 			handle(i1, i2);
 		}
 	}
 
 	protected void remove() {
-		instructions.remove(i);
+		items.remove(i);
 	}
 
 	protected void removeNext() {
-		instructions.remove(i + 1);
+		items.remove(i + 1);
 	}
 
-	protected void insert(I command) {
-		instructions.add(i, command);
+	protected void insert(I item) {
+		items.add(i, item);
 	}
 
-	protected void replace(I command) {
+	protected void replace(I item) {
 		remove();
-		insert(command);
+		insert(item);
 	}
 
 	protected void again() {
 		i--;
+	}
+
+	protected void print() {
+		for (I item : items) {
+			System.err.println(item);
+		}
 	}
 }
