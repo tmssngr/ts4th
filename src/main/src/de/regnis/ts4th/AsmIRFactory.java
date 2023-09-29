@@ -53,7 +53,7 @@ public class AsmIRFactory {
 	}
 
 	public static AsmIR load(int valueReg, int pointerReg, int valueSize) {
-		return new AsmIR.Load(valueReg, valueSize, pointerReg);
+		return new AsmIR.Load(valueReg, pointerReg, valueSize);
 	}
 
 	public static AsmIR store(int pointerReg, int valueReg, int valueSize) {
