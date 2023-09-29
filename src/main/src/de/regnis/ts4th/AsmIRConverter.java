@@ -52,12 +52,14 @@ public class AsmIRConverter {
 	private final Function function;
 	private final AsmIRStringLiterals stringLiterals;
 	private final Consumer<AsmIR> output;
+	private final int minPushSize;
 
 	private AsmIRConverter(@NotNull NameToFunction nameToFunction, @NotNull Function function, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Consumer<AsmIR> output) {
 		this.nameToFunction = nameToFunction;
 		this.function = function;
 		this.stringLiterals = stringLiterals;
 		this.output = output;
+		minPushSize = 2;
 	}
 
 	public TypeList process(Instruction instruction, TypeList input) {
@@ -168,7 +170,7 @@ public class AsmIRConverter {
 							yield input.append(type);
 						}
 					}
-					offset += size;
+					offset += Math.max(size, minPushSize);
 				}
 				throw new CompilerException(location, STR. "Unknown command \{ name }" );
 			}
@@ -195,7 +197,7 @@ public class AsmIRConverter {
 
 					final int size = typeToSize(type);
 					output.accept(AsmIRFactory.pop(REG_0, size));
-					output.accept(AsmIRFactory.pushVar(REG_0, size));
+					output.accept(AsmIRFactory.pushVar(REG_0, Math.max(size, minPushSize)));
 
 					types = types.prev();
 				}
@@ -207,7 +209,7 @@ public class AsmIRConverter {
 				while (count-- > 0) {
 					final LocalVar var = vars.removeLast();
 					final int size = typeToSize(var.type);
-					byteCount += size;
+					byteCount += Math.max(size, minPushSize);
 				}
 				output.accept(AsmIRFactory.dropVar(byteCount));
 				yield input;

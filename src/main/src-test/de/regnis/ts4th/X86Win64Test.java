@@ -338,6 +338,20 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testLocalVarBool() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				                   1     true
+				               var value isDebug do
+				                 isDebug if
+				                   "value: " printString
+				                   1 print
+				                 end
+				               end
+				             end""");
+	}
+
+	@Test
 	public void testLocalVarWrite() throws IOException {
 		compileWrite("""
 				             fn main(--)
