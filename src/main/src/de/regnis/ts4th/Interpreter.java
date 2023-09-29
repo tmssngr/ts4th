@@ -26,13 +26,13 @@ public class Interpreter {
 
 	protected boolean process(String name) {
 		switch (name) {
-		case BuiltinCommands.ADD -> {
+		case Intrinsics.ADD -> {
 			final int a = popInt();
 			final int b = popInt();
 			push(a + b);
 			return true;
 		}
-		case BuiltinCommands.MUL -> {
+		case Intrinsics.MUL -> {
 			final int a = popInt();
 			final int b = popInt();
 			push(a * b);

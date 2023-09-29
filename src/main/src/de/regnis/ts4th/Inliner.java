@@ -59,7 +59,7 @@ public class Inliner {
 				continue;
 			}
 
-			if (BuiltinCommands.get(command) != null) {
+			if (Intrinsics.get(command) != null) {
 				continue;
 			}
 
@@ -89,7 +89,7 @@ public class Inliner {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Command(String command, _)) {
-				if (BuiltinCommands.get(command) == null) {
+				if (Intrinsics.get(command) == null) {
 					final Function invokedFunction = nameToFunction.get(command);
 					if (invokedFunction != null && invokedFunction.isInline()) {
 						inline(invokedFunction, true, consumer);

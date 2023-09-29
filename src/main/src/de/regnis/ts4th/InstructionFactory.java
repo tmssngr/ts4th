@@ -47,75 +47,75 @@ public class InstructionFactory {
 
 	@NotNull
 	public static Instruction dup() {
-		return command(BuiltinCommands.DUP);
+		return command(Intrinsics.DUP);
 	}
 
 	public static Instruction dup2Int() {
-		return command(BuiltinCommands.DUP2);
+		return command(Intrinsics.DUP2);
 	}
 
 	@NotNull
 	public static Instruction dropInt() {
-		return command(BuiltinCommands.DROP);
+		return command(Intrinsics.DROP);
 	}
 
 	@NotNull
 	public static Instruction swapInt() {
-		return command(BuiltinCommands.SWAP);
+		return command(Intrinsics.SWAP);
 	}
 
 	@NotNull
 	public static Instruction overInt() {
-		return command(BuiltinCommands.OVER);
+		return command(Intrinsics.OVER);
 	}
 
 	@NotNull
 	public static Instruction add() {
-		return command(BuiltinCommands.ADD);
+		return command(Intrinsics.ADD);
 	}
 
 	@NotNull
 	public static Instruction sub() {
-		return command(BuiltinCommands.SUB);
+		return command(Intrinsics.SUB);
 	}
 
 	@NotNull
 	public static Instruction mul() {
-		return command(BuiltinCommands.MUL);
+		return command(Intrinsics.MUL);
 	}
 
 	@NotNull
 	public static Instruction isLT() {
-		return command(BuiltinCommands.IS_LT);
+		return command(Intrinsics.IS_LT);
 	}
 
 	@NotNull
 	public static Instruction isLE() {
-		return command(BuiltinCommands.IS_LE);
+		return command(Intrinsics.IS_LE);
 	}
 
 	@NotNull
 	public static Instruction isEQ() {
-		return command(BuiltinCommands.IS_EQ);
+		return command(Intrinsics.IS_EQ);
 	}
 
 	@NotNull
 	public static Instruction isNE() {
-		return command(BuiltinCommands.IS_NE);
+		return command(Intrinsics.IS_NE);
 	}
 
 	@NotNull
 	public static Instruction isGE() {
-		return command(BuiltinCommands.IS_GE);
+		return command(Intrinsics.IS_GE);
 	}
 
 	@NotNull
 	public static Instruction isGT() {
-		return command(BuiltinCommands.IS_GT);
+		return command(Intrinsics.IS_GT);
 	}
 
 	@NotNull
 	public static Instruction print() {
-		return command(BuiltinCommands.PRINT);
+		return command(Intrinsics.PRINT);
 	}
 }

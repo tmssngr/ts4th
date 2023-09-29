@@ -119,7 +119,7 @@ public class AsmIRConverter {
 				yield input;
 			}
 			case Instruction.Command(String name, Location location) -> {
-				final BuiltinCommands.Command command = BuiltinCommands.get(name);
+				final Intrinsics.Command command = Intrinsics.get(name);
 				if (command != null) {
 					final TypeList out = command.process(name, location, input);
 					command.toIR(name, input, output);
@@ -183,7 +183,7 @@ public class AsmIRConverter {
 				TypeList types = input;
 				while (it.hasPrevious()) {
 					final String name = it.previous();
-					if (BuiltinCommands.get(name) != null) {
+					if (Intrinsics.get(name) != null) {
 						throw new CompilerException(location, STR."There already is a built-in command defined with the name \{name}.");
 					}
 					if (nameToFunction.get(name) != null) {

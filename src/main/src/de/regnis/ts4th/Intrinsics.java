@@ -11,7 +11,7 @@ import static de.regnis.ts4th.AsmIRConverter.*;
 /**
  * @author Thomas Singer
  */
-public class BuiltinCommands {
+public class Intrinsics {
 
 	public static final String DROP = "drop";
 	public static final String DUP = "dup";
