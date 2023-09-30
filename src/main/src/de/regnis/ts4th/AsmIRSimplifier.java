@@ -207,10 +207,10 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.DropVars(int size1)
-				    && i2 instanceof AsmIR.DropVars(int size2)) {
+				if (i1 instanceof AsmIR.DropVars(TypeList types1)
+				    && i2 instanceof AsmIR.DropVars(TypeList types2)) {
 					removeNext();
-					replace(new AsmIR.DropVars(size1 + size2));
+					replace(new AsmIR.DropVars(types1.append(types2)));
 					again();
 				}
 			}

@@ -325,21 +325,27 @@ public class X86Win64 {
 			writeComment(name);
 			writeIndented(STR."call \{LABEL_PREFIX}\{name}");
 		}
-		case AsmIR.PushVar(int sourceReg, int size) -> {
-			writeComment(STR."push var r\{sourceReg} (\{size})");
-			writeIndented(STR. "push \{getRegName(sourceReg, size)}");
+		case AsmIR.PushVar(int sourceReg, Type type) -> {
+			writeComment(STR."push var r\{sourceReg} (\{type})");
+			final int size = getByteCountForPush(type);
+			writeIndented(STR. "push \{ getRegName(sourceReg, size) }");
 		}
-		case AsmIR.LocalVarRead(int targetReg, int size, int offset) -> {
-			writeComment(STR."read var r\{targetReg}, [\{offset} (\{size})]");
-			writeIndented(STR. "mov \{getRegName(targetReg, size)}, [rsp+\{offset}]");
+		case AsmIR.LocalVarRead(int targetReg, Type type, TypeList offset) -> {
+			writeComment(STR."read var r\{targetReg}, [\{offset} (\{type})]");
+			final int offsetCount = getOffset(offset);
+			final int size = getByteCountForPush(type);
+			writeIndented(STR. "mov \{ getRegName(targetReg, size) }, [rsp+\{ offsetCount }]");
 		}
-		case AsmIR.LocalVarWrite(int sourceReg, int size, int offset) -> {
-			writeComment(STR."write var [\{offset} (\{size})], \{sourceReg}");
-			writeIndented(STR. "mov [rsp+\{offset}], \{getRegName(sourceReg, size)}");
+		case AsmIR.LocalVarWrite(int sourceReg, Type type, TypeList offset) -> {
+			writeComment(STR."write var [\{ offset } (\{type})], \{sourceReg}");
+			final int offsetCount = getOffset(offset);
+			final int size = getByteCountForPush(type);
+			writeIndented(STR. "mov [rsp+\{ offsetCount }], \{ getRegName(sourceReg, size) }");
 		}
-		case AsmIR.DropVars(int size) -> {
-			writeComment(STR."drop vars \{size}");
-			writeIndented(STR. "add rsp, \{size}");
+		case AsmIR.DropVars(TypeList types) -> {
+			writeComment(STR."drop vars \{types}");
+			final int offset = getOffset(types);
+			writeIndented(STR. "add rsp, \{offset}");
 		}
 		}
 	}
@@ -573,6 +579,24 @@ public class X86Win64 {
 
 	private String nextLocalLabel() {
 		return "." + (++labelIndex);
+	}
+
+	private int getByteCountForPush(Type type) {
+		// x86 has no push for 8 bit register https://www.felixcloutier.com/x86/push
+		return Math.max(2, type.getByteCount(PTR_SIZE));
+	}
+
+	private int getOffset(TypeList types) {
+		int offset = 0;
+		while (true) {
+			final Type type = types.type();
+			if (type == null) {
+				return offset;
+			}
+
+			offset += getByteCountForPush(type);
+			types = types.prev();
+		}
 	}
 
 	@NotNull

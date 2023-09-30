@@ -23,15 +23,15 @@ tsf_main:
         mov [r15], cx
         ; -- literal r0, #true --
         mov cx, 1
-        ; -- push var r0 (2) --
+        ; -- push var r0 (Bool) --
         push cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
-        ; -- push var r0 (2) --
+        ; -- push var r0 (Int) --
         push cx
-        ; -- read var r0, [2 (1)] --
-        mov cl, [rsp+2]
+        ; -- read var r0, [Int (Bool)] --
+        mov cx, [rsp+2]
         ; -- boolTest 0 0 --
         test cl, cl
         ; -- jump z endif_1 --
@@ -64,7 +64,7 @@ tsf_main:
           call tsfbi_emit
         add  rsp, 8
 tsf_endif_1:
-        ; -- drop vars 4 --
+        ; -- drop vars Int, Bool --
         add rsp, 4
         ; -- ret --
         ret

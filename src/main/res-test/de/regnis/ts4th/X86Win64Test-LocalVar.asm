@@ -23,14 +23,14 @@ tsf_main:
         mov [r15], cx
         ; -- literal r0, #2 --
         mov cx, 2
-        ; -- push var r0 (2) --
+        ; -- push var r0 (Int) --
         push cx
         ; -- pop 0 (2) --
         mov cx, [r15]
         add r15, 2
-        ; -- push var r0 (2) --
+        ; -- push var r0 (Int) --
         push cx
-        ; -- read var r0, [0 (2)] --
+        ; -- read var r0, [<empty> (Int)] --
         mov cx, [rsp+0]
         ; -- printInt r0(2) --
         movsx rcx, cx
@@ -47,7 +47,7 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- read var r0, [2 (2)] --
+        ; -- read var r0, [Int (Int)] --
         mov cx, [rsp+2]
         ; -- printInt r0(2) --
         movsx rcx, cx
@@ -64,7 +64,7 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- drop vars 4 --
+        ; -- drop vars Int, Int --
         add rsp, 4
         ; -- ret --
         ret

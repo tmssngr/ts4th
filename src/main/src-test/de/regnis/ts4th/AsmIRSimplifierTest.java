@@ -188,20 +188,20 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testDropVars() {
 		testSimplify(List.of(
-				             dropVar(5)
+				             dropVar(TypeList.INT2.append(Type.Bool))
 		             ),
 		             List.of(
-				             dropVar(2),
-				             dropVar(3)
+				             dropVar(TypeList.INT2),
+				             dropVar(TypeList.BOOL)
 		             ));
 
 		testSimplify(List.of(
-				             dropVar(9)
+				             dropVar(TypeList.INT.append(Type.Ptr).append(Type.Bool))
 		             ),
 		             List.of(
-				             dropVar(2),
-				             dropVar(3),
-				             dropVar(4)
+				             dropVar(TypeList.INT),
+				             dropVar(TypeList.PTR),
+				             dropVar(TypeList.BOOL)
 		             ));
 	}
 

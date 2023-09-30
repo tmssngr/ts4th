@@ -26,18 +26,17 @@ public record TypeList(TypeList prev, Type type) {
 		return buffer.toString();
 	}
 
-	private void append(StringBuilder buffer) {
-		if (prev.type != null) {
-			prev.append(buffer);
-		}
-		if (buffer.length() > 0) {
-			buffer.append(", ");
-		}
-		buffer.append(type);
-	}
-
 	public TypeList append(Type type) {
 		return new TypeList(this, type);
+	}
+
+	public TypeList append(TypeList list) {
+		if (list.type == null) {
+			return this;
+		}
+
+		final TypeList appended = append(list.prev);
+		return appended.append(list.type);
 	}
 
 	public boolean canOperateOn(TypeList input) {
@@ -65,6 +64,16 @@ public record TypeList(TypeList prev, Type type) {
 		return prev.size() + 1;
 	}
 
+	private void append(StringBuilder buffer) {
+		if (prev.type != null) {
+			prev.append(buffer);
+		}
+		if (buffer.length() > 0) {
+			buffer.append(", ");
+		}
+		buffer.append(type);
+	}
+
 	private TypeList remove(TypeList in) {
 		if (in.type == null) {
 			return this;
@@ -73,14 +82,5 @@ public record TypeList(TypeList prev, Type type) {
 			return prev.remove(in.prev);
 		}
 		return null;
-	}
-
-	private TypeList append(TypeList list) {
-		if (list.type == null) {
-			return this;
-		}
-
-		final TypeList appended = append(list.prev);
-		return appended.append(list.type);
 	}
 }

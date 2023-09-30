@@ -52,14 +52,12 @@ public class AsmIRConverter {
 	private final Function function;
 	private final AsmIRStringLiterals stringLiterals;
 	private final Consumer<AsmIR> output;
-	private final int minPushSize;
 
 	private AsmIRConverter(@NotNull NameToFunction nameToFunction, @NotNull Function function, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Consumer<AsmIR> output) {
 		this.nameToFunction = nameToFunction;
 		this.function = function;
 		this.stringLiterals = stringLiterals;
 		this.output = output;
-		minPushSize = 2;
 	}
 
 	public TypeList process(Instruction instruction, TypeList input) {
@@ -146,7 +144,7 @@ public class AsmIRConverter {
 					name = name.substring(0, name.length() - 1);
 				}
 
-				int offset = 0;
+				TypeList offset = TypeList.EMPTY;
 				for (ListIterator<LocalVar> it = vars.listIterator(vars.size()); it.hasPrevious(); ) {
 					final LocalVar var = it.previous();
 					final Type type = var.type();
@@ -161,16 +159,16 @@ public class AsmIRConverter {
 							}
 
 							output.accept(AsmIRFactory.pop(REG_0, size));
-							output.accept(AsmIRFactory.localVarWrite(REG_0, size, offset));
+							output.accept(AsmIRFactory.localVarWrite(REG_0, type, offset));
 							yield input.prev();
 						}
 						else {
-							output.accept(AsmIRFactory.localVarRead(REG_0, size, offset));
+							output.accept(AsmIRFactory.localVarRead(REG_0, type, offset));
 							output.accept(AsmIRFactory.push(REG_0, size));
 							yield input.append(type);
 						}
 					}
-					offset += Math.max(size, minPushSize);
+					offset = offset.append(type);
 				}
 				throw new CompilerException(location, STR. "Unknown command \{ name }" );
 			}
@@ -197,7 +195,7 @@ public class AsmIRConverter {
 
 					final int size = typeToSize(type);
 					output.accept(AsmIRFactory.pop(REG_0, size));
-					output.accept(AsmIRFactory.pushVar(REG_0, Math.max(size, minPushSize)));
+					output.accept(AsmIRFactory.pushVar(REG_0, type));
 
 					types = types.prev();
 				}
@@ -205,13 +203,12 @@ public class AsmIRConverter {
 				yield types;
 			}
 			case Instruction.ReleaseVars(int count) -> {
-				int byteCount = 0;
+				TypeList types = TypeList.EMPTY;
 				while (count-- > 0) {
 					final LocalVar var = vars.removeLast();
-					final int size = typeToSize(var.type);
-					byteCount += Math.max(size, minPushSize);
+					types = types.append(var.type);
 				}
-				output.accept(AsmIRFactory.dropVar(byteCount));
+				output.accept(AsmIRFactory.dropVar(types));
 				yield input;
 			}
 		};

@@ -73,31 +73,35 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record PushVar(int sourceReg, int size) implements AsmIR {
+	record PushVar(int sourceReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "pushVar r" + sourceReg + " (" + size + ")";
+			return "pushVar r" + sourceReg + " (" + type + ")";
 		}
 	}
 
-	record LocalVarRead(int targetReg, int size, int offset) implements AsmIR {
+	record LocalVarRead(int targetReg, Type type, TypeList offset) implements AsmIR {
 		@Override
 		public String toString() {
-			return "read r" + targetReg + ", var[" + offset + "(" + size + ")]";
+			return "read r" + targetReg + ", var[" + offset.size() + "(" + type + ")]";
 		}
 	}
 
-	record LocalVarWrite(int sourceReg, int size, int offset) implements AsmIR {
+	record LocalVarWrite(int sourceReg, Type type, TypeList offset) implements AsmIR {
 		@Override
 		public String toString() {
-			return "write [" + offset + "(" + size + ")], r" + sourceReg;
+			return "write [" + offset.size() + "(" + type + ")], r" + sourceReg;
 		}
 	}
 
-	record DropVars(int size) implements AsmIR {
+	record DropVars(TypeList types) implements AsmIR {
+		public DropVars {
+			Utils.assertTrue(types.type() != null);
+		}
+
 		@Override
 		public String toString() {
-			return "dropVars " + size;
+			return "dropVars " + types;
 		}
 	}
 
