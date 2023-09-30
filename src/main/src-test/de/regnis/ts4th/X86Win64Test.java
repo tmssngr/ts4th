@@ -373,6 +373,25 @@ public class X86Win64Test extends AbstractFileTest {
 				             end""");
 	}
 
+	@Test
+	public void testCast() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				                1000
+				                    dup print
+				                    '=' emit
+				                    dup 8 shr print
+				                    as_u8 print
+				                '\\n' emit
+				                -1
+				                    dup print
+				                    '=' emit
+				                    dup as_u8 print
+				                    dup as_u16 print
+				                    as_u32 print
+				             end""");
+	}
+
 	@NotNull
 	private AsmIRProgram compile(String s) {
 		final List<Declaration> declarations = Parser.parseString(s);

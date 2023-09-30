@@ -13,6 +13,15 @@ import static de.regnis.ts4th.AsmIRConverter.*;
  */
 public class Intrinsics {
 
+	public static final String CAST_I8 = "as_i8";
+	public static final String CAST_I16 = "as_i16";
+	public static final String CAST_I32 = "as_i32";
+	public static final String CAST_I64 = "as_i64";
+	public static final String CAST_U8 = "as_u8";
+	public static final String CAST_U16 = "as_u16";
+	public static final String CAST_U32 = "as_u32";
+	public static final String CAST_U64 = "as_u64";
+
 	public static final String DROP = "drop";
 	public static final String DUP = "dup";
 	public static final String DUP2 = "dup2";
@@ -47,6 +56,14 @@ public class Intrinsics {
 	private static final Map<String, Command> nameToCommand = new HashMap<>();
 
 	static {
+		nameToCommand.put(CAST_I8, new CastCommand(Type.I8));
+		nameToCommand.put(CAST_I16, new CastCommand(Type.I16));
+		nameToCommand.put(CAST_I32, new CastCommand(Type.I32));
+		nameToCommand.put(CAST_I64, new CastCommand(Type.I64));
+		nameToCommand.put(CAST_U8, new CastCommand(Type.U8));
+		nameToCommand.put(CAST_U16, new CastCommand(Type.U16));
+		nameToCommand.put(CAST_U32, new CastCommand(Type.U32));
+		nameToCommand.put(CAST_U64, new CastCommand(Type.U64));
 		nameToCommand.put(DROP, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
@@ -447,6 +464,43 @@ public class Intrinsics {
 		TypeList process(String name, Location location, TypeList input);
 
 		void toIR(String name, TypeList types, Consumer<AsmIR> output);
+	}
+
+	private static final class CastCommand implements Command {
+		private final Type targetType;
+		private final List<Type> allowedTypes;
+
+		private CastCommand(Type targetType) {
+			this.targetType = targetType;
+			this.allowedTypes = new ArrayList<>();
+			for (Type type : Type.INT_TYPES) {
+				if (type != targetType) {
+					allowedTypes.add(type);
+				}
+			}
+		}
+
+		@Override
+		public TypeList process(String name, Location location, TypeList input) {
+			if (input.isEmpty()) {
+				throw new InvalidTypeException(location, name + " (a -- " + targetType + ") can't operate on empty stack");
+			}
+
+			if (!allowedTypes.contains(input.type())) {
+				throw new InvalidTypeException(location, name + " (a -- " + targetType + ") can only operate on " + typesToString(allowedTypes)
+				                                         + ", but got " + input);
+			}
+
+			return input.prev().append(targetType);
+		}
+
+		@Override
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			final Type type = types.type();
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.cast(REG_0, type, targetType));
+			output.accept(AsmIRFactory.push(REG_0, targetType));
+		}
 	}
 
 	private record BinaryCommand(AsmIR.BinOperation operation) implements Command {
