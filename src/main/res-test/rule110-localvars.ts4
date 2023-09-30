@@ -27,12 +27,12 @@ fn printBoard(--)
 			" *" drop
 			  board i + @8
 			+ @8
-			emit
+			as_u8 emit
 			i 1 + i!
 		end
 	end
 	'|'  emit
-	0x0a emit
+	'\n' emit
 end
 
 fn main(--)

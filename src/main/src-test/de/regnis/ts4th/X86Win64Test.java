@@ -392,6 +392,11 @@ public class X86Win64Test extends AbstractFileTest {
 				             end""");
 	}
 
+	@Test
+	public void testFiles() throws IOException {
+		compileFileWrite("rule110-localvars");
+	}
+
 	@NotNull
 	private AsmIRProgram compile(String s) {
 		final List<Declaration> declarations = Parser.parseString(s);
@@ -399,10 +404,19 @@ public class X86Win64Test extends AbstractFileTest {
 		return Compiler.compile(program);
 	}
 
-	private void compileWrite(String s) throws IOException {
-		final String name = getTestClassMethodName();
+	private void compileFileWrite(String name) throws IOException {
+		final List<Declaration> declarations = Parser.parseFile(createPath(name + ".ts4"));
+		final Program program = Program.fromDeclarations(declarations);
+		final AsmIRProgram irProgram = Compiler.compile(program);
+		compileWrite(irProgram, name);
+	}
 
+	private void compileWrite(String s) throws IOException {
 		final AsmIRProgram irProgram = compile(s);
+		compileWrite(irProgram, getTestClassMethodName());
+	}
+
+	private void compileWrite(AsmIRProgram irProgram, String name) throws IOException {
 		writeIr(irProgram, createPath(name + ".ir"));
 
 		final Path asmFile = createPath(name + ".asm");

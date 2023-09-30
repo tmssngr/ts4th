@@ -1,0 +1,209 @@
+const %0: 20 2a
+
+fill:
+	pop r0 (i16)
+	pushVar r0 (i16)
+	pop r0 (i16)
+	pushVar r0 (i16)
+	pop r0 (ptr)
+	pushVar r0 (ptr)
+while_1:
+	read r0, var[1(i16)]
+	r1 = 0 (i16)
+	gt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, endwhile_1
+	read r0, var[2(i16)]
+	push r0 (i16)
+	read r0, var[0(ptr)]
+	move r1, r0 (ptr)
+	pop r0 (i16)
+	store @r1, r0(1)
+	read r0, var[0(ptr)]
+	r1 = 1 (i16)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	write [0(ptr)], r0
+	read r0, var[1(i16)]
+	r1 = 1 (i16)
+	sub r0, r1 (i16)
+	write [1(i16)], r0
+	jump while_1
+endwhile_1:
+	dropVars ptr, i16, i16
+	ret
+printBoard:
+	r0 = 124 (u8)
+	emit
+	r0 = 0 (i16)
+	pushVar r0 (i16)
+while_2:
+	read r0, var[0(i16)]
+	push r0 (i16)
+	r0 = 30 (i16)
+	r1 = 2 (i16)
+	sub r0, r1 (i16)
+	move r1, r0 (i16)
+	pop r0 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, endwhile_2
+	r0 = constant 0
+	push r0 (ptr)
+	r0 = 2 (i16)
+	r0 = var 0:board
+	push r0 (ptr)
+	read r0, var[0(i16)]
+	move r1, r0 (i16)
+	pop r0 (ptr)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	r0 = 0 (i16)
+	load r0(1), @r1
+	move r1, r0 (i16)
+	pop r0 (ptr)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	r0 = 0 (i16)
+	load r0(1), @r1
+	cast r0 (i16 -> u8)
+	emit
+	read r0, var[0(i16)]
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	write [0(i16)], r0
+	jump while_2
+endwhile_2:
+	dropVars i16
+	r0 = 124 (u8)
+	emit
+	r0 = 10 (u8)
+	emit
+	ret
+main:
+	r0 = var 0:board
+	push r0 (ptr)
+	r0 = 30 (i16)
+	push r0 (i16)
+	r0 = 0 (i16)
+	push r0 (i16)
+	call fill
+	r0 = var 0:board
+	push r0 (ptr)
+	r0 = 30 (i16)
+	r1 = 2 (i16)
+	sub r0, r1 (i16)
+	move r1, r0 (i16)
+	pop r0 (ptr)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	r0 = 1 (i16)
+	store @r1, r0(1)
+	r0 = 0 (i16)
+	push r0 (i16)
+while_3:
+	pop r0 (i16)
+	push r0 (i16)
+	push r0 (i16)
+	r0 = 30 (i16)
+	r1 = 2 (i16)
+	sub r0, r1 (i16)
+	move r1, r0 (i16)
+	pop r0 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, endwhile_3
+	call printBoard
+	r1 = var 0:board
+	r0 = 0 (i16)
+	load r0(1), @r1
+	push r0 (i16)
+	r0 = var 0:board
+	r1 = 1 (i16)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	r0 = 0 (i16)
+	load r0(1), @r1
+	move r1, r0 (i16)
+	pop r0 (i16)
+	or r0, r1 (i16)
+	push r0 (i16)
+	r0 = 1 (i16)
+	pushVar r0 (i16)
+	pop r0 (i16)
+	pushVar r0 (i16)
+while_4:
+	read r0, var[1(i16)]
+	push r0 (i16)
+	r0 = 30 (i16)
+	r1 = 1 (i16)
+	sub r0, r1 (i16)
+	move r1, r0 (i16)
+	pop r0 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, endwhile_4
+	read r0, var[0(i16)]
+	move r1, r0 (i16)
+	r0 = 1 (i16)
+	shl r1, r0 (i16)
+	move r0, r1 (i16)
+	r1 = 7 (i16)
+	and r0, r1 (i16)
+	push r0 (i16)
+	r0 = var 0:board
+	push r0 (ptr)
+	read r0, var[1(i16)]
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	move r1, r0 (i16)
+	pop r0 (ptr)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	r0 = 0 (i16)
+	load r0(1), @r1
+	move r1, r0 (i16)
+	pop r0 (i16)
+	or r0, r1 (i16)
+	write [0(i16)], r0
+	r0 = 110 (i16)
+	push r0 (i16)
+	read r0, var[0(i16)]
+	pop r1 (i16)
+	shr r1, r0 (i16)
+	move r0, r1 (i16)
+	r1 = 1 (i16)
+	and r0, r1 (i16)
+	push r0 (i16)
+	r0 = var 0:board
+	push r0 (ptr)
+	read r0, var[1(i16)]
+	move r1, r0 (i16)
+	pop r0 (ptr)
+	cast r1 (i16 -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
+	pop r0 (i16)
+	store @r1, r0(1)
+	read r0, var[1(i16)]
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	write [1(i16)], r0
+	jump while_4
+endwhile_4:
+	dropVars i16, i16
+	pop r0 (i16)
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	push r0 (i16)
+	jump while_3
+endwhile_3:
+	pop r0 (i16)
+	ret
+
+var board, 30
