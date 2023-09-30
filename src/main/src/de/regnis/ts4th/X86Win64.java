@@ -271,25 +271,30 @@ public class X86Win64 {
 		case AsmIR.Jump(AsmIR.Condition condition, String target) -> {
 			writeJump(condition, target);
 		}
-		case AsmIR.Push(int sourceReg, int size) -> {
-			writeComment(STR."push \{ sourceReg } (\{size})");
+		case AsmIR.Push(int sourceReg, Type type) -> {
+			writeComment(STR."push \{ sourceReg } (\{type})");
 
+			final int size = type.getByteCount(PTR_SIZE);
 			final String regName = getRegName(sourceReg, size);
 			writeIndented(STR."""
 					              sub \{REG_DSP}, \{size}
 					              mov [\{REG_DSP}], \{regName}
 					              """);
 		}
-		case AsmIR.Pop(int targetReg, int size) -> {
-			writeComment(STR."pop \{ targetReg } (\{size})");
+		case AsmIR.Pop(int targetReg, Type type) -> {
+			writeComment(STR."pop \{ targetReg } (\{type})");
 
+			final int size = type.getByteCount(PTR_SIZE);
 			final String regName = getRegName(targetReg, size);
 			writeIndented(STR."""
 					              mov \{regName}, [\{REG_DSP}]
 					              add \{REG_DSP}, \{size}
 					              """);
 		}
-		case AsmIR.Move(int targetReg, int sourceReg, int size) -> {
+		case AsmIR.Move(int targetReg, int sourceReg, Type type) -> {
+			writeComment(STR."mov \{targetReg}, \{sourceReg} (\{type})");
+
+			final int size = type.getByteCount(PTR_SIZE);
 			writeIndented(STR."mov \{getRegName(targetReg, size)}, \{getRegName(sourceReg, size)}");
 		}
 		case AsmIR.Load(int valueReg, int pointerReg, int valueSize) -> {

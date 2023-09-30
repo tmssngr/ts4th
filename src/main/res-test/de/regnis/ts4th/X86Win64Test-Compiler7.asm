@@ -16,24 +16,25 @@ start:
 
         ; -- proc strlen --
 tsf_strlen:
-        ; -- pop 0 (8) --
+        ; -- pop 0 (Ptr) --
         mov rcx, [r15]
         add r15, 8
         ; -- literal r1, #0 --
         mov ax, 0
-        ; -- push 1 (2) --
+        ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
-        ; -- push 0 (8) --
+        ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
 tsf_while_1:
-        ; -- pop 0 (8) --
+        ; -- pop 0 (Ptr) --
         mov rcx, [r15]
         add r15, 8
-        ; -- push 0 (8) --
+        ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
+        ; -- mov 1, 0 (Ptr) --
         mov rax, rcx
         ; -- literal r0, #0 --
         mov cx, 0
@@ -50,24 +51,25 @@ tsf_while_1:
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
-        ; -- pop 1 (8) --
+        ; -- pop 1 (Ptr) --
         mov rax, [r15]
         add r15, 8
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 1 (8) --
+        ; -- push 1 (Ptr) --
         sub r15, 8
         mov [r15], rax
         ; -- literal r1, #1 --
         mov ax, 1
         ; -- add 0 1 --
         add cx, ax
+        ; -- mov 1, 0 (Int) --
         mov ax, cx
-        ; -- pop 0 (8) --
+        ; -- pop 0 (Ptr) --
         mov rcx, [r15]
         add r15, 8
-        ; -- push 1 (2) --
+        ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
         ; -- literal r1, #1 --
@@ -75,13 +77,13 @@ tsf_while_1:
         ; -- add_ptr 0 1 --
         movsx rax, ax
         add   rcx, rax
-        ; -- push 0 (8) --
+        ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_endwhile_1:
-        ; -- pop 0 (8) --
+        ; -- pop 0 (Ptr) --
         mov rcx, [r15]
         add r15, 8
         ; -- ret --
@@ -91,14 +93,14 @@ tsf_endwhile_1:
 tsf_main:
         ; -- literal r0, "0 --
         lea rcx, [string_0]
-        ; -- push 0 (8) --
+        ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
         ; -- literal r0, #12 --
         mov cx, 12
         ; -- strlen --
         call tsf_strlen
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- printInt r0(2) --

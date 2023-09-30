@@ -1,42 +1,42 @@
 main:
 	r0 = 0
-	push r0 (2)
+	push r0 (Int)
 while_1:
-	pop r0 (2)
-	push r0 (2)
+	pop r0 (Int)
+	push r0 (Int)
 	r1 = 10
 	lt r0, r1
 	boolTest r0, r0
 	jump z, endwhile_1
 	r0 = 0
-	push r0 (2)
+	push r0 (Int)
 while_2:
-	pop r0 (2)
-	push r0 (2)
+	pop r0 (Int)
+	push r0 (Int)
 	r1 = 20
 	lt r0, r1
 	boolTest r0, r0
 	jump z, endwhile_2
-	pop r1 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
 	add r0, r1
 	printInt r0(2)
-	pop r0 (2)
+	pop r0 (Int)
 	r1 = 1
 	add r0, r1
-	push r0 (2)
+	push r0 (Int)
 	jump while_2
 endwhile_2:
-	pop r0 (2)
+	pop r0 (Int)
 	r0 = 10
 	emit
-	pop r0 (2)
+	pop r0 (Int)
 	r1 = 1
 	add r0, r1
-	push r0 (2)
+	push r0 (Int)
 	jump while_1
 endwhile_1:
-	pop r0 (2)
+	pop r0 (Int)
 	ret

@@ -59,17 +59,17 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record Push(int sourceReg, int size) implements AsmIR {
+	record Push(int sourceReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "push r" + sourceReg + " (" + size + ")";
+			return "push r" + sourceReg + " (" + type + ")";
 		}
 	}
 
-	record Pop(int targetReg, int size) implements AsmIR {
+	record Pop(int targetReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "pop r" + targetReg + " (" + size + ")";
+			return "pop r" + targetReg + " (" + type + ")";
 		}
 	}
 
@@ -105,10 +105,10 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record Move(int targetReg, int sourceReg, int size) implements AsmIR {
+	record Move(int targetReg, int sourceReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "move " + targetReg + ", " + sourceReg + " (" + size + ")";
+			return "move r" + targetReg + ", r" + sourceReg + " (" + type + ")";
 		}
 	}
 

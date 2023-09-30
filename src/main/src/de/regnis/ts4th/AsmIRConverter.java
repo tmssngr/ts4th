@@ -68,28 +68,28 @@ public class AsmIRConverter {
 			}
 			case Instruction.IntLiteral(int value) -> {
 				output.accept(AsmIRFactory.literal(REG_0, value));
-				output.accept(AsmIRFactory.push(REG_0, 2));
+				output.accept(AsmIRFactory.push(REG_0, Type.Int));
 				yield input
 						.append(Type.Int);
 			}
 			case Instruction.BoolLiteral(boolean value) -> {
 				output.accept(AsmIRFactory.literal(REG_0, value));
-				output.accept(AsmIRFactory.push(REG_0, 1));
+				output.accept(AsmIRFactory.push(REG_0, Type.Bool));
 				yield input
 						.append(Type.Bool);
 			}
 			case Instruction.PtrLiteral(int index, String varName) -> {
 				output.accept(AsmIRFactory.ptrLiteral(REG_0, index, varName));
-				output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
+				output.accept(AsmIRFactory.push(REG_0, Type.Ptr));
 				yield input
 						.append(Type.Ptr);
 			}
 			case Instruction.StringLiteral(String text) -> {
 				final AsmIRStringLiterals.Entry entry = stringLiterals.addEntry(text);
 				output.accept(AsmIRFactory.stringLiteral(REG_0, entry.index()));
-				output.accept(AsmIRFactory.push(REG_0, PTR_SIZE));
+				output.accept(AsmIRFactory.push(REG_0, Type.Ptr));
 				output.accept(AsmIRFactory.literal(REG_0, entry.length()));
-				output.accept(AsmIRFactory.push(REG_0, 2));
+				output.accept(AsmIRFactory.push(REG_0, Type.Int));
 				yield input
 						.append(Type.Ptr)
 						.append(Type.Int);
@@ -103,7 +103,7 @@ public class AsmIRConverter {
 					throw new InvalidTypeException(location, "Invalid types! Expected " + TypeList.BOOL + ", but got " + input);
 				}
 
-				output.accept(AsmIRFactory.pop(REG_0, 1));
+				output.accept(AsmIRFactory.pop(REG_0, Type.Bool));
 				output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0));
 				output.accept(AsmIRFactory.jump(AsmIR.Condition.z, elseTarget));
 				output.accept(AsmIRFactory.jump(ifTarget));
@@ -148,7 +148,6 @@ public class AsmIRConverter {
 				for (ListIterator<LocalVar> it = vars.listIterator(vars.size()); it.hasPrevious(); ) {
 					final LocalVar var = it.previous();
 					final Type type = var.type();
-					final int size = typeToSize(type);
 					if (var.name().equals(name)) {
 						if (isWrite) {
 							if (input.size() == 0) {
@@ -158,13 +157,13 @@ public class AsmIRConverter {
 								throw new InvalidTypeException(location, "Variable " + name + " is of type " + type + ", but got " + input);
 							}
 
-							output.accept(AsmIRFactory.pop(REG_0, size));
+							output.accept(AsmIRFactory.pop(REG_0, type));
 							output.accept(AsmIRFactory.localVarWrite(REG_0, type, offset));
 							yield input.prev();
 						}
 						else {
 							output.accept(AsmIRFactory.localVarRead(REG_0, type, offset));
-							output.accept(AsmIRFactory.push(REG_0, size));
+							output.accept(AsmIRFactory.push(REG_0, type));
 							yield input.append(type);
 						}
 					}
@@ -193,8 +192,7 @@ public class AsmIRConverter {
 					final Type type = types.type();
 					vars.addLast(new LocalVar(name, type));
 
-					final int size = typeToSize(type);
-					output.accept(AsmIRFactory.pop(REG_0, size));
+					output.accept(AsmIRFactory.pop(REG_0, type));
 					output.accept(AsmIRFactory.pushVar(REG_0, type));
 
 					types = types.prev();
@@ -211,14 +209,6 @@ public class AsmIRConverter {
 				output.accept(AsmIRFactory.dropVar(types));
 				yield input;
 			}
-		};
-	}
-
-	private static int typeToSize(Type type) {
-		return switch (type) {
-			case Bool -> 1;
-			case Int -> 2;
-			case Ptr -> PTR_SIZE;
 		};
 	}
 

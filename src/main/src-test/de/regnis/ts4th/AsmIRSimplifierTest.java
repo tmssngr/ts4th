@@ -101,16 +101,16 @@ public class AsmIRSimplifierTest {
 				call("print")
 		), List.of(
 				literal(0, 1),
-				push(1, 2),
-				pop(1, 2),
+				push(1, Type.Int),
+				pop(1, Type.Int),
 				call("print")
 		));
 
 		try {
 			AsmIRSimplifier.simplify(List.of(
 					literal(0, 1),
-					push(1, 2),
-					pop(1, 1),
+					push(1, Type.Int),
+					pop(1, Type.Bool),
 					call("print")
 			));
 			fail();
@@ -122,11 +122,11 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testPushPopToMove() {
 		testSimplify(List.of(
-				             move(1, 0, 2)
+				             move(1, 0, Type.Int)
 		             ),
 		             List.of(
-				             push(0, 2),
-				             pop(1, 2)
+				             push(0, Type.Int),
+				             pop(1, Type.Int)
 		             ));
 
 		testSimplify(List.of(
@@ -134,54 +134,54 @@ public class AsmIRSimplifierTest {
 		             ),
 		             List.of(
 				             literal(0, 0),
-				             push(0, 2),
-				             pop(1, 2)
+				             push(0, Type.Int),
+				             pop(1, Type.Int)
 		             ));
 	}
 
 	@Test
 	public void testSwapLitPop() {
 		testSimplify(List.of(
-				             push(0, 2),
+				             push(0, Type.Int),
 				             print(2),
-				             pop(0, 2),
+				             pop(0, Type.Int),
 				             literal(1, 5)
 		             ),
 		             List.of(
-				             push(0, 2),
+				             push(0, Type.Int),
 				             print(2),
 				             literal(1, 5),
-				             pop(0, 2)
+				             pop(0, Type.Int)
 		             ));
 
 		testSimplify(List.of(
 				             literal(1, 5)
 		             ),
 		             List.of(
-				             push(0, 2),
+				             push(0, Type.Int),
 				             literal(1, 5),
-				             pop(0, 2)
+				             pop(0, Type.Int)
 		             ));
 
 		testSimplify(List.of(
 				             stringLiteral(1, 0),
-				             pop(0, 2),
-				             push(1, 8),
-				             push(0, 2)
+				             pop(0, Type.Int),
+				             push(1, Type.Ptr),
+				             push(0, Type.Int)
 		             ),
 		             List.of(
 				             // " *"
 				             stringLiteral(0, 0),
-				             push(0, 8),
+				             push(0, Type.Ptr),
 				             literal(0, 2),
-				             push(0, 2),
+				             push(0, Type.Int),
 				             // drop
-				             pop(0, 2),
+				             pop(0, Type.Int),
 				             // swap
-				             pop(1, 8),
-				             pop(0, 2),
-				             push(1, 8),
-				             push(0, 2)
+				             pop(1, Type.Ptr),
+				             pop(0, Type.Int),
+				             push(1, Type.Ptr),
+				             push(0, Type.Int)
 		             ));
 	}
 

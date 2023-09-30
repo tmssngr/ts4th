@@ -24,12 +24,12 @@ public class AsmIRFactory {
 		return new AsmIR.StringLiteral(target, constantIndex);
 	}
 
-	public static AsmIR push(int reg, int size) {
-		return new AsmIR.Push(reg, size);
+	public static AsmIR push(int sourceReg, Type type) {
+		return new AsmIR.Push(sourceReg, type);
 	}
 
-	public static AsmIR pop(int reg, int size) {
-		return new AsmIR.Pop(reg, size);
+	public static AsmIR pop(int targetReg, Type type) {
+		return new AsmIR.Pop(targetReg, type);
 	}
 
 	public static AsmIR pushVar(int sourceReg, Type type) {
@@ -48,8 +48,8 @@ public class AsmIRFactory {
 		return new AsmIR.DropVars(types);
 	}
 
-	public static AsmIR move(int target, int source, int size) {
-		return new AsmIR.Move(target, source, size);
+	public static AsmIR move(int targetReg, int sourceReg, Type type) {
+		return new AsmIR.Move(targetReg, sourceReg, type);
 	}
 
 	public static AsmIR load(int valueReg, int pointerReg, int valueSize) {

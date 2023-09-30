@@ -1,9 +1,9 @@
 main:
 	r0 = 1
-	push r0 (2)
+	push r0 (Int)
 	r0 = 2
 	pushVar r0 (Int)
-	pop r0 (2)
+	pop r0 (Int)
 	pushVar r0 (Int)
 	read r0, var[0(Int)]
 	printInt r0(2)

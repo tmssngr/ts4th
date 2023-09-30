@@ -22,6 +22,7 @@ tsf_main:
         mov cx, 2
         ; -- shl 1 0 --
         shl ax, cl
+        ; -- mov 0, 1 (Int) --
         mov cx, ax
         ; -- printInt r0(2) --
         movsx rcx, cx
@@ -44,6 +45,7 @@ tsf_main:
         mov cx, 1
         ; -- shr 1 0 --
         shr ax, cl
+        ; -- mov 0, 1 (Int) --
         mov cx, ax
         ; -- printInt r0(2) --
         movsx rcx, cx

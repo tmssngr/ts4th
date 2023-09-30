@@ -107,9 +107,9 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.Push(int sourceReg, int sourceSize)
-				    && i2 instanceof AsmIR.Pop(int targetReg, int targetSize)) {
-					Utils.assertTrue(sourceSize == targetSize);
+				if (i1 instanceof AsmIR.Push(int sourceReg, Type pushType)
+				    && i2 instanceof AsmIR.Pop(int targetReg, Type popType)) {
+					Utils.assertTrue(pushType == popType);
 					if (sourceReg == targetReg) {
 						removeNext();
 						remove();
@@ -117,7 +117,7 @@ public class AsmIRSimplifier {
 					}
 					else {
 						removeNext();
-						replace(new AsmIR.Move(targetReg, sourceReg, sourceSize));
+						replace(new AsmIR.Move(targetReg, sourceReg, pushType));
 					}
 				}
 			}
@@ -132,28 +132,28 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, int size)) {
+				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, Type type)) {
 					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value)
 					    && sourceReg == tmp) {
-						Utils.assertTrue(size == 2);
+						Utils.assertTrue(type == Type.Int);
 						removeNext();
 						replace(new AsmIR.IntLiteral(targetReg, value));
 					}
 					else if (i1 instanceof AsmIR.BoolLiteral(int tmpReg, boolean value)
 					         && sourceReg == tmpReg) {
-						Utils.assertTrue(size == 1);
+						Utils.assertTrue(type == Type.Bool);
 						removeNext();
 						replace(new AsmIR.BoolLiteral(targetReg, value));
 					}
 					else if (i1 instanceof AsmIR.PtrLiteral(int tmpReg, int index, String name)
 					         && sourceReg == tmpReg) {
-						Utils.assertTrue(size == 8);
+						Utils.assertTrue(type == Type.Ptr);
 						removeNext();
 						replace(new AsmIR.PtrLiteral(targetReg, index, name));
 					}
 					else if (i1 instanceof AsmIR.StringLiteral(int tmpReg, int index)
 					         && sourceReg == tmpReg) {
-						Utils.assertTrue(size == 8);
+						Utils.assertTrue(type == Type.Ptr);
 						removeNext();
 						replace(new AsmIR.StringLiteral(targetReg, index));
 					}

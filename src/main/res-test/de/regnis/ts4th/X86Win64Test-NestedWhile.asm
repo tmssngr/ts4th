@@ -18,14 +18,14 @@ start:
 tsf_main:
         ; -- literal r0, #0 --
         mov cx, 0
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
 tsf_while_1:
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
         ; -- literal r1, #10 --
@@ -41,14 +41,14 @@ tsf_while_1:
         jz tsf_endwhile_1
         ; -- literal r0, #0 --
         mov cx, 0
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
 tsf_while_2:
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
         ; -- literal r1, #20 --
@@ -62,16 +62,16 @@ tsf_while_2:
         test cl, cl
         ; -- jump z endwhile_2 --
         jz tsf_endwhile_2
-        ; -- pop 1 (2) --
+        ; -- pop 1 (Int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (2) --
+        ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
         ; -- add 0 1 --
@@ -91,20 +91,20 @@ tsf_while_2:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- literal r1, #1 --
         mov ax, 1
         ; -- add 0 1 --
         add cx, ax
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
         ; -- jump while_2 --
         jmp tsf_while_2
 tsf_endwhile_2:
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- literal r0, #10 --
@@ -113,20 +113,20 @@ tsf_endwhile_2:
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- literal r1, #1 --
         mov ax, 1
         ; -- add 0 1 --
         add cx, ax
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_endwhile_1:
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- ret --

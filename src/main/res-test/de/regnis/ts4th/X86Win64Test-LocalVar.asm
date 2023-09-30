@@ -18,14 +18,14 @@ start:
 tsf_main:
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- push 0 (2) --
+        ; -- push 0 (Int) --
         sub r15, 2
         mov [r15], cx
         ; -- literal r0, #2 --
         mov cx, 2
         ; -- push var r0 (Int) --
         push cx
-        ; -- pop 0 (2) --
+        ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
         ; -- push var r0 (Int) --

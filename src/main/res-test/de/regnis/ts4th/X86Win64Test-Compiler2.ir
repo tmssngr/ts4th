@@ -1,67 +1,67 @@
 main:
 	r0 = 1024
 	r1 = 768
-	push r0 (2)
-	push r1 (2)
-	push r0 (2)
-	push r1 (2)
+	push r0 (Int)
+	push r1 (Int)
+	push r0 (Int)
+	push r1 (Int)
 	call gcd
-	pop r2 (2)
-	pop r1 (2)
-	pop r0 (2)
-	push r1 (2)
-	push r2 (2)
-	move 1, 0 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
-	move 1, 0 (2)
-	pop r0 (2)
+	pop r2 (Int)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r1 (Int)
+	push r2 (Int)
+	move r1, r0 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
+	move r1, r0 (Int)
+	pop r0 (Int)
 	idiv r0, r1
 	printInt r0(2)
-	pop r1 (2)
-	pop r0 (2)
+	pop r1 (Int)
+	pop r0 (Int)
 	idiv r0, r1
 	printInt r0(2)
 	ret
 gcd:
 while_1:
-	pop r1 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
 	lt r0, r1
 	boolTest r0, r0
 	jump z, else_2
-	pop r1 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
-	move 1, 0 (2)
-	pop r0 (2)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
+	move r1, r0 (Int)
+	pop r0 (Int)
 	sub r0, r1
-	push r0 (2)
+	push r0 (Int)
 	jump while_1
 else_2:
-	pop r1 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
 	gt r0, r1
 	boolTest r0, r0
 	jump z, endwhile_1
-	pop r1 (2)
-	pop r0 (2)
-	push r1 (2)
-	move 1, 0 (2)
-	pop r0 (2)
-	push r0 (2)
-	push r1 (2)
-	move 1, 0 (2)
-	pop r0 (2)
+	pop r1 (Int)
+	pop r0 (Int)
+	push r1 (Int)
+	move r1, r0 (Int)
+	pop r0 (Int)
+	push r0 (Int)
+	push r1 (Int)
+	move r1, r0 (Int)
+	pop r0 (Int)
 	sub r0, r1
-	push r0 (2)
+	push r0 (Int)
 	jump while_1
 endwhile_1:
-	pop r0 (2)
+	pop r0 (Int)
 	ret
