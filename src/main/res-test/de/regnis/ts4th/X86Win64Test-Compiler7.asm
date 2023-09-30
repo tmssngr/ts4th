@@ -74,9 +74,10 @@ tsf_while_1:
         mov [r15], ax
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx

@@ -297,6 +297,14 @@ public class X86Win64 {
 			final int size = type.getByteCount(PTR_SIZE);
 			writeIndented(STR."mov \{getRegName(targetReg, size)}, \{getRegName(sourceReg, size)}");
 		}
+		case AsmIR.Cast(int reg, Type sourceType, Type targetType) -> {
+			final int sourceSize = sourceType.getByteCount(PTR_SIZE);
+			final int targetSize = targetType.getByteCount(PTR_SIZE);
+			if (sourceSize < targetSize) {
+				writeComment(STR."cast \{reg}, (\{sourceType} -> \{targetType})");
+				writeIndented(STR."movsx \{getRegName(reg, targetSize)}, \{getRegName(reg, sourceSize)}");
+			}
+		}
 		case AsmIR.Load(int valueReg, int pointerReg, int valueSize) -> {
 			writeComment(STR."load \{valueReg} (\{valueSize}), @\{pointerReg}");
 
@@ -415,13 +423,7 @@ public class X86Win64 {
 
 		switch (operation) {
 		case add -> writeIndented(STR."add \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
-		case add_ptr -> {
-			final String offsetReg = getRegName(reg2, 2);
-			final String offset64Reg = getRegName(reg2, PTR_SIZE);
-			writeIndented(STR."""
-			           movsx \{offset64Reg}, \{offsetReg}
-			           add   \{getRegName(reg1, PTR_SIZE)}, \{offset64Reg}""");
-		}
+		case add_ptr -> writeIndented(STR."add \{getRegName(reg1, PTR_SIZE)}, \{ getRegName(reg2, PTR_SIZE) }");
 		case sub -> writeIndented(STR."sub \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
 		case imul -> // https://www.felixcloutier.com/x86/imul
 				writeIndented(STR."imul \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");

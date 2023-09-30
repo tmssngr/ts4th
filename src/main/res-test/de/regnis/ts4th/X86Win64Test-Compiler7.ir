@@ -24,6 +24,7 @@ while_1:
 	pop r0 (Ptr)
 	push r1 (Int)
 	r1 = 1
+	cast r1 (Int -> Ptr)
 	add_ptr r0, r1
 	push r0 (Ptr)
 	jump while_1

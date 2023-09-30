@@ -32,9 +32,10 @@ tsf_main:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
@@ -49,9 +50,10 @@ tsf_main:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
@@ -66,9 +68,10 @@ tsf_main:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
@@ -83,9 +86,10 @@ tsf_main:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
@@ -102,9 +106,10 @@ tsf_main:
         lea rcx, [mem]
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx
@@ -150,9 +155,10 @@ tsf_main:
         lea rcx, [mem]
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- mov 1, 0 (Ptr) --
         mov rax, rcx
         ; -- literal r0, #5 --
@@ -204,9 +210,10 @@ tsf_appendChar:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add_ptr 0 1 --
+        ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        add   rcx, rax
+        ; -- add_ptr 0 1 --
+        add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8
         mov [r15], rcx

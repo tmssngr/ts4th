@@ -52,6 +52,10 @@ public class AsmIRFactory {
 		return new AsmIR.Move(targetReg, sourceReg, type);
 	}
 
+	public static AsmIR cast(int reg, Type sourceType, Type targetType) {
+		return new AsmIR.Cast(reg, sourceType, targetType);
+	}
+
 	public static AsmIR load(int valueReg, int pointerReg, int valueSize) {
 		return new AsmIR.Load(valueReg, pointerReg, valueSize);
 	}

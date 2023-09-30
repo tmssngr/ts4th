@@ -7,18 +7,21 @@ main:
 	store @r1, r0(1)
 	r0 = mem
 	r1 = 1
+	cast r1 (Int -> Ptr)
 	add_ptr r0, r1
 	move r1, r0 (Ptr)
 	r0 = 48
 	store @r1, r0(1)
 	r0 = mem
 	r1 = 2
+	cast r1 (Int -> Ptr)
 	add_ptr r0, r1
 	move r1, r0 (Ptr)
 	r0 = 50
 	store @r1, r0(1)
 	r0 = mem
 	r1 = 3
+	cast r1 (Int -> Ptr)
 	add_ptr r0, r1
 	move r1, r0 (Ptr)
 	r0 = 52
@@ -63,6 +66,7 @@ appendChar:
 	store @r1, r0(1)
 	pop r0 (Ptr)
 	r1 = 1
+	cast r1 (Int -> Ptr)
 	add_ptr r0, r1
 	push r0 (Ptr)
 	ret

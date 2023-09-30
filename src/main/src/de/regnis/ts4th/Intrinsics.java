@@ -214,12 +214,14 @@ public class Intrinsics {
 				else if (type1 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
+					output.accept(AsmIRFactory.cast(REG_0, type2, Type.Ptr));
 					output.accept(AsmIRFactory.binCommand(add_ptr, REG_1, REG_0));
 					output.accept(AsmIRFactory.push(REG_1, type1));
 				}
 				else if (type2 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
+					output.accept(AsmIRFactory.cast(REG_1, type1, Type.Ptr));
 					output.accept(AsmIRFactory.binCommand(add_ptr, REG_0, REG_1));
 					output.accept(AsmIRFactory.push(REG_0, type2));
 				}
@@ -434,14 +436,6 @@ public class Intrinsics {
 	@Nullable
 	public static Command get(String name) {
 		return nameToCommand.get(name);
-	}
-
-	private static int size(Type type) {
-		return switch (type) {
-			case Int -> 2;
-			case Bool -> 1;
-			case Ptr -> PTR_SIZE;
-		};
 	}
 
 	public interface Command {
