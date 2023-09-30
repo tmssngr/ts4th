@@ -48,7 +48,7 @@ tsf_main:
         add rsp, 8
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

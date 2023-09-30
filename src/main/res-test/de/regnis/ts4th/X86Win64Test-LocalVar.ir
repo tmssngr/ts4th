@@ -6,8 +6,8 @@ main:
 	pop r0 (Int)
 	pushVar r0 (Int)
 	read r0, var[0(Int)]
-	printInt r0(2)
+	printInt r0(Int)
 	read r0, var[1(Int)]
-	printInt r0(2)
+	printInt r0(Int)
 	dropVars Int, Int
 	ret

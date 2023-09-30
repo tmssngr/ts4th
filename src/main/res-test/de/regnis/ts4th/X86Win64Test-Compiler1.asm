@@ -22,7 +22,7 @@ tsf_main:
         mov ax, 2048
         ; -- sub 0 1 --
         sub cx, ax
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

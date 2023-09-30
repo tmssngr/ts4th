@@ -32,7 +32,7 @@ tsf_main:
         push cx
         ; -- read var r0, [<empty> (Int)] --
         mov cx, [rsp+0]
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -49,7 +49,7 @@ tsf_main:
         add  rsp, 8
         ; -- read var r0, [Int (Int)] --
         mov cx, [rsp+2]
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .2

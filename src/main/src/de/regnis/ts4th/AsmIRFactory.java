@@ -84,8 +84,8 @@ public class AsmIRFactory {
 		return new AsmIR.Emit();
 	}
 
-	public static AsmIR print(int size) {
-		return new AsmIR.PrintInt(size);
+	public static AsmIR print(Type type) {
+		return new AsmIR.PrintInt(type);
 	}
 
 	public static AsmIR mem() {

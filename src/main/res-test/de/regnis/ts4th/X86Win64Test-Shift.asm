@@ -24,7 +24,7 @@ tsf_main:
         shl ax, cl
         ; -- mov 0, 1 (Int) --
         mov cx, ax
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -47,7 +47,7 @@ tsf_main:
         shr ax, cl
         ; -- mov 0, 1 (Int) --
         mov cx, ax
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .2

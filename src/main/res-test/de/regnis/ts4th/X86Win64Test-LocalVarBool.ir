@@ -14,7 +14,7 @@ main:
 	r0 = 7
 	printString r1 (0)
 	r0 = 1
-	printInt r0(2)
+	printInt r0(Int)
 endif_1:
 	dropVars Int, Bool
 	ret

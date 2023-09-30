@@ -28,7 +28,7 @@ tsf_main:
         mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

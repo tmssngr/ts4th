@@ -18,11 +18,11 @@ main:
 	move r1, r0 (Int)
 	pop r0 (Int)
 	idiv r0, r1
-	printInt r0(2)
+	printInt r0(Int)
 	pop r1 (Int)
 	pop r0 (Int)
 	idiv r0, r1
-	printInt r0(2)
+	printInt r0(Int)
 	ret
 gcd:
 while_1:

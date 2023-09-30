@@ -151,10 +151,10 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record PrintInt(int size) implements AsmIR {
+	record PrintInt(Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "printInt r0(" + size + ")";
+			return "printInt r0(" + type + ")";
 		}
 	}
 

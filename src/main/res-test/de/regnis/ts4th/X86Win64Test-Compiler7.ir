@@ -36,5 +36,5 @@ main:
 	r0 = 12
 	call strlen
 	pop r0 (Int)
-	printInt r0(2)
+	printInt r0(Int)
 	ret

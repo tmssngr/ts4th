@@ -76,7 +76,7 @@ tsf_while_2:
         mov [r15], ax
         ; -- add 0 1 --
         add cx, ax
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

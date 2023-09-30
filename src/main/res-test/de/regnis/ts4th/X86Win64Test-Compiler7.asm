@@ -103,7 +103,7 @@ tsf_main:
         ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- printInt r0(2) --
+        ; -- printInt r0(Int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

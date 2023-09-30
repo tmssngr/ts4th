@@ -313,8 +313,8 @@ public class X86Win64 {
 		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2) -> {
 			writeBinCommand(operation, reg1, reg2);
 		}
-		case AsmIR.PrintInt(int size) -> {
-			writePrintInt(size);
+		case AsmIR.PrintInt(Type type) -> {
+			writePrintInt(type);
 		}
 		case AsmIR.Emit() -> {
 			writeEmit();
@@ -530,9 +530,10 @@ public class X86Win64 {
 		}
 	}
 
-	private void writePrintInt(int size) throws IOException {
-		writeComment("printInt r0(" + size + ")");
+	private void writePrintInt(Type type) throws IOException {
+		writeComment("printInt r0(" + type + ")");
 
+		final int size = type.getByteCount(PTR_SIZE);
 		if (size != 8) {
 			writeIndented(STR."movsx rcx, \{getRegName(0, size)}");
 		}

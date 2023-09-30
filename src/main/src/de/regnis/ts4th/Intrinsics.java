@@ -376,9 +376,8 @@ public class Intrinsics {
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final Type type = types.type();
-				final int size = size(type);
 				output.accept(AsmIRFactory.pop(REG_0, type));
-				output.accept(AsmIRFactory.print(size));
+				output.accept(AsmIRFactory.print(type));
 			}
 		});
 		nameToCommand.put("printString", new Command() {

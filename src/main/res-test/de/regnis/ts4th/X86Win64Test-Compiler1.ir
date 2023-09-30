@@ -2,5 +2,5 @@ main:
 	r0 = 1024
 	r1 = 2048
 	sub r0, r1
-	printInt r0(2)
+	printInt r0(Int)
 	ret

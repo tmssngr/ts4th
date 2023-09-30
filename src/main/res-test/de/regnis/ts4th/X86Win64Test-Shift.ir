@@ -3,10 +3,10 @@ main:
 	r0 = 2
 	shl r1, r0
 	move r0, r1 (Int)
-	printInt r0(2)
+	printInt r0(Int)
 	r1 = 1024
 	r0 = 1
 	shr r1, r0
 	move r0, r1 (Int)
-	printInt r0(2)
+	printInt r0(Int)
 	ret

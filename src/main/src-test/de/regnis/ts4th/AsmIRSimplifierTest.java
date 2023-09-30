@@ -143,13 +143,13 @@ public class AsmIRSimplifierTest {
 	public void testSwapLitPop() {
 		testSimplify(List.of(
 				             push(0, Type.Int),
-				             print(2),
+				             print(Type.Int),
 				             pop(0, Type.Int),
 				             literal(1, 5)
 		             ),
 		             List.of(
 				             push(0, Type.Int),
-				             print(2),
+				             print(Type.Int),
 				             literal(1, 5),
 				             pop(0, Type.Int)
 		             ));
