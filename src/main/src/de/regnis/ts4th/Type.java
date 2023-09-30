@@ -5,10 +5,20 @@ import java.util.*;
 /**
  * @author Thomas Singer
  */
+@SuppressWarnings("PointlessBitwiseExpression")
 public enum Type {
 	Bool(1),
-	I16(2),
+	I8(1 << 0),
+	I16(1 << 1),
+	I32(1 << 2),
+	I64(1 << 3),
+	U8(1 << 0),
+	U16(1 << 1),
+	U32(1 << 2),
+	U64(1 << 3),
 	Ptr(0);
+
+	public static final List<Type> INT_TYPES = List.of(I8, I16, I32, I64, U8, U16, U32, U64);
 
 	private final int byteCount;
 

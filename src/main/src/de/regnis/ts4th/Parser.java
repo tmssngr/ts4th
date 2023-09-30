@@ -122,22 +122,20 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		if (ctx != null) {
 			for (TerminalNode node : ctx.Identifier()) {
 				final String text = node.getText();
-				if (text.equals("int")) {
-					typeList = typeList.append(Type.I16);
-					continue;
-				}
-
-				if (text.equals("ptr")) {
-					typeList = typeList.append(Type.Ptr);
-					continue;
-				}
-
-				if (text.equals("bool")) {
-					typeList = typeList.append(Type.Bool);
-					continue;
-				}
-
-				throw new CompilerException(createLocation(node), "invalid type " + text);
+				final Type type = switch (text) {
+					case "i8" -> Type.I8;
+					case "int", "i16" -> Type.I16;
+					case "i32" -> Type.I32;
+					case "i64" -> Type.I64;
+					case "u8" -> Type.U8;
+					case "u16" -> Type.U16;
+					case "u32" -> Type.U32;
+					case "u64" -> Type.U64;
+					case "bool" -> Type.Bool;
+					case "ptr" -> Type.Ptr;
+					default -> throw new CompilerException(createLocation(node), "invalid type " + text);
+				};
+				typeList = typeList.append(type);
 			}
 		}
 		return typeList;
