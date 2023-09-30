@@ -1,86 +1,86 @@
 main:
 	r0 = mem
-	push r0 (Ptr)
-	move r1, r0 (Ptr)
+	push r0 (ptr)
+	move r1, r0 (ptr)
 	r0 = 49
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r1 = 1
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
-	move r1, r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
+	move r1, r0 (ptr)
 	r0 = 48
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r1 = 1
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
-	move r1, r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
+	move r1, r0 (ptr)
 	r0 = 50
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r1 = 1
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
-	move r1, r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
+	move r1, r0 (ptr)
 	r0 = 52
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r1 = 1
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
-	move r1, r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
+	move r1, r0 (ptr)
 	r0 = 10
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r0 = mem
 	r1 = 10
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
 	r0 = 104
-	push r0 (Int)
+	push r0 (int)
 	call appendChar
 	r0 = 101
-	push r0 (Int)
+	push r0 (int)
 	call appendChar
 	r0 = 108
-	push r0 (Int)
+	push r0 (int)
 	call appendChar
 	r0 = 108
-	push r0 (Int)
+	push r0 (int)
 	call appendChar
 	r0 = 111
-	push r0 (Int)
+	push r0 (int)
 	call appendChar
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r0 = mem
 	r1 = 10
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	move r1, r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	move r1, r0 (ptr)
 	r0 = 5
 	printString r1 (0)
 	r0 = mem
-	move r1, r0 (Ptr)
+	move r1, r0 (ptr)
 	r0 = 5
 	printString r1 (0)
 	ret
 appendChar:
-	pop r1 (Int)
-	pop r0 (Ptr)
-	push r0 (Ptr)
-	push r1 (Int)
-	move r1, r0 (Ptr)
-	pop r0 (Int)
+	pop r1 (int)
+	pop r0 (ptr)
+	push r0 (ptr)
+	push r1 (int)
+	move r1, r0 (ptr)
+	pop r0 (int)
 	store @r1, r0(1)
-	pop r0 (Ptr)
+	pop r0 (ptr)
 	r1 = 1
-	cast r1 (Int -> Ptr)
-	add r0, r1 (Ptr)
-	push r0 (Ptr)
+	cast r1 (int -> ptr)
+	add r0, r1 (ptr)
+	push r0 (ptr)
 	ret

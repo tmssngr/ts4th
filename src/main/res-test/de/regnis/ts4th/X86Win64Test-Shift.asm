@@ -20,11 +20,11 @@ tsf_main:
         mov ax, 1
         ; -- literal r0, #2 --
         mov cx, 2
-        ; -- shl r1, r0 (Int) --
+        ; -- shl r1, r0 (int) --
         shl ax, cl
-        ; -- mov 0, 1 (Int) --
+        ; -- mov 0, 1 (int) --
         mov cx, ax
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -43,11 +43,11 @@ tsf_main:
         mov ax, 1024
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- shr r1, r0 (Int) --
+        ; -- shr r1, r0 (int) --
         shr ax, cl
-        ; -- mov 0, 1 (Int) --
+        ; -- mov 0, 1 (int) --
         mov cx, ax
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .2

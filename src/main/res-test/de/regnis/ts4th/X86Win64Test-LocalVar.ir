@@ -1,13 +1,13 @@
 main:
 	r0 = 1
-	push r0 (Int)
+	push r0 (int)
 	r0 = 2
-	pushVar r0 (Int)
-	pop r0 (Int)
-	pushVar r0 (Int)
-	read r0, var[0(Int)]
-	printInt r0(Int)
-	read r0, var[1(Int)]
-	printInt r0(Int)
-	dropVars Int, Int
+	pushVar r0 (int)
+	pop r0 (int)
+	pushVar r0 (int)
+	read r0, var[0(int)]
+	printInt r0(int)
+	read r0, var[1(int)]
+	printInt r0(int)
+	dropVars int, int
 	ret

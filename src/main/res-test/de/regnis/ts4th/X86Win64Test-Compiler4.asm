@@ -18,27 +18,27 @@ start:
 tsf_main:
         ; -- literal r0, #10 --
         mov cx, 10
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
         ; -- mem --
         lea rcx, [mem]
-        ; -- mov 1, 0 (Ptr) --
+        ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
-        ; -- mov 1, 0 (Ptr) --
+        ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #0 --
         mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

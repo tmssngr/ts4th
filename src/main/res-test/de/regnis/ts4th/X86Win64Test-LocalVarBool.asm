@@ -18,21 +18,21 @@ start:
 tsf_main:
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
         ; -- literal r0, #true --
         mov cx, 1
-        ; -- push var r0 (Bool) --
+        ; -- push var r0 (bool) --
         push cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push var r0 (Int) --
+        ; -- push var r0 (int) --
         push cx
-        ; -- read var r0, [Int (Bool)] --
+        ; -- read var r0, [int (bool)] --
         mov cx, [rsp+2]
-        ; -- boolTest r0, r0 (Int) --
+        ; -- boolTest r0, r0 (int) --
         test cl, cl
         ; -- jump z endif_1 --
         jz tsf_endif_1
@@ -48,7 +48,7 @@ tsf_main:
         add rsp, 8
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -64,7 +64,7 @@ tsf_main:
           call tsfbi_emit
         add  rsp, 8
 tsf_endif_1:
-        ; -- drop vars Int, Bool --
+        ; -- drop vars int, bool --
         add rsp, 4
         ; -- ret --
         ret

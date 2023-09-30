@@ -1,12 +1,12 @@
 main:
 	r1 = 1
 	r0 = 2
-	shl r1, r0 (Int)
-	move r0, r1 (Int)
-	printInt r0(Int)
+	shl r1, r0 (int)
+	move r0, r1 (int)
+	printInt r0(int)
 	r1 = 1024
 	r0 = 1
-	shr r1, r0 (Int)
-	move r0, r1 (Int)
-	printInt r0(Int)
+	shr r1, r0 (int)
+	move r0, r1 (int)
+	printInt r0(int)
 	ret

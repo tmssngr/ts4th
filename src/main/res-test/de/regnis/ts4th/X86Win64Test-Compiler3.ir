@@ -1,8 +1,8 @@
 main:
 	r0 = -10
-	printInt r0(Int)
+	printInt r0(int)
 	r0 = 1000
-	printInt r0(Int)
+	printInt r0(int)
 	r0 = mem
-	printInt r0(Ptr)
+	printInt r0(ptr)
 	ret

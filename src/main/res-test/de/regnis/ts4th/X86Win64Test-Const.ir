@@ -2,7 +2,7 @@ const %0: 64 6f 69 74
 
 main:
 	r0 = 960
-	printInt r0(Int)
+	printInt r0(int)
 	r1 = constant 0
 	r0 = 4
 	printString r1 (0)

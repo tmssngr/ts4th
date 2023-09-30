@@ -1,13 +1,13 @@
 main:
 	r0 = 10
-	push r0 (Int)
+	push r0 (int)
 	r0 = mem
-	move r1, r0 (Ptr)
-	pop r0 (Int)
+	move r1, r0 (ptr)
+	pop r0 (int)
 	store @r1, r0(1)
 	r0 = mem
-	move r1, r0 (Ptr)
+	move r1, r0 (ptr)
 	r0 = 0
 	load r0(1), @r1
-	printInt r0(Int)
+	printInt r0(int)
 	ret

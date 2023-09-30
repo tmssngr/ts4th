@@ -20,52 +20,52 @@ tsf_main:
         mov cx, 1024
         ; -- literal r1, #768 --
         mov ax, 768
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
         ; -- gcd --
         call tsf_gcd
-        ; -- pop 2 (Int) --
+        ; -- pop 2 (int) --
         mov bx, [r15]
         add r15, 2
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- push 2 (Int) --
+        ; -- push 2 (int) --
         sub r15, 2
         mov [r15], bx
-        ; -- mov 1, 0 (Int) --
+        ; -- mov 1, 0 (int) --
         mov ax, cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- mov 1, 0 (Int) --
+        ; -- mov 1, 0 (int) --
         mov ax, cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- idiv r0, r1 (Int) --
+        ; -- idiv r0, r1 (int) --
         mov dx, ax
         xor eax, eax
         mov ax, cx
@@ -74,7 +74,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, eax
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -89,13 +89,13 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- idiv r0, r1 (Int) --
+        ; -- idiv r0, r1 (int) --
         mov dx, ax
         xor eax, eax
         mov ax, cx
@@ -104,7 +104,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, eax
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .2
@@ -125,107 +125,107 @@ tsf_main:
         ; -- proc gcd --
 tsf_gcd:
 tsf_while_1:
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- lt r0, r1 (Int) --
+        ; -- lt r0, r1 (int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest r0, r0 (Int) --
+        ; -- boolTest r0, r0 (int) --
         test cl, cl
         ; -- jump z else_2 --
         jz tsf_else_2
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- mov 1, 0 (Int) --
+        ; -- mov 1, 0 (int) --
         mov ax, cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- sub r0, r1 (Int) --
+        ; -- sub r0, r1 (int) --
         sub cx, ax
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_else_2:
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- gt r0, r1 (Int) --
+        ; -- gt r0, r1 (int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovg rcx, rax
-        ; -- boolTest r0, r0 (Int) --
+        ; -- boolTest r0, r0 (int) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
-        ; -- pop 1 (Int) --
+        ; -- pop 1 (int) --
         mov ax, [r15]
         add r15, 2
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- mov 1, 0 (Int) --
+        ; -- mov 1, 0 (int) --
         mov ax, cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
-        ; -- push 1 (Int) --
+        ; -- push 1 (int) --
         sub r15, 2
         mov [r15], ax
-        ; -- mov 1, 0 (Int) --
+        ; -- mov 1, 0 (int) --
         mov ax, cx
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
-        ; -- sub r0, r1 (Int) --
+        ; -- sub r0, r1 (int) --
         sub cx, ax
-        ; -- push 0 (Int) --
+        ; -- push 0 (int) --
         sub r15, 2
         mov [r15], cx
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_endwhile_1:
-        ; -- pop 0 (Int) --
+        ; -- pop 0 (int) --
         mov cx, [r15]
         add r15, 2
         ; -- ret --

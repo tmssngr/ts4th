@@ -18,7 +18,7 @@ start:
 tsf_main:
         ; -- literal r0, #960 --
         mov cx, 960
-        ; -- printInt r0(Int) --
+        ; -- printInt r0(int) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
