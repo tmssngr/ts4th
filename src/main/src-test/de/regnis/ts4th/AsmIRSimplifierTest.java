@@ -19,19 +19,19 @@ public class AsmIRSimplifierTest {
 				label("loop"),
 				call("foo"),
 				jump(Condition.lt, "else"),
-				literal(0, 0),
+				literal(0, 0, Type.I16),
 				jump("loop"),
 				label("else"),
-				literal(0, 1),
+				literal(0, 1, Type.I16),
 				jump("loop")
 		), List.of(
 				label("loop"),
 				call("foo"),
 				jump(Condition.lt, "else"),
-				literal(0, 0),
+				literal(0, 0, Type.I16),
 				jump("end"),
 				label("else"),
-				literal(0, 1),
+				literal(0, 1, Type.I16),
 				label("end"),
 				jump("loop")
 		));
@@ -43,15 +43,15 @@ public class AsmIRSimplifierTest {
 				jump(Condition.nz, "else"),
 				jump("end"),
 				label("else"),
-				literal(0, 0),
+				literal(0, 0, Type.I16),
 				label("end")
 		), List.of(
 				jump(Condition.nz, "else"),
 				jump("end"),
-				literal(0, 2),
-				literal(0, 1),
+				literal(0, 2, Type.I16),
+				literal(0, 1, Type.I16),
 				label("else"),
-				literal(0, 0),
+				literal(0, 0, Type.I16),
 				label("end")
 		));
 	}
@@ -59,37 +59,37 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testJumpToNext() {
 		testSimplify(List.of(
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		), List.of(
 				jump("next"),
 				label("next"),
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		));
 
 		testSimplify(List.of(
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		), List.of(
 				jump(Condition.nz, "next"),
 				label("next"),
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		));
 	}
 
 	@Test
 	public void testRemoveUnusedLabels() {
 		testSimplify(List.of(
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		), List.of(
 				label("start"),
-				literal(0, 1)
+				literal(0, 1, Type.I16)
 		));
 
 		testSimplifyExpectNoChange(List.of(
 				jump(Condition.z, "else"),
-				literal(0, 1),
+				literal(0, 1, Type.I16),
 				jump("end"),
 				label("else"),
-				literal(0, 2),
+				literal(0, 2, Type.I16),
 				label("end")
 		));
 	}
@@ -97,10 +97,10 @@ public class AsmIRSimplifierTest {
 	@Test
 	public void testPushPop() {
 		testSimplify(List.of(
-				literal(0, 1),
+				literal(0, 1, Type.I16),
 				call("print")
 		), List.of(
-				literal(0, 1),
+				literal(0, 1, Type.I16),
 				push(1, Type.I16),
 				pop(1, Type.I16),
 				call("print")
@@ -108,7 +108,7 @@ public class AsmIRSimplifierTest {
 
 		try {
 			AsmIRSimplifier.simplify(List.of(
-					literal(0, 1),
+					literal(0, 1, Type.I16),
 					push(1, Type.I16),
 					pop(1, Type.Bool),
 					call("print")
@@ -130,10 +130,10 @@ public class AsmIRSimplifierTest {
 		             ));
 
 		testSimplify(List.of(
-				             literal(1, 0)
+				             literal(1, 0, Type.I16)
 		             ),
 		             List.of(
-				             literal(0, 0),
+				             literal(0, 0, Type.I16),
 				             push(0, Type.I16),
 				             pop(1, Type.I16)
 		             ));
@@ -145,21 +145,21 @@ public class AsmIRSimplifierTest {
 				             push(0, Type.I16),
 				             print(Type.I16),
 				             pop(0, Type.I16),
-				             literal(1, 5)
+				             literal(1, 5, Type.I16)
 		             ),
 		             List.of(
 				             push(0, Type.I16),
 				             print(Type.I16),
-				             literal(1, 5),
+				             literal(1, 5, Type.I16),
 				             pop(0, Type.I16)
 		             ));
 
 		testSimplify(List.of(
-				             literal(1, 5)
+				             literal(1, 5, Type.I16)
 		             ),
 		             List.of(
 				             push(0, Type.I16),
-				             literal(1, 5),
+				             literal(1, 5, Type.I16),
 				             pop(0, Type.I16)
 		             ));
 
@@ -173,7 +173,7 @@ public class AsmIRSimplifierTest {
 				             // " *"
 				             stringLiteral(0, 0),
 				             push(0, Type.Ptr),
-				             literal(0, 2),
+				             literal(0, 2, Type.I16),
 				             push(0, Type.I16),
 				             // drop
 				             pop(0, Type.I16),

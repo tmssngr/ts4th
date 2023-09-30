@@ -1,5 +1,5 @@
 main:
-	r0 = 10
+	r0 = 10 (i16)
 	push r0 (i16)
 	r0 = mem
 	move r1, r0 (ptr)
@@ -7,7 +7,7 @@ main:
 	store @r1, r0(1)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 0
+	r0 = 0 (i16)
 	load r0(1), @r1
 	printInt r0(i16)
 	ret

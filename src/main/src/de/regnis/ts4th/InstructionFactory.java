@@ -14,7 +14,11 @@ public class InstructionFactory {
 	}
 
 	public static Instruction literal(int value) {
-		return new Instruction.IntLiteral(value);
+		return literal(value, Type.I16);
+	}
+
+	public static Instruction literal(int value, Type type) {
+		return new Instruction.IntLiteral(value, type);
 	}
 
 	public static Instruction literal(boolean value) {

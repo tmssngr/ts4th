@@ -1,7 +1,7 @@
 main:
-	r0 = 1
+	r0 = 1 (i16)
 	push r0 (i16)
-	r0 = 2
+	r0 = 2 (i16)
 	pushVar r0 (i16)
 	pop r0 (i16)
 	pushVar r0 (i16)

@@ -53,7 +53,7 @@ public class Interpreter {
 	}
 
 	protected void process(Instruction instruction) {
-		if (instruction instanceof Instruction.IntLiteral(int value)) {
+		if (instruction instanceof Instruction.IntLiteral(int value, Type type)) {
 			push(value);
 			return;
 		}

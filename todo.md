@@ -6,6 +6,16 @@
 - `elif` (to avoid multiple `end` at the end)
 - asm optimization
 	- replace
+		```
+		cast X, (sT -> tT)
+		mov Y, X (tT)
+		```
+		with
+		```
+		mov Y, X (sT)
+		cast Y, (sT -> tT)
+		```
+	- replace
 		lt/le/eq/ne/ge/gt
 		test
 		jump z

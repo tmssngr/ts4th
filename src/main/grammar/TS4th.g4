@@ -73,10 +73,15 @@ Inline: 'inline';
 ParenOpen : '(';
 ParenClose: ')';
 
-Number: ( [-]? [0-9]+
-        | '0x' [0-9A-Fa-f]+
+Number: ( [0-9]+            ([iu] BitCount)?
+        | '-' [0-9]+        ('i'  BitCount)?
+        | '0x' [0-9A-Fa-f]+ ('u'  BitCount)?
         | '\'' Char '\''
         );
+
+fragment BitCount
+	: '8' | '16' | '32' | '64'
+	;
 
 fragment Char
     : ~['\n\r]

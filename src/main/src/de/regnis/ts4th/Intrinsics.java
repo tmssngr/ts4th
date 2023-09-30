@@ -303,7 +303,7 @@ public class Intrinsics {
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-				output.accept(AsmIRFactory.literal(REG_0, 0));
+				output.accept(AsmIRFactory.literal(REG_0, 0, Type.I16));
 				output.accept(AsmIRFactory.load(REG_0, REG_1, 1));
 				output.accept(AsmIRFactory.push(REG_0, Type.I16));
 			}

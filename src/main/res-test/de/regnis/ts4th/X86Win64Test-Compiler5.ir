@@ -3,57 +3,57 @@ const %0: 0a 68 65 6c 6c 6f 20 22 77 6f 72 6c 64 22 0a
 main:
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 49
+	r0 = 49 (i16)
 	store @r1, r0(1)
 	r0 = mem
-	r1 = 1
+	r1 = 1 (i16)
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	r0 = 48
+	r0 = 48 (i16)
 	store @r1, r0(1)
 	r0 = mem
-	r1 = 2
+	r1 = 2 (i16)
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	r0 = 50
+	r0 = 50 (i16)
 	store @r1, r0(1)
 	r0 = mem
-	r1 = 3
+	r1 = 3 (i16)
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	r0 = 52
+	r0 = 52 (i16)
 	store @r1, r0(1)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 4
+	r0 = 4 (i16)
 	printString r1 (0)
 	r0 = mem
 	push r0 (ptr)
-	r0 = 104
+	r0 = 104 (i16)
 	push r0 (i16)
 	call appendChar
-	r0 = 101
+	r0 = 101 (i16)
 	push r0 (i16)
 	call appendChar
-	r0 = 108
+	r0 = 108 (i16)
 	push r0 (i16)
 	call appendChar
-	r0 = 108
+	r0 = 108 (i16)
 	push r0 (i16)
 	call appendChar
-	r0 = 111
+	r0 = 111 (i16)
 	push r0 (i16)
 	call appendChar
 	pop r0 (ptr)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 5
+	r0 = 5 (i16)
 	printString r1 (0)
 	r1 = constant 0
-	r0 = 15
+	r0 = 15 (i16)
 	printString r1 (0)
 	ret
 appendChar:
@@ -65,7 +65,7 @@ appendChar:
 	pop r0 (i16)
 	store @r1, r0(1)
 	pop r0 (ptr)
-	r1 = 1
+	r1 = 1 (i16)
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)

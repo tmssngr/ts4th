@@ -133,11 +133,11 @@ public class AsmIRSimplifier {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, Type type)) {
-					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value)
+					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value, Type litType)
 					    && sourceReg == tmp) {
-						Utils.assertTrue(type == Type.I16);
+						Utils.assertTrue(type == litType);
 						removeNext();
-						replace(new AsmIR.IntLiteral(targetReg, value));
+						replace(new AsmIR.IntLiteral(targetReg, value, type));
 					}
 					else if (i1 instanceof AsmIR.BoolLiteral(int tmpReg, boolean value)
 					         && sourceReg == tmpReg) {
@@ -170,7 +170,7 @@ public class AsmIRSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _)
+				if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _, Type type)
 				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
 					if (targetRegLit == targetRegPop) {
 						// might happen after pushing a string literal and dropping the size

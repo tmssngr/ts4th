@@ -66,11 +66,11 @@ public class AsmIRConverter {
 				output.accept(AsmIRFactory.label(name));
 				yield input;
 			}
-			case Instruction.IntLiteral(int value) -> {
-				output.accept(AsmIRFactory.literal(REG_0, value));
-				output.accept(AsmIRFactory.push(REG_0, Type.I16));
+			case Instruction.IntLiteral(int value, Type type) -> {
+				output.accept(AsmIRFactory.literal(REG_0, value, type));
+				output.accept(AsmIRFactory.push(REG_0, type));
 				yield input
-						.append(Type.I16);
+						.append(type);
 			}
 			case Instruction.BoolLiteral(boolean value) -> {
 				output.accept(AsmIRFactory.literal(REG_0, value));
@@ -88,7 +88,7 @@ public class AsmIRConverter {
 				final AsmIRStringLiterals.Entry entry = stringLiterals.addEntry(text);
 				output.accept(AsmIRFactory.stringLiteral(REG_0, entry.index()));
 				output.accept(AsmIRFactory.push(REG_0, Type.Ptr));
-				output.accept(AsmIRFactory.literal(REG_0, entry.length()));
+				output.accept(AsmIRFactory.literal(REG_0, entry.length(), Type.I16));
 				output.accept(AsmIRFactory.push(REG_0, Type.I16));
 				yield input
 						.append(Type.Ptr)

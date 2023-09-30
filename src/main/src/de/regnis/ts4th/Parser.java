@@ -154,22 +154,28 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	@Override
 	public List<Instruction> visitNumber(TS4thParser.NumberContext ctx) {
 		final TerminalNode node = ctx.Number();
-		final String text = node.getText();
-		final int value;
+		String text = node.getText();
 		if (text.startsWith("0x")) {
-			value = Integer.parseInt(text.substring(2), 16);
+			final Type[] type = new Type[] {Type.I16};
+			final String hexText = stripTypeSuffix(text.substring(2), type);
+			final int value = Integer.parseInt(hexText, 16);
+			return List.of(InstructionFactory.literal(value, type[0]));
 		}
-		else if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
+
+		if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
 			final String unescape = unescape(text.substring(1, text.length() - 1));
 			if (unescape.length() != 1) {
 				throw new CompilerException(createLocation(node), "invalid char " + text);
 			}
-			value = unescape.charAt(0);
+			final int value = unescape.charAt(0);
+			// TODO
+			return List.of(InstructionFactory.literal(value, Type.I16));
 		}
-		else {
-			value = Integer.parseInt(text);
-		}
-		return List.of(InstructionFactory.literal(value));
+
+		final Type[] type = new Type[] {Type.I16};
+		text = stripTypeSuffix(text, type);
+		final int value = Integer.parseInt(text);
+		return List.of(InstructionFactory.literal(value, type[0]));
 	}
 
 	@Override
@@ -343,6 +349,27 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		}
 
 		throw new CompilerException(createLocation(token), "`continue` needs an outer `while` loop");
+	}
+
+	private String stripTypeSuffix(String text, Type[] type) {
+		text = stripTypeSuffix(text, Type.I8, type);
+		text = stripTypeSuffix(text, Type.I16, type);
+		text = stripTypeSuffix(text, Type.I32, type);
+		text = stripTypeSuffix(text, Type.I64, type);
+		text = stripTypeSuffix(text, Type.U8, type);
+		text = stripTypeSuffix(text, Type.U16, type);
+		text = stripTypeSuffix(text, Type.U32, type);
+		text = stripTypeSuffix(text, Type.U64, type);
+		return text;
+	}
+
+	private String stripTypeSuffix(String text, Type type, Type[] foundType) {
+		final String typeString = type.toString();
+		if (text.endsWith(typeString)) {
+			text = text.substring(0, text.length() - typeString.length());
+			foundType[0] = type;
+		}
+		return text;
 	}
 
 	private Iterable<ControlFlowStructure> getStackInReverseOrder() {
