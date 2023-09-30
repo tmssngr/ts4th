@@ -3,12 +3,13 @@ package de.regnis.ts4th;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.jetbrains.annotations.*;
 import org.junit.*;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Thomas Singer
@@ -28,7 +29,8 @@ public class X86Win64Test extends AbstractFileTest {
 				))
 		), stringLiterals.getConstants(), List.of());
 
-		writeX86(program);
+		final Path path = createPath(getTestClassMethodName() + ".asm");
+		writeX86(program, path);
 	}
 
 	@Test
@@ -372,14 +374,40 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void compileWrite(String s) throws IOException {
+		final String name = getTestClassMethodName();
+
 		final AsmIRProgram irProgram = compile(s);
-		writeIr(irProgram);
-		writeX86(irProgram);
+		writeIr(irProgram, createPath(name + ".ir"));
+
+		final Path asmFile = createPath(name + ".asm");
+		writeX86(irProgram, asmFile);
+
+		final Path exeFile = createPath(name + ".exe");
+		Files.deleteIfExists(exeFile);
+
+		invokeFasm(asmFile);
+
+		invokeExe(exeFile, createPath(name + ".out"));
 	}
 
-	private void writeIr(AsmIRProgram program) throws IOException {
-		final Path path = createPath(getTestClassMethodName() + ".ir");
-		writeIr(program, path);
+	private void invokeFasm(Path asmFile) throws IOException {
+		final int exitValue = Compiler.launchFasm(asmFile);
+		assertEquals(0, exitValue);
+	}
+
+	private void invokeExe(Path exeFile, Path outputFile) throws IOException {
+		final ProcessBuilder processBuilder = new ProcessBuilder(exeFile.toString());
+		processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+		processBuilder.redirectOutput(outputFile.toFile());
+		final Process process = processBuilder.start();
+		try {
+			process.waitFor(10, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e) {
+			process.destroy();
+		}
+
+		assertEquals(0, process.exitValue());
 	}
 
 	private void writeIr(AsmIRProgram program, Path path) throws IOException {
@@ -433,11 +461,6 @@ public class X86Win64Test extends AbstractFileTest {
 			writer.write(instruction.toString());
 			writer.newLine();
 		}
-	}
-
-	private void writeX86(AsmIRProgram program) throws IOException {
-		final Path path = createPath(getTestClassMethodName() + ".asm");
-		writeX86(program, path);
 	}
 
 	private void writeX86(AsmIRProgram program, Path path) throws IOException {

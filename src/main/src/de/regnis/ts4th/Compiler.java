@@ -46,6 +46,27 @@ public class Compiler {
 		return new AsmIRProgram(processedFunctions, stringLiterals.getConstants(), program.vars());
 	}
 
+	public static int launchFasm(Path asmFile) throws IOException {
+		final String fasmHome = System.getenv("FASM_HOME");
+		final Path fasmExe = fasmHome != null ? Paths.get(fasmHome, "fasm.exe") : Paths.get("fasm.exe");
+
+		final ProcessBuilder processBuilder = new ProcessBuilder(fasmExe.toString(), asmFile.toString());
+		processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		if (fasmHome != null) {
+			processBuilder.environment().put("INCLUDE",
+			                                 Paths.get(fasmHome, "INCLUDE").toString());
+		}
+		final Process process = processBuilder.start();
+		try {
+			process.waitFor(10, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e) {
+			process.destroy();
+		}
+		return process.exitValue();
+	}
+
 	private static void writeAsmFile(Path asmFile, AsmIRProgram program) throws IOException {
 		try (Writer writer = Files.newBufferedWriter(asmFile)) {
 			final X86Win64 x86Win64 = new X86Win64(writer);
@@ -62,20 +83,5 @@ public class Compiler {
 		}
 		name = name + ".asm";
 		return name;
-	}
-
-	private static void launchFasm(Path asmFile) throws IOException, InterruptedException {
-		final String fasmHome = System.getenv("FASM_HOME");
-		final Path fasmExe = fasmHome != null ? Paths.get(fasmHome, "fasm.exe") : Paths.get("fasm.exe");
-
-		final ProcessBuilder processBuilder = new ProcessBuilder(fasmExe.toString(), asmFile.toString());
-		processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-		if (fasmHome != null) {
-			processBuilder.environment().put("INCLUDE",
-			                                 Paths.get(fasmHome, "INCLUDE").toString());
-		}
-		final Process process = processBuilder.start();
-		process.waitFor(10, TimeUnit.SECONDS);
 	}
 }
