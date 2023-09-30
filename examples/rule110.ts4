@@ -26,17 +26,17 @@ for (size_t j = 0; j < BOARD_CAP; ++j) {
 fputc('\n', stdout);
 */
 fn printBoard(--)
-	'|' printChar
+	'|' emit
 	0
 	while dup BOARD_CAP 2 - < do
 		dup board + @8 // i board[i]
 		" *" drop swap + @8 // i chr
-		printChar
+		emit
 		1 +
 	end
 	drop
-	'|'  printChar
-	0x0a printChar
+	'|'  emit
+	0x0a emit
 end
 
 fn main(--)

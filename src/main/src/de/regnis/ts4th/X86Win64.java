@@ -21,7 +21,7 @@ public class X86Win64 {
 	private static final String STRING_PREFIX = "string_";
 	private static final String VAR_PREFIX = "var_";
 	private static final String PRINT_STRING = LABEL_PREFIX_BI + "printString";
-	private static final String PRINT_CHAR = LABEL_PREFIX_BI + "printChar";
+	private static final String EMIT = LABEL_PREFIX_BI + "emit";
 	private static final String PRINT_UINT = LABEL_PREFIX_BI + "printUint";
 
 	private final Writer writer;
@@ -123,7 +123,7 @@ public class X86Win64 {
 
 	private void writeCharPrint() throws IOException {
 		// rcx = char
-		writeLabel(PRINT_CHAR);
+		writeLabel(EMIT);
 		writeIndented(STR."""
 				              push rcx ; = sub rsp, 8
 				                mov rcx, rsp
@@ -309,8 +309,8 @@ public class X86Win64 {
 		case AsmIR.PrintInt(int size) -> {
 			writePrintInt(size);
 		}
-		case AsmIR.PrintChar() -> {
-			writePrintChar();
+		case AsmIR.Emit() -> {
+			writeEmit();
 		}
 		case AsmIR.PrintString(int ptrReg, int sizeReg) -> {
 			writePrintString(ptrReg, sizeReg);
@@ -531,7 +531,7 @@ public class X86Win64 {
 				              neg    rcx
 				              push   rcx
 				                mov    cl, '-'
-				                call   \{PRINT_CHAR}
+				                call   \{ EMIT}
 				              pop    rcx
 				              """);
 		writeLabel(labelPos);
@@ -539,17 +539,17 @@ public class X86Win64 {
 				              sub  rsp, 8
 				                call \{PRINT_UINT}
 				                mov  cl, ' '
-				                call \{PRINT_CHAR}
+				                call \{ EMIT}
 				              add  rsp, 8
 				              """);
 	}
 
-	private void writePrintChar() throws IOException {
-		writeComment("printChar");
+	private void writeEmit() throws IOException {
+		writeComment("emit");
 		// expects char in cl
 		writeIndented(STR."""
 				              sub rsp, 8
-				                call \{PRINT_CHAR}
+				                call \{ EMIT}
 				              add rsp, 8
 				              """);
 	}

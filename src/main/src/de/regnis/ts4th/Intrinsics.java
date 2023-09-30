@@ -339,7 +339,7 @@ public class Intrinsics {
 			}
 		});
 
-		nameToCommand.put("printChar", new Command() {
+		nameToCommand.put("emit", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
 				if (input.isEmpty()) {
@@ -358,7 +358,7 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final int size = size(types.type());
 				output.accept(AsmIRFactory.pop(REG_0, size));
-				output.accept(AsmIRFactory.printChar());
+				output.accept(AsmIRFactory.emit());
 			}
 		});
 		nameToCommand.put(PRINT, new Command() {

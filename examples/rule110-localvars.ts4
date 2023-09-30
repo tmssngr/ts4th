@@ -21,18 +21,18 @@ for (size_t j = 0; j < BOARD_CAP; ++j) {
 fputc('\n', stdout);
 */
 fn printBoard(--)
-	'|' printChar
+	'|' emit
 	0 var i do
 		while i BOARD_CAP 2 - < do
 			" *" drop
 			  board i + @8
 			+ @8
-			printChar
+			emit
 			i 1 + i!
 		end
 	end
-	'|'  printChar
-	0x0a printChar
+	'|'  emit
+	0x0a emit
 end
 
 fn main(--)

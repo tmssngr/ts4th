@@ -10,7 +10,7 @@ public sealed interface AsmIR permits
 		AsmIR.PushVar, AsmIR.LocalVarRead, AsmIR.LocalVarWrite, AsmIR.DropVars,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
-		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.PrintChar, AsmIR.Mem, AsmIR.Ret {
+		AsmIR.BinCommand, AsmIR.PrintInt, AsmIR.PrintString, AsmIR.Emit, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
 		z, nz, lt, le, ge, gt
@@ -154,10 +154,10 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record PrintChar() implements AsmIR {
+	record Emit() implements AsmIR {
 		@Override
 		public String toString() {
-			return "printChar";
+			return "emit";
 		}
 	}
 

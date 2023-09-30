@@ -199,7 +199,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             		end
 				             		drop
 
-				             		10 printChar
+				             		10 emit
 
 				             		1 +
 				             	end

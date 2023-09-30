@@ -25,13 +25,13 @@ tsf_main:
         neg    rcx
         push   rcx
           mov    cl, '-'
-          call   tsfbi_printChar
+          call   tsfbi_emit
         pop    rcx
 .1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
-          call tsfbi_printChar
+          call tsfbi_emit
         add  rsp, 8
         ; -- literal r0, #1000 --
         mov cx, 1000
@@ -42,13 +42,13 @@ tsf_main:
         neg    rcx
         push   rcx
           mov    cl, '-'
-          call   tsfbi_printChar
+          call   tsfbi_emit
         pop    rcx
 .2:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
-          call tsfbi_printChar
+          call tsfbi_emit
         add  rsp, 8
         ; -- mem --
         lea rcx, [mem]
@@ -58,18 +58,18 @@ tsf_main:
         neg    rcx
         push   rcx
           mov    cl, '-'
-          call   tsfbi_printChar
+          call   tsfbi_emit
         pop    rcx
 .3:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
-          call tsfbi_printChar
+          call tsfbi_emit
         add  rsp, 8
         ; -- ret --
         ret
 
-tsfbi_printChar:
+tsfbi_emit:
         push rcx ; = sub rsp, 8
           mov rcx, rsp
           mov rdx, 1

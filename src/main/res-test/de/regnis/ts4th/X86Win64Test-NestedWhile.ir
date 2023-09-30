@@ -31,7 +31,7 @@ while_2:
 endwhile_2:
 	pop r0 (2)
 	r0 = 10
-	printChar
+	emit
 	pop r0 (2)
 	r1 = 1
 	add r0, r1

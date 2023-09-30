@@ -26,7 +26,7 @@ tsf_subr:
         ; -- ret --
         ret
 
-tsfbi_printChar:
+tsfbi_emit:
         push rcx ; = sub rsp, 8
           mov rcx, rsp
           mov rdx, 1

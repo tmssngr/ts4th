@@ -80,8 +80,8 @@ public class AsmIRFactory {
 		return new AsmIR.PrintString(ptrReg, sizeReg);
 	}
 
-	public static AsmIR printChar() {
-		return new AsmIR.PrintChar();
+	public static AsmIR emit() {
+		return new AsmIR.Emit();
 	}
 
 	public static AsmIR print(int size) {
