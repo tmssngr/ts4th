@@ -3,6 +3,7 @@ package de.regnis.ts4th;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Thomas Singer
@@ -42,12 +43,16 @@ public class Utils {
 	}
 
 	public static String join(Iterable<String> iterable, String separator) {
+		return join(iterable, s -> s, separator);
+	}
+
+	public static <O> String join(Iterable<O> iterable, Function<O, String> converter, String separator) {
 		final StringBuilder buffer = new StringBuilder();
-		for (String s : iterable) {
+		for (O o : iterable) {
 			if (buffer.length() > 0) {
 				buffer.append(separator);
 			}
-			buffer.append(s);
+			buffer.append(converter.apply(o));
 		}
 		return buffer.toString();
 	}
