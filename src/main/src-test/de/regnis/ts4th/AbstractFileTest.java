@@ -10,14 +10,15 @@ import java.nio.file.*;
  */
 public class AbstractFileTest {
 
-	protected void write(String suffix, FileWriter writer) throws IOException {
-		final Path path = Paths.get("src/main/res-test/" + getName() + suffix);
+	@NotNull
+	protected Path createPath(String name) throws IOException {
+		final Path path = Paths.get("src/main/res-test/" + name);
 		Files.createDirectories(path.getParent());
-		writer.writeFile(path);
+		return path;
 	}
 
 	@NotNull
-	private static String getName() {
+	protected String getTestClassMethodName() {
 		final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
 		for (StackTraceElement element : stackTrace) {
 			final String className = element.getClassName();
@@ -27,9 +28,5 @@ public class AbstractFileTest {
 			}
 		}
 		throw new IllegalStateException("no test method found");
-	}
-
-	protected interface FileWriter {
-		void writeFile(Path path) throws IOException;
 	}
 }

@@ -378,7 +378,8 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void writeIr(AsmIRProgram program) throws IOException {
-		write(".ir", path -> writeIr(program, path));
+		final Path path = createPath(getTestClassMethodName() + ".ir");
+		writeIr(program, path);
 	}
 
 	private void writeIr(AsmIRProgram program, Path path) throws IOException {
@@ -435,7 +436,8 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void writeX86(AsmIRProgram program) throws IOException {
-		write(".asm", path -> writeX86(program, path));
+		final Path path = createPath(getTestClassMethodName() + ".asm");
+		writeX86(program, path);
 	}
 
 	private void writeX86(AsmIRProgram program, Path path) throws IOException {
