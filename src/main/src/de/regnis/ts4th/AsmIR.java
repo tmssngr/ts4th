@@ -17,7 +17,7 @@ public sealed interface AsmIR permits
 	}
 
 	enum BinOperation {
-		add, add_ptr, sub, imul, idiv, imod,
+		add, sub, imul, idiv, imod,
 		and, or, xor,
 		shl, shr,
 		boolTest,
@@ -151,10 +151,10 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record BinCommand(BinOperation operation, int reg1, int reg2) implements AsmIR {
+	record BinCommand(BinOperation operation, int reg1, int reg2, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return operation + " r" + reg1 + ", r" + reg2;
+			return operation + " r" + reg1 + ", r" + reg2 + " (" + type + ")";
 		}
 	}
 

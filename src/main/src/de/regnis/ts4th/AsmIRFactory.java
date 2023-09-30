@@ -76,8 +76,8 @@ public class AsmIRFactory {
 		return new AsmIR.Call(name);
 	}
 
-	public static AsmIR binCommand(AsmIR.BinOperation operation, int reg1, int reg2) {
-		return new AsmIR.BinCommand(operation, reg1, reg2);
+	public static AsmIR binCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) {
+		return new AsmIR.BinCommand(operation, reg1, reg2, type);
 	}
 
 	public static AsmIR printString(int ptrReg, int sizeReg) {

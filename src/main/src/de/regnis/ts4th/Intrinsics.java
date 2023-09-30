@@ -208,21 +208,21 @@ public class Intrinsics {
 				if (type1 == Type.Int && type2 == Type.Int) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
-					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1));
+					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.Int));
 					output.accept(AsmIRFactory.push(REG_0, type1));
 				}
 				else if (type1 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
 					output.accept(AsmIRFactory.cast(REG_0, type2, Type.Ptr));
-					output.accept(AsmIRFactory.binCommand(add_ptr, REG_1, REG_0));
+					output.accept(AsmIRFactory.binCommand(add, REG_1, REG_0, Type.Ptr));
 					output.accept(AsmIRFactory.push(REG_1, type1));
 				}
 				else if (type2 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
 					output.accept(AsmIRFactory.cast(REG_1, type1, Type.Ptr));
-					output.accept(AsmIRFactory.binCommand(add_ptr, REG_0, REG_1));
+					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.Ptr));
 					output.accept(AsmIRFactory.push(REG_0, type2));
 				}
 				else {
@@ -252,7 +252,7 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_0, Type.Int));
 				output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0));
+				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0, Type.Int));
 				output.accept(AsmIRFactory.push(REG_1, Type.Int));
 			}
 		});
@@ -271,7 +271,7 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				output.accept(AsmIRFactory.pop(REG_0, Type.Int));
 				output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0));
+				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0, Type.Int));
 				output.accept(AsmIRFactory.push(REG_1, Type.Int));
 			}
 		});
@@ -458,7 +458,7 @@ public class Intrinsics {
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, Type.Int));
 			output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.Int));
 			output.accept(AsmIRFactory.push(REG_0, Type.Int));
 		}
 	}
@@ -477,7 +477,7 @@ public class Intrinsics {
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 			output.accept(AsmIRFactory.pop(REG_1, Type.Int));
 			output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.Int));
 			output.accept(AsmIRFactory.push(REG_0, Type.Bool));
 		}
 	}

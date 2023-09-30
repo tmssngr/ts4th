@@ -30,7 +30,7 @@ tsf_main:
         mov ax, 1
         ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        ; -- add_ptr 0 1 --
+        ; -- add r0, r1 (Ptr) --
         add rcx, rax
         ; -- mov 1, 0 (Ptr) --
         mov rax, rcx
@@ -44,7 +44,7 @@ tsf_main:
         mov ax, 2
         ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        ; -- add_ptr 0 1 --
+        ; -- add r0, r1 (Ptr) --
         add rcx, rax
         ; -- mov 1, 0 (Ptr) --
         mov rax, rcx
@@ -58,7 +58,7 @@ tsf_main:
         mov ax, 3
         ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        ; -- add_ptr 0 1 --
+        ; -- add r0, r1 (Ptr) --
         add rcx, rax
         ; -- mov 1, 0 (Ptr) --
         mov rax, rcx
@@ -174,7 +174,7 @@ tsf_appendChar:
         mov ax, 1
         ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        ; -- add_ptr 0 1 --
+        ; -- add r0, r1 (Ptr) --
         add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8

@@ -42,12 +42,12 @@ tsf_while_1:
         mov cl, byte [rax]
         ; -- literal r1, #0 --
         mov ax, 0
-        ; -- neq 0 1 --
+        ; -- neq r0, r1 (Int) --
         cmp    cx, ax
         mov    cx, 0
         mov    ax, 1
         cmovne rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
@@ -62,7 +62,7 @@ tsf_while_1:
         mov [r15], rax
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add 0 1 --
+        ; -- add r0, r1 (Int) --
         add cx, ax
         ; -- mov 1, 0 (Int) --
         mov ax, cx
@@ -76,7 +76,7 @@ tsf_while_1:
         mov ax, 1
         ; -- cast 1, (Int -> Ptr) --
         movsx rax, ax
-        ; -- add_ptr 0 1 --
+        ; -- add r0, r1 (Ptr) --
         add rcx, rax
         ; -- push 0 (Ptr) --
         sub r15, 8

@@ -30,12 +30,12 @@ tsf_while_1:
         mov [r15], cx
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- lt 0 1 --
+        ; -- lt r0, r1 (Int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
@@ -53,12 +53,12 @@ tsf_while_2:
         mov [r15], cx
         ; -- literal r1, #20 --
         mov ax, 20
-        ; -- lt 0 1 --
+        ; -- lt r0, r1 (Int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endwhile_2 --
         jz tsf_endwhile_2
@@ -74,7 +74,7 @@ tsf_while_2:
         ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
-        ; -- add 0 1 --
+        ; -- add r0, r1 (Int) --
         add cx, ax
         ; -- printInt r0(Int) --
         movsx rcx, cx
@@ -96,7 +96,7 @@ tsf_while_2:
         add r15, 2
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add 0 1 --
+        ; -- add r0, r1 (Int) --
         add cx, ax
         ; -- push 0 (Int) --
         sub r15, 2
@@ -118,7 +118,7 @@ tsf_endwhile_2:
         add r15, 2
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add 0 1 --
+        ; -- add r0, r1 (Int) --
         add cx, ax
         ; -- push 0 (Int) --
         sub r15, 2

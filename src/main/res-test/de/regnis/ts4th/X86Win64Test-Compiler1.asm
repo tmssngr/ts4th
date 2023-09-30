@@ -20,7 +20,7 @@ tsf_main:
         mov cx, 1024
         ; -- literal r1, #2048 --
         mov ax, 2048
-        ; -- sub 0 1 --
+        ; -- sub r0, r1 (Int) --
         sub cx, ax
         ; -- printInt r0(Int) --
         movsx rcx, cx

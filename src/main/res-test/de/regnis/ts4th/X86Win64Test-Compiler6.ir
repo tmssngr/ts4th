@@ -7,7 +7,7 @@ main:
 	pop r0 (Ptr)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	move r1, r0 (Ptr)
 	r0 = 48
@@ -15,7 +15,7 @@ main:
 	pop r0 (Ptr)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	move r1, r0 (Ptr)
 	r0 = 50
@@ -23,7 +23,7 @@ main:
 	pop r0 (Ptr)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	move r1, r0 (Ptr)
 	r0 = 52
@@ -31,7 +31,7 @@ main:
 	pop r0 (Ptr)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	move r1, r0 (Ptr)
 	r0 = 10
@@ -40,7 +40,7 @@ main:
 	r0 = mem
 	r1 = 10
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	r0 = 104
 	push r0 (Int)
@@ -61,7 +61,7 @@ main:
 	r0 = mem
 	r1 = 10
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	move r1, r0 (Ptr)
 	r0 = 5
 	printString r1 (0)
@@ -81,6 +81,6 @@ appendChar:
 	pop r0 (Ptr)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	ret

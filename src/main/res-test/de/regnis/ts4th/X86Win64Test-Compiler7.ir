@@ -12,20 +12,20 @@ while_1:
 	r0 = 0
 	load r0(1), @r1
 	r1 = 0
-	neq r0, r1
-	boolTest r0, r0
+	neq r0, r1 (Int)
+	boolTest r0, r0 (Int)
 	jump z, endwhile_1
 	pop r1 (Ptr)
 	pop r0 (Int)
 	push r1 (Ptr)
 	r1 = 1
-	add r0, r1
+	add r0, r1 (Int)
 	move r1, r0 (Int)
 	pop r0 (Ptr)
 	push r1 (Int)
 	r1 = 1
 	cast r1 (Int -> Ptr)
-	add_ptr r0, r1
+	add r0, r1 (Ptr)
 	push r0 (Ptr)
 	jump while_1
 endwhile_1:

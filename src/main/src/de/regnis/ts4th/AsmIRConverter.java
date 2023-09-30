@@ -104,7 +104,7 @@ public class AsmIRConverter {
 				}
 
 				output.accept(AsmIRFactory.pop(REG_0, Type.Bool));
-				output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0));
+				output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0, Type.Int));
 				output.accept(AsmIRFactory.jump(AsmIR.Condition.z, elseTarget));
 				output.accept(AsmIRFactory.jump(ifTarget));
 				yield input.prev();

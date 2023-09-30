@@ -8,7 +8,7 @@ main:
 	pop r0 (Int)
 	pushVar r0 (Int)
 	read r0, var[1(Bool)]
-	boolTest r0, r0
+	boolTest r0, r0 (Int)
 	jump z, endif_1
 	r1 = constant 0
 	r0 = 7

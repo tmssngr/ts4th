@@ -20,7 +20,7 @@ tsf_main:
         mov ax, 1
         ; -- literal r0, #2 --
         mov cx, 2
-        ; -- shl 1 0 --
+        ; -- shl r1, r0 (Int) --
         shl ax, cl
         ; -- mov 0, 1 (Int) --
         mov cx, ax
@@ -43,7 +43,7 @@ tsf_main:
         mov ax, 1024
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- shr 1 0 --
+        ; -- shr r1, r0 (Int) --
         shr ax, cl
         ; -- mov 0, 1 (Int) --
         mov cx, ax

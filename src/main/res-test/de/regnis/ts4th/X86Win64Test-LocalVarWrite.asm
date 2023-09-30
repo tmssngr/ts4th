@@ -25,12 +25,12 @@ tsf_while_1:
         mov cx, [rsp+0]
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- lt 0 1 --
+        ; -- lt r0, r1 (Int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
@@ -55,7 +55,7 @@ tsf_while_1:
         mov cx, [rsp+0]
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add 0 1 --
+        ; -- add r0, r1 (Int) --
         add cx, ax
         ; -- write var [<empty> (Int)], 0 --
         mov [rsp+0], cx

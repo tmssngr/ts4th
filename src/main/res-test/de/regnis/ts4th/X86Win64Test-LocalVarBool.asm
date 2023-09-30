@@ -32,7 +32,7 @@ tsf_main:
         push cx
         ; -- read var r0, [Int (Bool)] --
         mov cx, [rsp+2]
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endif_1 --
         jz tsf_endif_1

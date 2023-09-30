@@ -294,8 +294,7 @@ public class X86Win64 {
 		case AsmIR.Move(int targetReg, int sourceReg, Type type) -> {
 			writeComment(STR."mov \{targetReg}, \{sourceReg} (\{type})");
 
-			final int size = type.getByteCount(PTR_SIZE);
-			writeIndented(STR."mov \{getRegName(targetReg, size)}, \{getRegName(sourceReg, size)}");
+			writeIndented(STR."mov \{getRegName(targetReg, type)}, \{getRegName(sourceReg, type)}");
 		}
 		case AsmIR.Cast(int reg, Type sourceType, Type targetType) -> {
 			final int sourceSize = sourceType.getByteCount(PTR_SIZE);
@@ -318,8 +317,8 @@ public class X86Win64 {
 		case AsmIR.Ret() -> {
 			writeRet();
 		}
-		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2) -> {
-			writeBinCommand(operation, reg1, reg2);
+		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) -> {
+			writeBinCommand(operation, reg1, reg2, type);
 		}
 		case AsmIR.PrintInt(Type type) -> {
 			writePrintInt(type);
@@ -418,21 +417,20 @@ public class X86Win64 {
 		writeIndented("ret");
 	}
 
-	private void writeBinCommand(AsmIR.BinOperation operation, int reg1, int reg2) throws IOException {
-		writeComment(STR."\{operation} \{reg1} \{reg2}");
+	private void writeBinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) throws IOException {
+		writeComment(STR."\{operation} r\{reg1}, r\{reg2} (\{type})");
 
 		switch (operation) {
-		case add -> writeIndented(STR."add \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
-		case add_ptr -> writeIndented(STR."add \{getRegName(reg1, PTR_SIZE)}, \{ getRegName(reg2, PTR_SIZE) }");
-		case sub -> writeIndented(STR."sub \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
+		case add -> writeIndented(STR."add \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case sub -> writeIndented(STR."sub \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case imul -> // https://www.felixcloutier.com/x86/imul
-				writeIndented(STR."imul \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
+				writeIndented(STR."imul \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case idiv -> {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              mov dx, \{regName2}
 					              xor eax, eax
@@ -447,8 +445,8 @@ public class X86Win64 {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              mov dx, \{regName2}
 					              xor eax, eax
@@ -459,24 +457,24 @@ public class X86Win64 {
 					              idiv ecx
 					              mov ecx, edx""");
 		}
-		case and -> writeIndented(STR."and \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
-		case or -> writeIndented(STR."or \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
-		case xor -> writeIndented(STR."xor \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
+		case and -> writeIndented(STR."and \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case or -> writeIndented(STR."or \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case xor -> writeIndented(STR."xor \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case shl -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
 			Utils.assertTrue(reg2 == 0, "source must be cl");
-			writeIndented(STR."shl \{getRegName(reg1, 2)}, \{getRegName(reg2, 1)}");
+			writeIndented(STR."shl \{getRegName(reg1, type)}, \{getRegName(reg2, 1)}");
 		}
 		case shr -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
 			Utils.assertTrue(reg2 == 0, "source must be cl");
-			writeIndented(STR."shr \{getRegName(reg1, 2)}, \{getRegName(reg2, 1)}");
+			writeIndented(STR."shr \{getRegName(reg1, type)}, \{getRegName(reg2, 1)}");
 		}
 		case boolTest -> writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
 		                                                       getRegName(reg2, 1)));
 		case lt -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp   \{regName1}, \{regName2}
 					              mov   \{regName1}, 0
@@ -484,8 +482,8 @@ public class X86Win64 {
 					              cmovl r\{regName1}, r\{regName2}""");
 		}
 		case le -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp    \{regName1}, \{regName2}
 					              mov    \{regName1}, 0
@@ -493,8 +491,8 @@ public class X86Win64 {
 					              cmovle r\{regName1}, r\{regName2}""");
 		}
 		case eq -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp   \{regName1}, \{regName2}
 					              mov   \{regName1}, 0
@@ -502,8 +500,8 @@ public class X86Win64 {
 					              cmove r\{regName1}, r\{regName2}""");
 		}
 		case neq -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp    \{regName1}, \{regName2}
 					              mov    \{regName1}, 0
@@ -511,8 +509,8 @@ public class X86Win64 {
 					              cmovne r\{regName1}, r\{regName2}""");
 		}
 		case ge -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp    \{regName1}, \{regName2}
 					              mov    \{regName1}, 0
@@ -520,15 +518,15 @@ public class X86Win64 {
 					              cmovge r\{regName1}, r\{regName2}""");
 		}
 		case gt -> {
-			final String regName1 = getRegName(reg1, 2);
-			final String regName2 = getRegName(reg2, 2);
+			final String regName1 = getRegName(reg1, type);
+			final String regName2 = getRegName(reg2, type);
 			writeIndented(STR."""
 					              cmp   \{regName1}, \{regName2}
 					              mov   \{regName1}, 0
 					              mov   \{regName2}, 1
 					              cmovg r\{regName1}, r\{regName2}""");
 		}
-		default -> throw new IllegalStateException();
+		default -> throw new IllegalStateException("not implemented " + operation);
 		}
 	}
 
@@ -574,7 +572,7 @@ public class X86Win64 {
 		writeComment(STR."printString r\{ ptrReg } (\{ sizeReg })");
 
 		final String ptrRegName = getRegName(ptrReg, PTR_SIZE);
-		final String sizeRegName = getRegName(sizeReg, 2);
+		final String sizeRegName = getRegName(sizeReg, Type.Int);
 		// expects ptr in rcx, size in rdx
 		writeIndented(STR."""
 				              movsx rdx, \{ sizeRegName}
@@ -605,6 +603,11 @@ public class X86Win64 {
 			offset += getByteCountForPush(type);
 			types = types.prev();
 		}
+	}
+
+	@NotNull
+	private static String getRegName(int reg, Type type) {
+		return getRegName(reg, type.getByteCount(PTR_SIZE));
 	}
 
 	@NotNull

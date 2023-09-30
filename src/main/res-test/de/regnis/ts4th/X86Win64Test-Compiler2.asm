@@ -65,7 +65,7 @@ tsf_main:
         ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- idiv 0 1 --
+        ; -- idiv r0, r1 (Int) --
         mov dx, ax
         xor eax, eax
         mov ax, cx
@@ -95,7 +95,7 @@ tsf_main:
         ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- idiv 0 1 --
+        ; -- idiv r0, r1 (Int) --
         mov dx, ax
         xor eax, eax
         mov ax, cx
@@ -137,12 +137,12 @@ tsf_while_1:
         ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
-        ; -- lt 0 1 --
+        ; -- lt r0, r1 (Int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z else_2 --
         jz tsf_else_2
@@ -163,7 +163,7 @@ tsf_while_1:
         ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- sub 0 1 --
+        ; -- sub r0, r1 (Int) --
         sub cx, ax
         ; -- push 0 (Int) --
         sub r15, 2
@@ -183,12 +183,12 @@ tsf_else_2:
         ; -- push 1 (Int) --
         sub r15, 2
         mov [r15], ax
-        ; -- gt 0 1 --
+        ; -- gt r0, r1 (Int) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovg rcx, rax
-        ; -- boolTest 0 0 --
+        ; -- boolTest r0, r0 (Int) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
@@ -217,7 +217,7 @@ tsf_else_2:
         ; -- pop 0 (Int) --
         mov cx, [r15]
         add r15, 2
-        ; -- sub 0 1 --
+        ; -- sub r0, r1 (Int) --
         sub cx, ax
         ; -- push 0 (Int) --
         sub r15, 2
