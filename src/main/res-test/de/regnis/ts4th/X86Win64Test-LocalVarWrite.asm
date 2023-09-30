@@ -18,25 +18,25 @@ start:
 tsf_main:
         ; -- literal r0, #0 --
         mov cx, 0
-        ; -- push var r0 (int) --
+        ; -- push var r0 (i16) --
         push cx
 tsf_while_1:
-        ; -- read var r0, [<empty> (int)] --
+        ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- literal r1, #10 --
         mov ax, 10
-        ; -- lt r0, r1 (int) --
+        ; -- lt r0, r1 (i16) --
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
         cmovl rcx, rax
-        ; -- boolTest r0, r0 (int) --
+        ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
-        ; -- read var r0, [<empty> (int)] --
+        ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- printInt r0(int) --
+        ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1
@@ -51,18 +51,18 @@ tsf_while_1:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- read var r0, [<empty> (int)] --
+        ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add r0, r1 (int) --
+        ; -- add r0, r1 (i16) --
         add cx, ax
-        ; -- write var [<empty> (int)], 0 --
+        ; -- write var [<empty> (i16)], 0 --
         mov [rsp+0], cx
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_endwhile_1:
-        ; -- drop vars int --
+        ; -- drop vars i16 --
         add rsp, 2
         ; -- ret --
         ret

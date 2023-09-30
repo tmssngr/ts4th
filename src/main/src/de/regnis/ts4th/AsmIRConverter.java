@@ -68,9 +68,9 @@ public class AsmIRConverter {
 			}
 			case Instruction.IntLiteral(int value) -> {
 				output.accept(AsmIRFactory.literal(REG_0, value));
-				output.accept(AsmIRFactory.push(REG_0, Type.Int));
+				output.accept(AsmIRFactory.push(REG_0, Type.I16));
 				yield input
-						.append(Type.Int);
+						.append(Type.I16);
 			}
 			case Instruction.BoolLiteral(boolean value) -> {
 				output.accept(AsmIRFactory.literal(REG_0, value));
@@ -89,10 +89,10 @@ public class AsmIRConverter {
 				output.accept(AsmIRFactory.stringLiteral(REG_0, entry.index()));
 				output.accept(AsmIRFactory.push(REG_0, Type.Ptr));
 				output.accept(AsmIRFactory.literal(REG_0, entry.length()));
-				output.accept(AsmIRFactory.push(REG_0, Type.Int));
+				output.accept(AsmIRFactory.push(REG_0, Type.I16));
 				yield input
 						.append(Type.Ptr)
-						.append(Type.Int);
+						.append(Type.I16);
 			}
 			case Instruction.Jump(String target, _) -> {
 				output.accept(AsmIRFactory.jump(target));
@@ -104,7 +104,7 @@ public class AsmIRConverter {
 				}
 
 				output.accept(AsmIRFactory.pop(REG_0, Type.Bool));
-				output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0, Type.Int));
+				output.accept(AsmIRFactory.binCommand(boolTest, REG_0, REG_0, Type.I16));
 				output.accept(AsmIRFactory.jump(AsmIR.Condition.z, elseTarget));
 				output.accept(AsmIRFactory.jump(ifTarget));
 				yield input.prev();

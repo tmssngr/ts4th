@@ -10,11 +10,11 @@ public class TypeListTest {
 	@Test
 	public void testToString() {
 		Assert.assertEquals("<empty>", TypeList.EMPTY.toString());
-		Assert.assertEquals(Type.Int.toString(), TypeList.INT.toString());
-		Assert.assertEquals(Type.Int + ", " + Type.Int, TypeList.INT2.toString());
-		Assert.assertEquals(Type.Int + ", " + Type.Int + ", " + Type.Int, TypeList.INT3.toString());
-		Assert.assertEquals(Type.Int + ", " + Type.Int + ", " + Type.Bool, TypeList.INT.append(Type.Int).append(Type.Bool).toString());
-		Assert.assertEquals(Type.Int + ", " + Type.Bool + ", " + Type.Bool, TypeList.INT.append(Type.Bool).append(Type.Bool).toString());
+		Assert.assertEquals(Type.I16.toString(), TypeList.INT.toString());
+		Assert.assertEquals(Type.I16 + ", " + Type.I16, TypeList.INT2.toString());
+		Assert.assertEquals(Type.I16 + ", " + Type.I16 + ", " + Type.I16, TypeList.INT3.toString());
+		Assert.assertEquals(Type.I16 + ", " + Type.I16 + ", " + Type.Bool, TypeList.INT.append(Type.I16).append(Type.Bool).toString());
+		Assert.assertEquals(Type.I16 + ", " + Type.Bool + ", " + Type.Bool, TypeList.INT.append(Type.Bool).append(Type.Bool).toString());
 	}
 
 	@Test
@@ -26,15 +26,15 @@ public class TypeListTest {
 
 		Assert.assertTrue(TypeList.INT.canOperateOn(TypeList.INT));
 		Assert.assertTrue(TypeList.INT.canOperateOn(TypeList.INT2));
-		Assert.assertTrue(TypeList.INT.canOperateOn(TypeList.BOOL.append(Type.Int)));
-		Assert.assertTrue(TypeList.INT2.canOperateOn(TypeList.BOOL.append(Type.Int).append(Type.Int)));
+		Assert.assertTrue(TypeList.INT.canOperateOn(TypeList.BOOL.append(Type.I16)));
+		Assert.assertTrue(TypeList.INT2.canOperateOn(TypeList.BOOL.append(Type.I16).append(Type.I16)));
 
 		Assert.assertFalse(TypeList.INT.canOperateOn(TypeList.EMPTY));
 		Assert.assertFalse(TypeList.INT.canOperateOn(TypeList.BOOL));
 		Assert.assertFalse(TypeList.BOOL.canOperateOn(TypeList.EMPTY));
 		Assert.assertFalse(TypeList.BOOL.canOperateOn(TypeList.INT));
 		Assert.assertFalse(TypeList.INT2.canOperateOn(TypeList.INT));
-		Assert.assertFalse(TypeList.INT2.canOperateOn(TypeList.BOOL.append(Type.Int)));
+		Assert.assertFalse(TypeList.INT2.canOperateOn(TypeList.BOOL.append(Type.I16)));
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class TypeListTest {
 		catch (InvalidTypeException ignored) {
 		}
 		try {
-			TypeList.INT.append(Type.Bool).transform(TypeList.BOOL.append(Type.Int), TypeList.EMPTY);
+			TypeList.INT.append(Type.Bool).transform(TypeList.BOOL.append(Type.I16), TypeList.EMPTY);
 		}
 		catch (InvalidTypeException ignored) {
 		}

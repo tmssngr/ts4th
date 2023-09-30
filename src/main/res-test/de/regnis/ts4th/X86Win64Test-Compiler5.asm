@@ -28,7 +28,7 @@ tsf_main:
         lea rcx, [mem]
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- cast 1, (int -> ptr) --
+        ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
         add rcx, rax
@@ -42,7 +42,7 @@ tsf_main:
         lea rcx, [mem]
         ; -- literal r1, #2 --
         mov ax, 2
-        ; -- cast 1, (int -> ptr) --
+        ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
         add rcx, rax
@@ -56,7 +56,7 @@ tsf_main:
         lea rcx, [mem]
         ; -- literal r1, #3 --
         mov ax, 3
-        ; -- cast 1, (int -> ptr) --
+        ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
         add rcx, rax
@@ -85,35 +85,35 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #104 --
         mov cx, 104
-        ; -- push 0 (int) --
+        ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #101 --
         mov cx, 101
-        ; -- push 0 (int) --
+        ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
         mov cx, 108
-        ; -- push 0 (int) --
+        ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
         mov cx, 108
-        ; -- push 0 (int) --
+        ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #111 --
         mov cx, 111
-        ; -- push 0 (int) --
+        ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
         ; -- appendChar --
@@ -148,7 +148,7 @@ tsf_main:
 
         ; -- proc appendChar --
 tsf_appendChar:
-        ; -- pop 1 (int) --
+        ; -- pop 1 (i16) --
         mov ax, [r15]
         add r15, 2
         ; -- pop 0 (ptr) --
@@ -157,12 +157,12 @@ tsf_appendChar:
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-        ; -- push 1 (int) --
+        ; -- push 1 (i16) --
         sub r15, 2
         mov [r15], ax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- pop 0 (int) --
+        ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
         ; -- store @1, 0 (1) --
@@ -172,7 +172,7 @@ tsf_appendChar:
         add r15, 8
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- cast 1, (int -> ptr) --
+        ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
         add rcx, rax

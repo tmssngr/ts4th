@@ -7,7 +7,7 @@ import java.util.*;
  */
 public enum Type {
 	Bool(1),
-	Int(2),
+	I16(2),
 	Ptr(0);
 
 	private final int byteCount;

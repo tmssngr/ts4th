@@ -1,6 +1,6 @@
 main:
 	r0 = 1024
 	r1 = 2048
-	sub r0, r1 (int)
-	printInt r0(int)
+	sub r0, r1 (i16)
+	printInt r0(i16)
 	ret

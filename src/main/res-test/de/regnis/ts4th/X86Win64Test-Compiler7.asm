@@ -21,7 +21,7 @@ tsf_strlen:
         add r15, 8
         ; -- literal r1, #0 --
         mov ax, 0
-        ; -- push 1 (int) --
+        ; -- push 1 (i16) --
         sub r15, 2
         mov [r15], ax
         ; -- push 0 (ptr) --
@@ -42,19 +42,19 @@ tsf_while_1:
         mov cl, byte [rax]
         ; -- literal r1, #0 --
         mov ax, 0
-        ; -- neq r0, r1 (int) --
+        ; -- neq r0, r1 (i16) --
         cmp    cx, ax
         mov    cx, 0
         mov    ax, 1
         cmovne rcx, rax
-        ; -- boolTest r0, r0 (int) --
+        ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
         ; -- pop 1 (ptr) --
         mov rax, [r15]
         add r15, 8
-        ; -- pop 0 (int) --
+        ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
         ; -- push 1 (ptr) --
@@ -62,19 +62,19 @@ tsf_while_1:
         mov [r15], rax
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- add r0, r1 (int) --
+        ; -- add r0, r1 (i16) --
         add cx, ax
-        ; -- mov 1, 0 (int) --
+        ; -- mov 1, 0 (i16) --
         mov ax, cx
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
-        ; -- push 1 (int) --
+        ; -- push 1 (i16) --
         sub r15, 2
         mov [r15], ax
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- cast 1, (int -> ptr) --
+        ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
         add rcx, rax
@@ -101,10 +101,10 @@ tsf_main:
         mov cx, 12
         ; -- strlen --
         call tsf_strlen
-        ; -- pop 0 (int) --
+        ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
-        ; -- printInt r0(int) --
+        ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
         jns    .1

@@ -6,7 +6,7 @@ main:
 	store @r1, r0(1)
 	pop r0 (ptr)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	move r1, r0 (ptr)
@@ -14,7 +14,7 @@ main:
 	store @r1, r0(1)
 	pop r0 (ptr)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	move r1, r0 (ptr)
@@ -22,7 +22,7 @@ main:
 	store @r1, r0(1)
 	pop r0 (ptr)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	move r1, r0 (ptr)
@@ -30,7 +30,7 @@ main:
 	store @r1, r0(1)
 	pop r0 (ptr)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	move r1, r0 (ptr)
@@ -39,28 +39,28 @@ main:
 	pop r0 (ptr)
 	r0 = mem
 	r1 = 10
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	r0 = 104
-	push r0 (int)
+	push r0 (i16)
 	call appendChar
 	r0 = 101
-	push r0 (int)
+	push r0 (i16)
 	call appendChar
 	r0 = 108
-	push r0 (int)
+	push r0 (i16)
 	call appendChar
 	r0 = 108
-	push r0 (int)
+	push r0 (i16)
 	call appendChar
 	r0 = 111
-	push r0 (int)
+	push r0 (i16)
 	call appendChar
 	pop r0 (ptr)
 	r0 = mem
 	r1 = 10
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
 	r0 = 5
@@ -71,16 +71,16 @@ main:
 	printString r1 (0)
 	ret
 appendChar:
-	pop r1 (int)
+	pop r1 (i16)
 	pop r0 (ptr)
 	push r0 (ptr)
-	push r1 (int)
+	push r1 (i16)
 	move r1, r0 (ptr)
-	pop r0 (int)
+	pop r0 (i16)
 	store @r1, r0(1)
 	pop r0 (ptr)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	ret

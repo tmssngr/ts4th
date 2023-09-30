@@ -2,19 +2,19 @@ const %0: 76 61 6c 75 65 3a 20
 
 main:
 	r0 = 1
-	push r0 (int)
+	push r0 (i16)
 	r0 = true
 	pushVar r0 (bool)
-	pop r0 (int)
-	pushVar r0 (int)
+	pop r0 (i16)
+	pushVar r0 (i16)
 	read r0, var[1(bool)]
-	boolTest r0, r0 (int)
+	boolTest r0, r0 (i16)
 	jump z, endif_1
 	r1 = constant 0
 	r0 = 7
 	printString r1 (0)
 	r0 = 1
-	printInt r0(int)
+	printInt r0(i16)
 endif_1:
-	dropVars int, bool
+	dropVars i16, bool
 	ret

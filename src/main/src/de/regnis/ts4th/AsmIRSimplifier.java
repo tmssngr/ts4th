@@ -135,7 +135,7 @@ public class AsmIRSimplifier {
 				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, Type type)) {
 					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value)
 					    && sourceReg == tmp) {
-						Utils.assertTrue(type == Type.Int);
+						Utils.assertTrue(type == Type.I16);
 						removeNext();
 						replace(new AsmIR.IntLiteral(targetReg, value));
 					}

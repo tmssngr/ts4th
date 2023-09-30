@@ -3,7 +3,7 @@ const %0: 68 65 6c 6c 6f 20 77 6f 72 6c 64 00
 strlen:
 	pop r0 (ptr)
 	r1 = 0
-	push r1 (int)
+	push r1 (i16)
 	push r0 (ptr)
 while_1:
 	pop r0 (ptr)
@@ -12,19 +12,19 @@ while_1:
 	r0 = 0
 	load r0(1), @r1
 	r1 = 0
-	neq r0, r1 (int)
-	boolTest r0, r0 (int)
+	neq r0, r1 (i16)
+	boolTest r0, r0 (i16)
 	jump z, endwhile_1
 	pop r1 (ptr)
-	pop r0 (int)
+	pop r0 (i16)
 	push r1 (ptr)
 	r1 = 1
-	add r0, r1 (int)
-	move r1, r0 (int)
+	add r0, r1 (i16)
+	move r1, r0 (i16)
 	pop r0 (ptr)
-	push r1 (int)
+	push r1 (i16)
 	r1 = 1
-	cast r1 (int -> ptr)
+	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	push r0 (ptr)
 	jump while_1
@@ -36,6 +36,6 @@ main:
 	push r0 (ptr)
 	r0 = 12
 	call strlen
-	pop r0 (int)
-	printInt r0(int)
+	pop r0 (i16)
+	printInt r0(i16)
 	ret

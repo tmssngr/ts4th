@@ -123,7 +123,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			for (TerminalNode node : ctx.Identifier()) {
 				final String text = node.getText();
 				if (text.equals("int")) {
-					typeList = typeList.append(Type.Int);
+					typeList = typeList.append(Type.I16);
 					continue;
 				}
 

@@ -8,10 +8,10 @@ import org.jetbrains.annotations.*;
 public record TypeList(TypeList prev, Type type) {
 
 	public static final TypeList EMPTY = new TypeList(null, null);
-	public static final TypeList INT = new TypeList(EMPTY, Type.Int);
-	public static final TypeList INT2 = new TypeList(INT, Type.Int);
-	public static final TypeList INT3 = new TypeList(INT2, Type.Int);
-	public static final TypeList INT4 = new TypeList(INT3, Type.Int);
+	public static final TypeList INT = new TypeList(EMPTY, Type.I16);
+	public static final TypeList INT2 = new TypeList(INT, Type.I16);
+	public static final TypeList INT3 = new TypeList(INT2, Type.I16);
+	public static final TypeList INT4 = new TypeList(INT3, Type.I16);
 	public static final TypeList BOOL = new TypeList(EMPTY, Type.Bool);
 	public static final TypeList PTR = new TypeList(EMPTY, Type.Ptr);
 

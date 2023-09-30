@@ -572,7 +572,7 @@ public class X86Win64 {
 		writeComment(STR."printString r\{ ptrReg } (\{ sizeReg })");
 
 		final String ptrRegName = getRegName(ptrReg, PTR_SIZE);
-		final String sizeRegName = getRegName(sizeReg, Type.Int);
+		final String sizeRegName = getRegName(sizeReg, Type.I16);
 		// expects ptr in rcx, size in rdx
 		writeIndented(STR."""
 				              movsx rdx, \{ sizeRegName}

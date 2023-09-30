@@ -186,7 +186,7 @@ public class Intrinsics {
 					return output;
 				}
 
-				final TypeList ptrInt = TypeList.PTR.append(Type.Int);
+				final TypeList ptrInt = TypeList.PTR.append(Type.I16);
 				output = input.transform(ptrInt, TypeList.PTR);
 				if (output != null) {
 					return output;
@@ -205,10 +205,10 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final Type type1 = types.type();
 				final Type type2 = types.prev().type();
-				if (type1 == Type.Int && type2 == Type.Int) {
+				if (type1 == Type.I16 && type2 == Type.I16) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
-					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.Int));
+					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.I16));
 					output.accept(AsmIRFactory.push(REG_0, type1));
 				}
 				else if (type1 == Type.Ptr) {
@@ -250,10 +250,10 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-				output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0, Type.Int));
-				output.accept(AsmIRFactory.push(REG_1, Type.Int));
+				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+				output.accept(AsmIRFactory.pop(REG_1, Type.I16));
+				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0, Type.I16));
+				output.accept(AsmIRFactory.push(REG_1, Type.I16));
 			}
 		});
 		nameToCommand.put(SHR, new Command() {
@@ -269,10 +269,10 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-				output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0, Type.Int));
-				output.accept(AsmIRFactory.push(REG_1, Type.Int));
+				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+				output.accept(AsmIRFactory.pop(REG_1, Type.I16));
+				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0, Type.I16));
+				output.accept(AsmIRFactory.push(REG_1, Type.I16));
 			}
 		});
 
@@ -305,7 +305,7 @@ public class Intrinsics {
 				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 				output.accept(AsmIRFactory.literal(REG_0, 0));
 				output.accept(AsmIRFactory.load(REG_0, REG_1, 1));
-				output.accept(AsmIRFactory.push(REG_0, Type.Int));
+				output.accept(AsmIRFactory.push(REG_0, Type.I16));
 			}
 		});
 		nameToCommand.put(STORE8, new Command() {
@@ -317,7 +317,7 @@ public class Intrinsics {
 					return output;
 				}
 
-				expected = TypeList.PTR.append(Type.Int);
+				expected = TypeList.PTR.append(Type.I16);
 				output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
 					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
@@ -330,10 +330,10 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-					output.accept(AsmIRFactory.pop(REG_0, Type.Int));
+					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
 				}
 				else {
-					output.accept(AsmIRFactory.pop(REG_0, Type.Int));
+					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
 					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 				}
 				output.accept(AsmIRFactory.store(REG_1, REG_0, 1));
@@ -347,7 +347,7 @@ public class Intrinsics {
 					throw new InvalidTypeException(location, name + " (ascii --) can't operate on empty stack");
 				}
 
-				if (input.type() != Type.Int) {
+				if (input.type() != Type.I16) {
 					throw new InvalidTypeException(location, name + " (ascii --) only can work on `int`");
 				}
 
@@ -356,7 +356,7 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.Int));
+				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
 				output.accept(AsmIRFactory.emit());
 			}
 		});
@@ -368,7 +368,7 @@ public class Intrinsics {
 				}
 
 				final Type type = input.type();
-				if (type != Type.Int && type != Type.Ptr) {
+				if (type != Type.I16 && type != Type.Ptr) {
 					throw new InvalidTypeException(location, name + " (a --) only can work on `int` and `ptr`");
 				}
 
@@ -391,7 +391,7 @@ public class Intrinsics {
 					return output;
 				}
 
-				expected = TypeList.PTR.append(Type.Int);
+				expected = TypeList.PTR.append(Type.I16);
 				output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
 					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
@@ -404,10 +404,10 @@ public class Intrinsics {
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				if (types.type() == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-					output.accept(AsmIRFactory.pop(REG_0, Type.Int));
+					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
 				}
 				else {
-					output.accept(AsmIRFactory.pop(REG_0, Type.Int));
+					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
 					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 				}
 				output.accept(AsmIRFactory.printString(REG_1, REG_0));
@@ -456,10 +456,10 @@ public class Intrinsics {
 
 		@Override
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-			output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.Int));
-			output.accept(AsmIRFactory.push(REG_0, Type.Int));
+			output.accept(AsmIRFactory.pop(REG_1, Type.I16));
+			output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.I16));
+			output.accept(AsmIRFactory.push(REG_0, Type.I16));
 		}
 	}
 
@@ -475,9 +475,9 @@ public class Intrinsics {
 
 		@Override
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIRFactory.pop(REG_1, Type.Int));
-			output.accept(AsmIRFactory.pop(REG_0, Type.Int));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.Int));
+			output.accept(AsmIRFactory.pop(REG_1, Type.I16));
+			output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.I16));
 			output.accept(AsmIRFactory.push(REG_0, Type.Bool));
 		}
 	}
