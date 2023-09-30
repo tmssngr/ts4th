@@ -13,6 +13,8 @@ import static java.lang.StringTemplate.STR;
  */
 public class X86Win64 {
 
+	private static final int PTR_SIZE = 8;
+
 	private static final String INDENTATION = "        ";
 	// data stack pointer
 	private static final String REG_DSP = "r15";
@@ -260,11 +262,11 @@ public class X86Win64 {
 		}
 		case AsmIR.PtrLiteral(int targetReg, int index, String name) -> {
 			writeComment(STR."var r\{ targetReg }, @\{ name }");
-			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ VAR_PREFIX + index }]");
+			writeIndented(STR."lea \{getRegName(targetReg, PTR_SIZE)}, [\{ VAR_PREFIX + index }]");
 		}
 		case  AsmIR.StringLiteral(int targetReg, int index) -> {
 			writeComment(STR."literal r\{ targetReg }, \"\{ index }");
-			writeIndented(STR."lea \{getRegName(targetReg, 8)}, [\{ STRING_PREFIX + index }]");
+			writeIndented(STR."lea \{getRegName(targetReg, PTR_SIZE)}, [\{ STRING_PREFIX + index }]");
 		}
 		case AsmIR.Jump(AsmIR.Condition condition, String target) -> {
 			writeJump(condition, target);
@@ -293,12 +295,12 @@ public class X86Win64 {
 		case AsmIR.Load(int valueReg, int pointerReg, int valueSize) -> {
 			writeComment(STR."load \{valueReg} (\{valueSize}), @\{pointerReg}");
 
-			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}]");
+			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}]");
 		}
 		case AsmIR.Store(int pointerReg, int valueReg, int valueSize) -> {
 			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{valueSize})");
 
-			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, 8)}], \{getRegName(valueReg, valueSize)}");
+			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}], \{getRegName(valueReg, valueSize)}");
 		}
 		case AsmIR.Ret() -> {
 			writeRet();
@@ -317,7 +319,7 @@ public class X86Win64 {
 		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");
-			writeIndented(STR."lea \{getRegName(AsmIRConverter.REG_0, 8)}, [mem]");
+			writeIndented(STR."lea \{getRegName(AsmIRConverter.REG_0, PTR_SIZE)}, [mem]");
 		}
 		case AsmIR.Call(String name) -> {
 			writeComment(name);
@@ -404,10 +406,10 @@ public class X86Win64 {
 		case add -> writeIndented(STR."add \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
 		case add_ptr -> {
 			final String offsetReg = getRegName(reg2, 2);
-			final String offset64Reg = getRegName(reg2, 8);
+			final String offset64Reg = getRegName(reg2, PTR_SIZE);
 			writeIndented(STR."""
 			           movsx \{offset64Reg}, \{offsetReg}
-			           add   \{getRegName(reg1, 8)}, \{offset64Reg}""");
+			           add   \{getRegName(reg1, PTR_SIZE)}, \{offset64Reg}""");
 		}
 		case sub -> writeIndented(STR."sub \{getRegName(reg1, 2)}, \{getRegName(reg2, 2)}");
 		case imul -> // https://www.felixcloutier.com/x86/imul
@@ -557,7 +559,7 @@ public class X86Win64 {
 	private void writePrintString(int ptrReg, int sizeReg) throws IOException {
 		writeComment(STR."printString r\{ ptrReg } (\{ sizeReg })");
 
-		final String ptrRegName = getRegName(ptrReg, 8);
+		final String ptrRegName = getRegName(ptrReg, PTR_SIZE);
 		final String sizeRegName = getRegName(sizeReg, 2);
 		// expects ptr in rcx, size in rdx
 		writeIndented(STR."""
