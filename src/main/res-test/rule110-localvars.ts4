@@ -2,12 +2,12 @@
 const BOARD_CAP 30 end
 var board BOARD_CAP end
 
-fn fill(ptr int int --)
+fn fill(ptr int u8 --)
 	var target size value do
 		while
 			size 0 >
 		do
-			value target !8
+			target value !8
 			target 1 + target!
 			size 1 - size!
 		end
@@ -36,9 +36,9 @@ fn printBoard(--)
 end
 
 fn main(--)
-	board BOARD_CAP 0 fill
+	board BOARD_CAP 0u8 fill
 	// board[BOARD_CAP - 2] = 1;
-	board BOARD_CAP 2 - + 1 !8
+	board BOARD_CAP 2 - + 1u8 !8
 	0
 	while dup BOARD_CAP 2 - < do
 		printBoard
@@ -70,6 +70,7 @@ fn main(--)
 
 				// board[j] =
 				board j +
+				swap as_u8
 				!8
 				j 1 + j!
 			end

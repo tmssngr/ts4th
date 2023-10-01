@@ -16,10 +16,10 @@ start:
 
         ; -- proc fill --
 tsf_fill:
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- push var r0 (i16) --
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- push var r0 (u8) --
         push cx
         ; -- pop 0 (i16) --
         mov cx, [r15]
@@ -45,18 +45,16 @@ tsf_while_1:
         test cl, cl
         ; -- jump z endwhile_1 --
         jz tsf_endwhile_1
-        ; -- read var r0, [ptr, i16 (i16)] --
-        mov cx, [rsp+10]
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- read var r0, [<empty> (ptr)] --
         mov rcx, [rsp+0]
-        ; -- mov 1, 0 (ptr) --
-        mov rax, rcx
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
+        ; -- push 0 (ptr) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- read var r0, [ptr, i16 (u8)] --
+        mov cx, [rsp+10]
+        ; -- pop 1 (ptr) --
+        mov rax, [r15]
+        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- read var r0, [<empty> (ptr)] --
@@ -80,7 +78,7 @@ tsf_while_1:
         ; -- jump while_1 --
         jmp tsf_while_1
 tsf_endwhile_1:
-        ; -- drop vars ptr, i16, i16 --
+        ; -- drop vars ptr, i16, u8 --
         add rsp, 12
         ; -- ret --
         ret
@@ -210,10 +208,10 @@ tsf_main:
         sub r15, 2
         mov [r15], cx
         ; -- literal r0, #0 --
-        mov cx, 0
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 0
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- fill --
         call tsf_fill
         ; -- var r0, @board --
@@ -239,7 +237,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #1 --
-        mov cx, 1
+        mov cl, 1
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- literal r0, #0 --
@@ -441,6 +439,12 @@ tsf_while_4:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
+        ; -- push 1 (ptr) --
+        sub r15, 8
+        mov [r15], rax
+        ; -- pop 1 (ptr) --
+        mov rax, [r15]
+        add r15, 8
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- read var r0, [i16 (i16)] --

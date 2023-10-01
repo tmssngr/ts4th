@@ -24,7 +24,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #49 --
-        mov cx, 49
+        mov cl, 49
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (ptr) --
@@ -42,7 +42,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #48 --
-        mov cx, 48
+        mov cl, 48
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (ptr) --
@@ -60,7 +60,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #50 --
-        mov cx, 50
+        mov cl, 50
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (ptr) --
@@ -78,7 +78,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #52 --
-        mov cx, 52
+        mov cl, 52
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (ptr) --
@@ -96,7 +96,7 @@ tsf_main:
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
         ; -- literal r0, #10 --
-        mov cx, 10
+        mov cl, 10
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (ptr) --
@@ -186,29 +186,31 @@ tsf_main:
 
         ; -- proc appendChar --
 tsf_appendChar:
-        ; -- pop 0 (u8) --
-        mov cl, [r15]
+        ; -- pop 1 (u8) --
+        mov al, [r15]
         add r15, 1
-        ; -- cast 0, (u8 -> i16) --
-        movsx cx, cl
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-        ; -- push 1 (i16) --
-        sub r15, 2
-        mov [r15], ax
+        ; -- push 1 (u8) --
+        sub r15, 1
+        mov [r15], al
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8

@@ -19,7 +19,7 @@ tsf_main:
         ; -- var r1, @buffer --
         lea rax, [var_0]
         ; -- literal r0, #40 --
-        mov cx, 40
+        mov cl, 40
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- var r1, @buffer --

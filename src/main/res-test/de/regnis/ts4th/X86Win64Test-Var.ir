@@ -1,6 +1,6 @@
 main:
 	r1 = var 0:buffer
-	r0 = 40 (i16)
+	r0 = 40 (u8)
 	store @r1, r0(1)
 	r1 = var 0:buffer
 	load r0(1), @r1

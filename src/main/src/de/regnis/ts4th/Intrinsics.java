@@ -327,16 +327,16 @@ public class Intrinsics {
 		nameToCommand.put(STORE8, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
-				TypeList expected = TypeList.INT.append(Type.Ptr);
+				TypeList expected = TypeList.PTR.append(Type.U8);
 				TypeList output = input.transform(expected, TypeList.EMPTY);
 				if (output != null) {
 					return output;
 				}
 
-				expected = TypeList.PTR.append(Type.I16);
+				expected = TypeList.PTR.append(Type.I8);
 				output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
+					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Type.Ptr + ", " + Type.I8 + "|" + Type.U8 + " but got " + input);
 				}
 
 				return output;
@@ -344,14 +344,8 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				if (types.type() == Type.Ptr) {
-					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-				}
-				else {
-					output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-					output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-				}
+				output.accept(AsmIRFactory.pop(REG_0, types.type()));
+				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 				output.accept(AsmIRFactory.store(REG_1, REG_0, 1));
 			}
 		});

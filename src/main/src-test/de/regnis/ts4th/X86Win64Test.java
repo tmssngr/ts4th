@@ -98,7 +98,7 @@ public class X86Win64Test extends AbstractFileTest {
 	public void testCompiler4() throws IOException {
 		compileWrite("""
 				             fn main(--)
-				             	10 mem !8
+				             	mem 10u8 !8
 				             	mem @8 print
 				             end
 				             """);
@@ -108,10 +108,10 @@ public class X86Win64Test extends AbstractFileTest {
 	public void testCompiler5() throws IOException {
 		compileWrite("""
 				             fn main(--)
-				             	mem     0x31 !8
-				             	mem 1 + 0x30 !8
-				             	mem 2 + 0x32 !8
-				             	mem 3 + 0x34 !8
+				             	mem     0x31u8 !8
+				             	mem 1 + 0x30u8 !8
+				             	mem 2 + 0x32u8 !8
+				             	mem 3 + 0x34u8 !8
 				             	mem 4 printString
 
 				             	mem
@@ -127,8 +127,9 @@ public class X86Win64Test extends AbstractFileTest {
 				             end
 
 				             fn appendChar(ptr u8 -- ptr)
-				               as_i16 over
+				               over over
 				               !8
+				               drop
 				               1 +
 				             end
 				             """);
@@ -147,11 +148,11 @@ public class X86Win64Test extends AbstractFileTest {
 
 				             fn main(--)
 				             	a
-				             	dup 0x31 !8 1 +
-				             	dup 0x30 !8 1 +
-				             	dup 0x32 !8 1 +
-				             	dup 0x34 !8 1 +
-				             	dup 0x0a !8
+				             	dup '1' !8 1 +
+				             	dup '0' !8 1 +
+				             	dup '2' !8 1 +
+				             	dup '4' !8 1 +
+				             	dup '\\n' !8
 				             	drop
 
 				             	b
@@ -167,8 +168,9 @@ public class X86Win64Test extends AbstractFileTest {
 				             end
 
 				             fn appendChar(ptr u8 -- ptr)
-				               as_i16 over
+				               over over
 				               !8
+				               drop
 				               1 +
 				             end
 				             """);
@@ -254,7 +256,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             var buffer width height * end
 
 				             fn main(--)
-				               buffer 40 !8
+				               buffer 40u8 !8
 				               buffer @8 print
 				             end""");
 	}

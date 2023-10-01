@@ -16,18 +16,12 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal r0, #10 --
-        mov cx, 10
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- mem --
         lea rcx, [mem]
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
+        ; -- literal r0, #10 --
+        mov cl, 10
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- mem --
