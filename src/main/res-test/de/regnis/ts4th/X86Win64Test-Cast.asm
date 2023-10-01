@@ -37,7 +37,7 @@ tsf_main:
           call tsfbi_emit
         add  rsp, 8
         ; -- literal r0, #61 --
-        mov cx, 61
+        mov cl, 61
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit
@@ -82,7 +82,7 @@ tsf_main:
           call tsfbi_emit
         add  rsp, 8
         ; -- literal r0, #10 --
-        mov cx, 10
+        mov cl, 10
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit
@@ -108,7 +108,7 @@ tsf_main:
           call tsfbi_emit
         add  rsp, 8
         ; -- literal r0, #61 --
-        mov cx, 61
+        mov cl, 61
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit

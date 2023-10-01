@@ -84,38 +84,38 @@ tsf_main:
         sub r15, 8
         mov [r15], rcx
         ; -- literal r0, #104 --
-        mov cx, 104
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 104
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #101 --
-        mov cx, 101
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 101
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
-        mov cx, 108
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 108
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
-        mov cx, 108
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 108
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- appendChar --
         call tsf_appendChar
         ; -- literal r0, #111 --
-        mov cx, 111
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        mov cl, 111
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
         ; -- appendChar --
         call tsf_appendChar
         ; -- pop 0 (ptr) --
@@ -148,9 +148,13 @@ tsf_main:
 
         ; -- proc appendChar --
 tsf_appendChar:
-        ; -- pop 1 (i16) --
-        mov ax, [r15]
-        add r15, 2
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- cast 0, (u8 -> i16) --
+        movsx cx, cl
+        ; -- mov 1, 0 (i16) --
+        mov ax, cx
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8

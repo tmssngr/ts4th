@@ -126,8 +126,8 @@ public class X86Win64Test extends AbstractFileTest {
 				             	"\\nhello \\"world\\"\\n" printString
 				             end
 
-				             fn appendChar(ptr int -- ptr)
-				               over
+				             fn appendChar(ptr u8 -- ptr)
+				               as_i16 over
 				               !8
 				               1 +
 				             end
@@ -166,8 +166,8 @@ public class X86Win64Test extends AbstractFileTest {
 				             	a 5 printString
 				             end
 
-				             fn appendChar(ptr int -- ptr)
-				               over
+				             fn appendChar(ptr u8 -- ptr)
+				               as_i16 over
 				               !8
 				               1 +
 				             end
@@ -208,7 +208,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             		end
 				             		drop
 
-				             		10 emit
+				             		'\\n' emit
 
 				             		1 +
 				             	end

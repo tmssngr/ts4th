@@ -32,20 +32,20 @@ main:
 	printString r1 (0)
 	r0 = mem
 	push r0 (ptr)
-	r0 = 104 (i16)
-	push r0 (i16)
+	r0 = 104 (u8)
+	push r0 (u8)
 	call appendChar
-	r0 = 101 (i16)
-	push r0 (i16)
+	r0 = 101 (u8)
+	push r0 (u8)
 	call appendChar
-	r0 = 108 (i16)
-	push r0 (i16)
+	r0 = 108 (u8)
+	push r0 (u8)
 	call appendChar
-	r0 = 108 (i16)
-	push r0 (i16)
+	r0 = 108 (u8)
+	push r0 (u8)
 	call appendChar
-	r0 = 111 (i16)
-	push r0 (i16)
+	r0 = 111 (u8)
+	push r0 (u8)
 	call appendChar
 	pop r0 (ptr)
 	r0 = mem
@@ -57,7 +57,9 @@ main:
 	printString r1 (0)
 	ret
 appendChar:
-	pop r1 (i16)
+	pop r0 (u8)
+	cast r0 (u8 -> i16)
+	move r1, r0 (i16)
 	pop r0 (ptr)
 	push r0 (ptr)
 	push r1 (i16)

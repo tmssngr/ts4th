@@ -108,7 +108,7 @@ tsf_endwhile_2:
         mov cx, [r15]
         add r15, 2
         ; -- literal r0, #10 --
-        mov cx, 10
+        mov cl, 10
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit

@@ -364,8 +364,8 @@ public class Intrinsics {
 					throw new InvalidTypeException(location, name + " (ascii --) can't operate on empty stack");
 				}
 
-				if (input.type() != Type.I16) {
-					throw new InvalidTypeException(location, name + " (ascii --) only can work on `int`");
+				if (input.type() != Type.U8) {
+					throw new InvalidTypeException(location, name + " (ascii --) only can work on `u8`");
 				}
 
 				return input.prev();
@@ -373,7 +373,7 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+				output.accept(AsmIRFactory.pop(REG_0, types.type()));
 				output.accept(AsmIRFactory.emit());
 			}
 		});

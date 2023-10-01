@@ -168,8 +168,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 				throw new CompilerException(createLocation(node), "invalid char " + text);
 			}
 			final int value = unescape.charAt(0);
-			// TODO
-			return List.of(InstructionFactory.literal(value, Type.I16));
+			return List.of(InstructionFactory.literal(value, Type.U8));
 		}
 
 		final Type[] type = new Type[] {Type.I16};

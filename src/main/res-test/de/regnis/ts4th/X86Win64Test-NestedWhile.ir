@@ -30,7 +30,7 @@ while_2:
 	jump while_2
 endwhile_2:
 	pop r0 (i16)
-	r0 = 10 (i16)
+	r0 = 10 (u8)
 	emit
 	pop r0 (i16)
 	r1 = 1 (i16)
