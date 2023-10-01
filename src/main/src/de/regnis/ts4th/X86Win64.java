@@ -565,8 +565,13 @@ public class X86Win64 {
 	}
 
 	private int getByteCountForPush(Type type) {
-		// x86 has no push for 8 bit register https://www.felixcloutier.com/x86/push
-		return Math.max(2, type.getByteCount(PTR_SIZE));
+		// x86_64 has no push for 8 or 32 bit registers https://www.felixcloutier.com/x86/push
+		int size = type.getByteCount(PTR_SIZE);
+		return switch (size) {
+			case 1 -> 2;
+			case 4 -> 8;
+			default -> size;
+		};
 	}
 
 	private int getOffset(TypeList types) {
