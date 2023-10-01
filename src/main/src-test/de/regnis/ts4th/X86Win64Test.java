@@ -179,7 +179,7 @@ public class X86Win64Test extends AbstractFileTest {
 		compileWrite("""
 				             fn strlen(ptr -- int)
 				             	0 swap               // 0 ptr
-				             	while dup @8 0 != do
+				             	while dup @8 as_i16 0 != do
 				             		swap 1 +
 				             		swap 1 +
 				             	end

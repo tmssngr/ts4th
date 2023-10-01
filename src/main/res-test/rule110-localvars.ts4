@@ -25,9 +25,9 @@ fn printBoard(--)
 	0 var i do
 		while i BOARD_CAP 2 - < do
 			" *" drop
-			  board i + @8
+			  board i + @8 as_i16
 			+ @8
-			as_u8 emit
+			emit
 			i 1 + i!
 		end
 	end
@@ -50,8 +50,8 @@ fn main(--)
             board[j] = (110 >> pattern) & 1;
         }
         */
-		board     @8
-		board 1 + @8
+		board     @8 as_i16
+		board 1 + @8 as_i16
 		    or      1
 		// for (size_t j = 1; j < BOARD_CAP - 1; ++j) {
 		var pattern j do
@@ -59,7 +59,7 @@ fn main(--)
 				// ((pattern << 1) & 7)
 				pattern 1 shl 7 and
 				// ... | board[j + 1];
-				board j 1 + + @8
+				board j 1 + + @8 as_i16
 				or
 				// pattern = 
 				pattern!

@@ -34,20 +34,10 @@ tsf_main:
         lea rcx, [mem]
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
-        ; -- printInt r0(i16) --
-        movsx rcx, cx
-        test   rcx, rcx
-        jns    .1
-        neg    rcx
-        push   rcx
-          mov    cl, '-'
-          call   tsfbi_emit
-        pop    rcx
-.1:
+        ; -- printInt r0(u8) --
+        movzx rcx, cl
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '

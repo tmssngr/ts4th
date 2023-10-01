@@ -3,9 +3,8 @@ main:
 	r0 = 40 (i16)
 	store @r1, r0(1)
 	r1 = var 0:buffer
-	r0 = 0 (i16)
 	load r0(1), @r1
-	printInt r0(i16)
+	printInt r0(u8)
 	ret
 
 var buffer, 960

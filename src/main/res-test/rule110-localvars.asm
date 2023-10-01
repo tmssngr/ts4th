@@ -148,10 +148,10 @@ tsf_while_2:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
+        ; -- cast 0, (u8 -> i16) --
+        movsx cx, cl
         ; -- mov 1, 0 (i16) --
         mov ax, cx
         ; -- pop 0 (ptr) --
@@ -163,8 +163,6 @@ tsf_while_2:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
         ; -- emit --
@@ -283,10 +281,10 @@ tsf_while_3:
         call tsf_printBoard
         ; -- var r1, @board --
         lea rax, [var_0]
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
+        ; -- cast 0, (u8 -> i16) --
+        movsx cx, cl
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
@@ -300,10 +298,10 @@ tsf_while_3:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
+        ; -- cast 0, (u8 -> i16) --
+        movsx cx, cl
         ; -- mov 1, 0 (i16) --
         mov ax, cx
         ; -- pop 0 (i16) --
@@ -388,10 +386,10 @@ tsf_while_4:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- literal r0, #0 --
-        mov cx, 0
         ; -- load 0 (1), @1 --
         mov cl, byte [rax]
+        ; -- cast 0, (u8 -> i16) --
+        movsx cx, cl
         ; -- mov 1, 0 (i16) --
         mov ax, cx
         ; -- pop 0 (i16) --
