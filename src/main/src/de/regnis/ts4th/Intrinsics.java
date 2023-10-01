@@ -198,37 +198,40 @@ public class Intrinsics {
 		nameToCommand.put(ADD, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
-				TypeList output = input.transform(TypeList.INT2, TypeList.INT);
-				if (output != null) {
-					return output;
-				}
+				//noinspection ConstantValue,LoopStatementThatDoesntLoop
+				do {
+					final Type type1 = input.type();
+					if (type1 == null) {
+						break;
+					}
 
-				final TypeList ptrInt = TypeList.PTR.append(Type.I16);
-				output = input.transform(ptrInt, TypeList.PTR);
-				if (output != null) {
-					return output;
-				}
+					final TypeList prev = input.prev();
+					if (prev == null) {
+						break;
+					}
 
-				final TypeList intPtr = TypeList.INT.append(Type.Ptr);
-				output = input.transform(intPtr, TypeList.PTR);
-				if (output != null) {
-					return output;
-				}
+					final Type type2 = prev.type();
+					if (type2 == Type.Ptr && Type.INT_TYPES.contains(type1)) {
+						return prev;
+					}
+					if (type1 == Type.Ptr && Type.INT_TYPES.contains(type2)) {
+						return prev.prev().append(type1);
+					}
+					if (type2 != type1) {
+						break;
+					}
 
-				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + ", " + ptrInt + " or " + intPtr + " but got " + input);
+					return prev;
+				}
+				while (false);
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Got " + input);
 			}
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
 				final Type type1 = types.type();
 				final Type type2 = types.prev().type();
-				if (type1 == Type.I16 && type2 == Type.I16) {
-					output.accept(AsmIRFactory.pop(REG_1, type1));
-					output.accept(AsmIRFactory.pop(REG_0, type2));
-					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.I16));
-					output.accept(AsmIRFactory.push(REG_0, type1));
-				}
-				else if (type1 == Type.Ptr) {
+				if (type1 == Type.Ptr) {
 					output.accept(AsmIRFactory.pop(REG_1, type1));
 					output.accept(AsmIRFactory.pop(REG_0, type2));
 					output.accept(AsmIRFactory.cast(REG_0, type2, Type.Ptr));
@@ -242,7 +245,13 @@ public class Intrinsics {
 					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, Type.Ptr));
 					output.accept(AsmIRFactory.push(REG_0, type2));
 				}
-				else {
+				else if (type1 == type2) {
+					output.accept(AsmIRFactory.pop(REG_1, type1));
+					output.accept(AsmIRFactory.pop(REG_0, type1));
+					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, type1));
+					output.accept(AsmIRFactory.push(REG_0, type1));
+				}
+				else{
 					throw new IllegalStateException();
 				}
 			}
@@ -257,39 +266,31 @@ public class Intrinsics {
 		nameToCommand.put(SHL, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
-				final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
-				if (output == null) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
-				}
-
-				return output;
+				return processBinary(name, location, input);
 			}
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-				output.accept(AsmIRFactory.pop(REG_1, Type.I16));
-				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0, Type.I16));
-				output.accept(AsmIRFactory.push(REG_1, Type.I16));
+				final Type type = types.type();
+				output.accept(AsmIRFactory.pop(REG_0, type));
+				output.accept(AsmIRFactory.pop(REG_1, type));
+				output.accept(AsmIRFactory.binCommand(shl, REG_1, REG_0, type));
+				output.accept(AsmIRFactory.push(REG_1, type));
 			}
 		});
 		nameToCommand.put(SHR, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
-				final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
-				if (output == null) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
-				}
-
-				return output;
+				return processBinary(name, location, input);
 			}
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-				output.accept(AsmIRFactory.pop(REG_1, Type.I16));
-				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0, Type.I16));
-				output.accept(AsmIRFactory.push(REG_1, Type.I16));
+				final Type type = types.type();
+				output.accept(AsmIRFactory.pop(REG_0, type));
+				output.accept(AsmIRFactory.pop(REG_1, type));
+				output.accept(AsmIRFactory.binCommand(shr, REG_1, REG_0, type));
+				output.accept(AsmIRFactory.push(REG_1, type));
 			}
 		});
 
@@ -498,38 +499,73 @@ public class Intrinsics {
 
 	private record BinaryCommand(AsmIR.BinOperation operation) implements Command {
 		public TypeList process(String name, Location location, TypeList input) {
-			final TypeList output = input.transform(TypeList.INT2, TypeList.INT);
-			if (output == null) {
-				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
-			}
-
-			return output;
+			return processBinary(name, location, input);
 		}
 
 		@Override
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIRFactory.pop(REG_1, Type.I16));
-			output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.I16));
-			output.accept(AsmIRFactory.push(REG_0, Type.I16));
+			final Type type = types.type();
+			output.accept(AsmIRFactory.pop(REG_1, type));
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
+			output.accept(AsmIRFactory.push(REG_0, type));
 		}
+	}
+
+	@NotNull
+	private static TypeList processBinary(String name, Location location, TypeList input) {
+		//noinspection ConstantValue,LoopStatementThatDoesntLoop
+		do {
+			final Type type = input.type();
+			if (type == null || !Type.INT_TYPES.contains(type)) {
+				break;
+			}
+
+			final TypeList prev = input.prev();
+			if (prev == null) {
+				break;
+			}
+
+			if (prev.type() != type) {
+				break;
+			}
+
+			return prev;
+		}
+		while (false);
+		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
 	}
 
 	private record RelationalCommand(AsmIR.BinOperation operation) implements Command {
 		public TypeList process(String name, Location location, TypeList input) {
-			final TypeList output = input.transform(TypeList.INT2, TypeList.BOOL);
-			if (output == null) {
-				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + TypeList.INT2 + " but got " + input);
-			}
+			//noinspection ConstantValue,LoopStatementThatDoesntLoop
+			do {
+				final Type type = input.type();
+				if (type == null || !Type.INT_TYPES.contains(type)) {
+					break;
+				}
 
-			return output;
+				final TypeList prev = input.prev();
+				if (prev == null) {
+					break;
+				}
+
+				if (prev.type() != type) {
+					break;
+				}
+
+				return prev.prev().append(Type.Bool);
+			}
+			while (false);
+			throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
 		}
 
 		@Override
 		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-			output.accept(AsmIRFactory.pop(REG_1, Type.I16));
-			output.accept(AsmIRFactory.pop(REG_0, Type.I16));
-			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, Type.I16));
+			final Type type = types.type();
+			output.accept(AsmIRFactory.pop(REG_1, type));
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
 			output.accept(AsmIRFactory.push(REG_0, Type.Bool));
 		}
 	}
