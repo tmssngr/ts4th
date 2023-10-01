@@ -623,6 +623,8 @@ public class X86Win64 {
 		return switch (valueSize) {
 			case 1 -> "byte";
 			case 2 -> "word";
+			case 4 -> "dword";
+			case 8 -> "qword";
 			default -> throw new IllegalStateException("unsupported size " + valueSize);
 		};
 	}
