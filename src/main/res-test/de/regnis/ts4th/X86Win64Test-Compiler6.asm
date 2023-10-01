@@ -86,8 +86,8 @@ tsf_main:
         sub r15, 8
         mov [r15], rcx
         mov rax, rcx
-        ; -- literal r0, #13 --
-        mov cx, 13
+        ; -- literal r0, #10 --
+        mov cx, 10
         ; -- store @1, 0 (1) --
         mov byte [rax], cl
         ; -- pop 0 (8) --

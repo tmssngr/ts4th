@@ -30,7 +30,7 @@ main:
 	add_ptr r0, r1
 	push r0 (8)
 	move 1, 0 (8)
-	r0 = 13
+	r0 = 10
 	store @r1, r0(1)
 	pop r0 (8)
 	r0 = mem

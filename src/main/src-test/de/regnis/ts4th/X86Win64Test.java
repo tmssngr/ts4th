@@ -144,7 +144,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	dup 0x30 !8 1 +
 				             	dup 0x32 !8 1 +
 				             	dup 0x34 !8 1 +
-				             	dup 0x0d !8
+				             	dup 0x0a !8
 				             	drop
 
 				             	b
