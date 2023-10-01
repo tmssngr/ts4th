@@ -109,7 +109,10 @@ public class AsmIRSimplifier {
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Push(int sourceReg, Type pushType)
 				    && i2 instanceof AsmIR.Pop(int targetReg, Type popType)) {
-					Utils.assertTrue(pushType == popType);
+					if (pushType != popType) {
+						printError();
+						throw new IllegalStateException("");
+					}
 					if (sourceReg == targetReg) {
 						removeNext();
 						remove();
