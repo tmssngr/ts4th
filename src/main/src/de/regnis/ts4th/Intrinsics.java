@@ -43,6 +43,12 @@ public class Intrinsics {
 	public static final String MEM = "mem";
 	public static final String LOAD8 = "@8";
 	public static final String STORE8 = "!8";
+	public static final String LOAD16 = "@16";
+	public static final String STORE16 = "!16";
+	public static final String LOAD32 = "@32";
+	public static final String STORE32 = "!32";
+	public static final String LOAD64 = "@64";
+	public static final String STORE64 = "!64";
 
 	public static final String PRINT = "print";
 
@@ -307,49 +313,14 @@ public class Intrinsics {
 			}
 		});
 
-		nameToCommand.put(LOAD8, new Command() {
-			@Override
-			public TypeList process(String name, Location location, TypeList input) {
-				final TypeList prev = input.prev();
-				if (prev == null || input.type() != Type.Ptr) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Type.Ptr + " but got " + input);
-				}
-
-				return prev.append(Type.U8);
-			}
-
-			@Override
-			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-				output.accept(AsmIRFactory.load(REG_0, REG_1, Type.U8));
-				output.accept(AsmIRFactory.push(REG_0, Type.U8));
-			}
-		});
-		nameToCommand.put(STORE8, new Command() {
-			@Override
-			public TypeList process(String name, Location location, TypeList input) {
-				TypeList expected = TypeList.PTR.append(Type.U8);
-				TypeList output = input.transform(expected, TypeList.EMPTY);
-				if (output != null) {
-					return output;
-				}
-
-				expected = TypeList.PTR.append(Type.I8);
-				output = input.transform(expected, TypeList.EMPTY);
-				if (output == null) {
-					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Type.Ptr + ", " + Type.I8 + "|" + Type.U8 + " but got " + input);
-				}
-
-				return output;
-			}
-
-			@Override
-			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, types.type()));
-				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
-				output.accept(AsmIRFactory.store(REG_1, REG_0, Type.U8));
-			}
-		});
+		nameToCommand.put(LOAD8, new LoadCommand(Type.U8));
+		nameToCommand.put(LOAD16, new LoadCommand(Type.U16));
+		nameToCommand.put(LOAD32, new LoadCommand(Type.U32));
+		nameToCommand.put(LOAD64, new LoadCommand(Type.U64));
+		nameToCommand.put(STORE8, new StoreCommand(Type.U8));
+		nameToCommand.put(STORE16, new StoreCommand(Type.U16));
+		nameToCommand.put(STORE32, new StoreCommand(Type.U32));
+		nameToCommand.put(STORE64, new StoreCommand(Type.U64));
 
 		nameToCommand.put("emit", new Command() {
 			@Override
@@ -567,6 +538,57 @@ public class Intrinsics {
 			output.accept(AsmIRFactory.pop(REG_0, type));
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
 			output.accept(AsmIRFactory.push(REG_0, Type.Bool));
+		}
+	}
+
+	private static class LoadCommand implements Command {
+		private final Type type;
+
+		public LoadCommand(Type type) {
+			this.type = type;
+		}
+
+		@Override
+		public TypeList process(String name, Location location, TypeList input) {
+			final TypeList prev = input.prev();
+			if (prev == null || input.type() != Type.Ptr) {
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Type.Ptr + " but got " + input);
+			}
+
+			return prev.append(type);
+		}
+
+		@Override
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
+			output.accept(AsmIRFactory.load(REG_0, REG_1, type));
+			output.accept(AsmIRFactory.push(REG_0, type));
+		}
+	}
+
+	private static class StoreCommand implements Command {
+		private final Type type;
+
+		public StoreCommand(Type type) {
+			this.type = type;
+		}
+
+		@Override
+		public TypeList process(String name, Location location, TypeList input) {
+			final TypeList expected = TypeList.PTR.append(type);
+			final TypeList output = input.transform(expected, TypeList.EMPTY);
+			if (output == null) {
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Type.Ptr + ", " + type + " but got " + input);
+			}
+
+			return output;
+		}
+
+		@Override
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
+			output.accept(AsmIRFactory.store(REG_1, REG_0, type));
 		}
 	}
 }
