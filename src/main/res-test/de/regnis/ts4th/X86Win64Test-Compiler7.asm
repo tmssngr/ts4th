@@ -162,44 +162,44 @@ tsfbi_printUint:
         mov    qword [rsp+24h], rcx
 
         ; int pos = sizeof(buf);
-        mov    eax, 20h
-        mov    dword [rsp+20h], eax
+        mov    ax, 20h
+        mov    word [rsp+20h], ax
 
         ; do {
 .print:
         ; pos--;
-        mov    eax, dword [rsp+20h]
-        sub    eax, 1
-        mov    dword [rsp+20h], eax
+        mov    ax, word [rsp+20h]
+        dec    ax
+        mov    word [rsp+20h], ax
 
         ; int remainder = x mod 10;
         ; x = x / 10;
-        mov    eax, dword [rsp+24h]
+        mov    rax, qword [rsp+24h]
         mov    ecx, 10
         xor    edx, edx
         div    ecx
-        mov    dword [rsp+24h], eax
+        mov    qword [rsp+24h], rax
 
         ; int digit = remainder + '0';
         add    dl, '0'
 
         ; buf[pos] = digit;
-        mov    eax, dword [rsp+20h]
-        movsxd rax, eax
+        mov    ax, word [rsp+20h]
+        movzx  rax, ax
         lea    rcx, qword [rsp]
         add    rcx, rax
         mov    byte [rcx], dl
 
         ; } while (x > 0);
-        mov    eax, dword [rsp+24h]
-        cmp    eax, 0
+        mov    rax, qword [rsp+24h]
+        cmp    rax, 0
         ja     .print
 
         ; rcx = &buf[pos]
 
         ; rdx = sizeof(buf) - pos
-        mov    eax, dword [rsp+20h]
-        movsxd rax, eax
+        mov    ax, word [rsp+20h]
+        movzx  rax, ax
         mov    rdx, 20h
         sub    rdx, rax
 

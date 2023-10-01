@@ -80,9 +80,16 @@ public class X86Win64Test extends AbstractFileTest {
 	public void testCompiler3() throws IOException {
 		compileWrite("""
 				             fn main(--)
-				             	-10 print
-				             	1000 print
-				             	mem print
+				             	-8i8 print
+				             	-16 print
+				             	-16i16 print
+				             	-32i32 print
+				             	-64i64 print
+				             	8u8 print
+				             	16 print
+				             	16u16 print
+				             	32u32 print
+				             	64u64 print
 				             end
 				             """);
 	}

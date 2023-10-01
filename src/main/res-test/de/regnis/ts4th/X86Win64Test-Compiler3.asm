@@ -16,10 +16,10 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal r0, #-10 --
-        mov cx, -10
-        ; -- printInt r0(i16) --
-        movsx rcx, cx
+        ; -- literal r0, #-8 --
+        mov cl, -8
+        ; -- printInt r0(i8) --
+        movsx rcx, cl
         test   rcx, rcx
         jns    .1
         neg    rcx
@@ -33,8 +33,8 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- literal r0, #1000 --
-        mov cx, 1000
+        ; -- literal r0, #-16 --
+        mov cx, -16
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
@@ -50,9 +50,10 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-        ; -- mem --
-        lea rcx, [mem]
-        ; -- printInt r0(ptr) --
+        ; -- literal r0, #-16 --
+        mov cx, -16
+        ; -- printInt r0(i16) --
+        movsx rcx, cx
         test   rcx, rcx
         jns    .3
         neg    rcx
@@ -61,6 +62,90 @@ tsf_main:
           call   tsfbi_emit
         pop    rcx
 .3:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #-32 --
+        mov ecx, -32
+        ; -- printInt r0(i32) --
+        movsxd rcx, ecx
+        test   rcx, rcx
+        jns    .4
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_emit
+        pop    rcx
+.4:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #-64 --
+        mov rcx, -64
+        ; -- printInt r0(i64) --
+        test   rcx, rcx
+        jns    .5
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_emit
+        pop    rcx
+.5:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #8 --
+        mov cl, 8
+        ; -- printInt r0(u8) --
+        movzx rcx, cl
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #16 --
+        mov cx, 16
+        ; -- printInt r0(i16) --
+        movsx rcx, cx
+        test   rcx, rcx
+        jns    .6
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_emit
+        pop    rcx
+.6:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #16 --
+        mov cx, 16
+        ; -- printInt r0(u16) --
+        movzx rcx, cx
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #32 --
+        mov ecx, 32
+        ; -- printInt r0(u32) --
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #64 --
+        mov rcx, 64
+        ; -- printInt r0(u64) --
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -109,44 +194,44 @@ tsfbi_printUint:
         mov    qword [rsp+24h], rcx
 
         ; int pos = sizeof(buf);
-        mov    eax, 20h
-        mov    dword [rsp+20h], eax
+        mov    ax, 20h
+        mov    word [rsp+20h], ax
 
         ; do {
 .print:
         ; pos--;
-        mov    eax, dword [rsp+20h]
-        sub    eax, 1
-        mov    dword [rsp+20h], eax
+        mov    ax, word [rsp+20h]
+        dec    ax
+        mov    word [rsp+20h], ax
 
         ; int remainder = x mod 10;
         ; x = x / 10;
-        mov    eax, dword [rsp+24h]
+        mov    rax, qword [rsp+24h]
         mov    ecx, 10
         xor    edx, edx
         div    ecx
-        mov    dword [rsp+24h], eax
+        mov    qword [rsp+24h], rax
 
         ; int digit = remainder + '0';
         add    dl, '0'
 
         ; buf[pos] = digit;
-        mov    eax, dword [rsp+20h]
-        movsxd rax, eax
+        mov    ax, word [rsp+20h]
+        movzx  rax, ax
         lea    rcx, qword [rsp]
         add    rcx, rax
         mov    byte [rcx], dl
 
         ; } while (x > 0);
-        mov    eax, dword [rsp+24h]
-        cmp    eax, 0
+        mov    rax, qword [rsp+24h]
+        cmp    rax, 0
         ja     .print
 
         ; rcx = &buf[pos]
 
         ; rdx = sizeof(buf) - pos
-        mov    eax, dword [rsp+20h]
-        movsxd rax, eax
+        mov    ax, word [rsp+20h]
+        movzx  rax, ax
         mov    rdx, 20h
         sub    rdx, rax
 

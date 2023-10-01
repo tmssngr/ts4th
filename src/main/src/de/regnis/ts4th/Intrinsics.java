@@ -368,8 +368,9 @@ public class Intrinsics {
 				}
 
 				final Type type = input.type();
-				if (type != Type.I16 && type != Type.Ptr) {
-					throw new InvalidTypeException(location, name + " (a --) only can work on `int` and `ptr`");
+				final List<Type> allowed = List.of(Type.I8, Type.I16, Type.I32, Type.I64, Type.U8, Type.U16, Type.U32, Type.U64);
+				if (!allowed.contains(type)) {
+					throw new InvalidTypeException(location, name + " (a --) only can work on " + typesToString(allowed) + ", but got " + input);
 				}
 
 				return input.prev();
@@ -436,6 +437,10 @@ public class Intrinsics {
 	@Nullable
 	public static Command get(String name) {
 		return nameToCommand.get(name);
+	}
+
+	private static String typesToString(List<Type> types) {
+		return Utils.join(types, Type::toString, ", ");
 	}
 
 	public interface Command {
