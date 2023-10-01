@@ -1,0 +1,97 @@
+initRandom:
+	r1 = var 0:__random__
+	pop r0 (u32)
+	store @r1, r0(u32)
+	ret
+random:
+	r0 = 48271 (u32)
+	pushVar r0 (u32)
+	r1 = var 0:__random__
+	load r0(u32), @r1
+	push r0 (u32)
+	r1 = 524287 (u32)
+	and r0, r1 (u32)
+	push r0 (u32)
+	read r0, var[0(u32)]
+	move r1, r0 (u32)
+	pop r0 (u32)
+	imul r0, r1 (u32)
+	move r1, r0 (u32)
+	pop r0 (u32)
+	push r1 (u32)
+	move r1, r0 (u32)
+	r0 = 15 (u32)
+	shr r1, r0 (u32)
+	push r1 (u32)
+	read r0, var[0(u32)]
+	move r1, r0 (u32)
+	pop r0 (u32)
+	imul r0, r1 (u32)
+	push r0 (u32)
+	r1 = 65535 (u32)
+	and r0, r1 (u32)
+	move r1, r0 (u32)
+	r0 = 15 (u32)
+	shl r1, r0 (u32)
+	pop r0 (u32)
+	push r1 (u32)
+	move r1, r0 (u32)
+	r0 = 16 (u32)
+	shr r1, r0 (u32)
+	pop r0 (u32)
+	add r0, r1 (u32)
+	move r1, r0 (u32)
+	pop r0 (u32)
+	add r0, r1 (u32)
+	push r0 (u32)
+	r1 = 2147483647 (u32)
+	and r0, r1 (u32)
+	move r1, r0 (u32)
+	pop r0 (u32)
+	push r1 (u32)
+	move r1, r0 (u32)
+	r0 = 31 (u32)
+	shr r1, r0 (u32)
+	pop r0 (u32)
+	add r0, r1 (u32)
+	push r0 (u32)
+	push r0 (u32)
+	r1 = var 0:__random__
+	pop r0 (u32)
+	store @r1, r0(u32)
+	dropVars u32
+	ret
+randomU8:
+	call random
+	pop r0 (u32)
+	cast r0 (u32 -> u8)
+	push r0 (u8)
+	ret
+main:
+	r0 = 7439742 (u32)
+	push r0 (u32)
+	call initRandom
+	r0 = 0 (i16)
+	push r0 (i16)
+while_1:
+	pop r0 (i16)
+	push r0 (i16)
+	r1 = 50 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, endwhile_1
+	call randomU8
+	pop r0 (u8)
+	printInt r0(u8)
+	r0 = 10 (u8)
+	emit
+	pop r0 (i16)
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	push r0 (i16)
+	jump while_1
+endwhile_1:
+	pop r0 (i16)
+	ret
+
+var __random__, 4

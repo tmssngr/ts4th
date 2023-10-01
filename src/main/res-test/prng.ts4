@@ -1,0 +1,35 @@
+var __random__ 4 end
+
+fn initRandom(u32)
+	__random__ swap !32
+end
+
+fn random(-- u32)
+	48271u32 var a do
+		__random__ @32
+		dup 0x7ffffu32 and a *  // low
+		swap 15u32 shr     a *  // high
+		dup 0xffffu32 and 15u32 shl
+		swap 16u32 shr
+		+
+		+
+		dup 0x7fffffffu32 and
+		swap 31u32 shr
+		+
+		dup __random__ swap !32
+	end
+end
+
+fn randomU8(-- u8)
+	random as_u8
+end
+
+fn main()
+	7439742u32 initRandom
+	0 while dup 50 < do
+		randomU8 print
+		'\n' emit
+		1 +
+	end
+	drop
+end
