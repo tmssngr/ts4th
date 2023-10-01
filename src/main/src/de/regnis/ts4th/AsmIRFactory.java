@@ -56,12 +56,12 @@ public class AsmIRFactory {
 		return new AsmIR.Cast(reg, sourceType, targetType);
 	}
 
-	public static AsmIR load(int valueReg, int pointerReg, int valueSize) {
-		return new AsmIR.Load(valueReg, pointerReg, valueSize);
+	public static AsmIR load(int valueReg, int pointerReg, Type type) {
+		return new AsmIR.Load(valueReg, pointerReg, type);
 	}
 
-	public static AsmIR store(int pointerReg, int valueReg, int valueSize) {
-		return new AsmIR.Store(pointerReg, valueReg, valueSize);
+	public static AsmIR store(int pointerReg, int valueReg, Type type) {
+		return new AsmIR.Store(pointerReg, valueReg, type);
 	}
 
 	public static AsmIR jump(String target) {

@@ -119,17 +119,17 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record Load(int valueReg, int pointerReg, int valueSize) implements AsmIR {
+	record Load(int valueReg, int pointerReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "load r" + valueReg + "(" + valueSize + "), @r" + pointerReg;
+			return "load r" + valueReg + "(" + type + "), @r" + pointerReg;
 		}
 	}
 
-	record Store(int pointerReg, int valueReg, int valueSize) implements AsmIR {
+	record Store(int pointerReg, int valueReg, Type type) implements AsmIR {
 		@Override
 		public String toString() {
-			return "store @r" + pointerReg + ", r" + valueReg + "(" + valueSize + ")";
+			return "store @r" + pointerReg + ", r" + valueReg + "(" + type + ")";
 		}
 	}
 

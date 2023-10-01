@@ -22,13 +22,13 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #10 --
         mov cl, 10
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- printInt r0(u8) --
         movzx rcx, cl

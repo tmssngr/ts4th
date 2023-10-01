@@ -55,7 +55,7 @@ tsf_while_1:
         ; -- pop 1 (ptr) --
         mov rax, [r15]
         add r15, 8
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- read var r0, [<empty> (ptr)] --
         mov rcx, [rsp+0]
@@ -146,7 +146,7 @@ tsf_while_2:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl
@@ -161,7 +161,7 @@ tsf_while_2:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- emit --
         sub rsp, 8
@@ -238,7 +238,7 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #1 --
         mov cl, 1
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- literal r0, #0 --
         mov cx, 0
@@ -279,7 +279,7 @@ tsf_while_3:
         call tsf_printBoard
         ; -- var r1, @board --
         lea rax, [var_0]
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl
@@ -296,7 +296,7 @@ tsf_while_3:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl
@@ -384,7 +384,7 @@ tsf_while_4:
         add rcx, rax
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl
@@ -445,7 +445,7 @@ tsf_while_4:
         ; -- pop 1 (ptr) --
         mov rax, [r15]
         add r15, 8
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- read var r0, [i16 (i16)] --
         mov cx, [rsp+2]

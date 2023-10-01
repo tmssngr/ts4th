@@ -17,7 +17,7 @@ while_1:
 	push r0 (ptr)
 	read r0, var[2(u8)]
 	pop r1 (ptr)
-	store @r1, r0(1)
+	store @r1, r0(u8)
 	read r0, var[0(ptr)]
 	r1 = 1 (i16)
 	cast r1 (i16 -> ptr)
@@ -58,14 +58,14 @@ while_2:
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	cast r0 (u8 -> i16)
 	move r1, r0 (i16)
 	pop r0 (ptr)
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	emit
 	read r0, var[0(i16)]
 	r1 = 1 (i16)
@@ -98,7 +98,7 @@ main:
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
 	r0 = 1 (u8)
-	store @r1, r0(1)
+	store @r1, r0(u8)
 	r0 = 0 (i16)
 	push r0 (i16)
 while_3:
@@ -115,7 +115,7 @@ while_3:
 	jump z, endwhile_3
 	call printBoard
 	r1 = var 0:board
-	load r0(1), @r1
+	load r0(u8), @r1
 	cast r0 (u8 -> i16)
 	push r0 (i16)
 	r0 = var 0:board
@@ -123,7 +123,7 @@ while_3:
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	cast r0 (u8 -> i16)
 	move r1, r0 (i16)
 	pop r0 (i16)
@@ -162,7 +162,7 @@ while_4:
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	cast r0 (u8 -> i16)
 	move r1, r0 (i16)
 	pop r0 (i16)
@@ -189,7 +189,7 @@ while_4:
 	push r1 (ptr)
 	cast r0 (i16 -> u8)
 	pop r1 (ptr)
-	store @r1, r0(1)
+	store @r1, r0(u8)
 	read r0, var[1(i16)]
 	r1 = 1 (i16)
 	add r0, r1 (i16)

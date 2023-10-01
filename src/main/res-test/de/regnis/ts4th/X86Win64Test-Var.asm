@@ -20,11 +20,11 @@ tsf_main:
         lea rax, [var_0]
         ; -- literal r0, #40 --
         mov cl, 40
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- var r1, @buffer --
         lea rax, [var_0]
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- printInt r0(u8) --
         movzx rcx, cl

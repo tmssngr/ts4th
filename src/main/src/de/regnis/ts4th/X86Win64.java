@@ -304,14 +304,14 @@ public class X86Win64 {
 				writeIndented(STR."movsx \{getRegName(reg, targetSize)}, \{getRegName(reg, sourceSize)}");
 			}
 		}
-		case AsmIR.Load(int valueReg, int pointerReg, int valueSize) -> {
-			writeComment(STR."load \{valueReg} (\{valueSize}), @\{pointerReg}");
-
+		case AsmIR.Load(int valueReg, int pointerReg, Type type) -> {
+			writeComment(STR."load \{valueReg} (\{type}), @\{pointerReg}");
+			final int valueSize = type.getByteCount(PTR_SIZE);
 			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}]");
 		}
-		case AsmIR.Store(int pointerReg, int valueReg, int valueSize) -> {
-			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{valueSize})");
-
+		case AsmIR.Store(int pointerReg, int valueReg, Type type) -> {
+			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{type})");
+			final int valueSize = type.getByteCount(PTR_SIZE);
 			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}], \{getRegName(valueReg, valueSize)}");
 		}
 		case AsmIR.Ret() -> {

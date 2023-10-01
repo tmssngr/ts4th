@@ -22,7 +22,7 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #49 --
         mov cl, 49
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
@@ -36,7 +36,7 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #48 --
         mov cl, 48
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
@@ -50,7 +50,7 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #50 --
         mov cl, 50
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
@@ -64,7 +64,7 @@ tsf_main:
         mov rax, rcx
         ; -- literal r0, #52 --
         mov cl, 52
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- mem --
         lea rcx, [mem]
@@ -168,7 +168,7 @@ tsf_appendChar:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- store @1, 0 (1) --
+        ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- pop 0 (u8) --
         mov cl, [r15]

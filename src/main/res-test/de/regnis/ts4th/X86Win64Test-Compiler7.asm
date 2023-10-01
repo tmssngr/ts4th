@@ -36,7 +36,7 @@ tsf_while_1:
         mov [r15], rcx
         ; -- mov 1, 0 (ptr) --
         mov rax, rcx
-        ; -- load 0 (1), @1 --
+        ; -- load 0 (u8), @1 --
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl

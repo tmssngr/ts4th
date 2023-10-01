@@ -9,7 +9,7 @@ while_1:
 	pop r0 (ptr)
 	push r0 (ptr)
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	cast r0 (u8 -> i16)
 	r1 = 0 (i16)
 	neq r0, r1 (i16)

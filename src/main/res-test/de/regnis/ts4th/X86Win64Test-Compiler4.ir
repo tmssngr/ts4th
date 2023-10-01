@@ -2,9 +2,9 @@ main:
 	r0 = mem
 	move r1, r0 (ptr)
 	r0 = 10 (u8)
-	store @r1, r0(1)
+	store @r1, r0(u8)
 	r0 = mem
 	move r1, r0 (ptr)
-	load r0(1), @r1
+	load r0(u8), @r1
 	printInt r0(u8)
 	ret
