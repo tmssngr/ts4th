@@ -10,13 +10,13 @@ Usually, with Forth the developer wrote comments declaring how a *word* (procedu
 ```
 With TS4th this comment becomes a requirement like a method definition in other (more or less) modern programming languages:
 ```
-def foo (int ptr -- ptr)
+fn foo (int ptr -- ptr)
   ...
 end
 ```
 ## Types
-TS4th supports the types `int` (16 bit), `bool` and `ptr`.
-While in classic Forth each int could also be used as input for a boolean operation, this would be rejected by TS4th.
+TS4th supports the types `i8`, `i16` (or `int`), `i32`, `i64`, `u8`, `u16`, `u32`, `u64`, `bool` and `ptr`.
+While in classic Forth each integer value could also be used as input for a boolean operation, this would be rejected by TS4th.
 
 ## Inspiring Resources
 Back in 2000 Stephan Becher already started a similar project with [StrongForth](https://www.stephan-becher.de/strongforth/).
