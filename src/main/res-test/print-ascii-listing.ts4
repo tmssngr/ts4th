@@ -1,0 +1,48 @@
+fn printNibble(u8)
+	0xFu8 and
+	'0' +
+	dup '9' > if
+		'A' '9' - 1u8 - +
+	end
+	emit
+end
+
+fn printHex8(u8)
+	dup 4u8 shr printNibble
+	printNibble
+end
+
+fn main(--)
+	0u8 0x10u8
+	var i max do
+		' ' emit
+		'x' emit
+		while i max < do
+			i 0x07u8 and 0u8 == if
+				' ' emit
+			end
+			i printNibble
+			i 1u8 + i!
+		end
+		'\n' emit
+	end
+
+	0x20u8 0x80u8
+	var i max do
+		while
+			i max <
+		do
+			i 0x0Fu8 and 0u8 == if
+				i printHex8
+			end
+			i 0x07u8 and 0u8 == if
+				' ' emit
+			end
+			i emit
+			i 0x0Fu8 and 0x0Fu8 == if
+				'\n' emit
+			end
+			i 1u8 + i!
+		end
+	end
+end

@@ -397,6 +397,7 @@ public class X86Win64Test extends AbstractFileTest {
 	@Test
 	public void testFiles() throws IOException {
 		compileFileWrite("rule110-localvars");
+		compileFileWrite("print-ascii-listing");
 	}
 
 	@NotNull
@@ -443,7 +444,7 @@ public class X86Win64Test extends AbstractFileTest {
 		processBuilder.redirectOutput(outputFile.toFile());
 		final Process process = processBuilder.start();
 		try {
-			process.waitFor(10, TimeUnit.SECONDS);
+			process.waitFor(2, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException e) {
 			process.destroy();
