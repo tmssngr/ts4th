@@ -472,62 +472,28 @@ public class X86Win64 {
 		}
 		case boolTest -> writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
 		                                                       getRegName(reg2, 1)));
-		case lt -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp   \{regName1}, \{regName2}
-					              mov   \{regName1}, 0
-					              mov   \{regName2}, 1
-					              cmovl r\{regName1}, r\{regName2}""");
-		}
-		case le -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp    \{regName1}, \{regName2}
-					              mov    \{regName1}, 0
-					              mov    \{regName2}, 1
-					              cmovle r\{regName1}, r\{regName2}""");
-		}
-		case eq -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp   \{regName1}, \{regName2}
-					              mov   \{regName1}, 0
-					              mov   \{regName2}, 1
-					              cmove r\{regName1}, r\{regName2}""");
-		}
-		case neq -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp    \{regName1}, \{regName2}
-					              mov    \{regName1}, 0
-					              mov    \{regName2}, 1
-					              cmovne r\{regName1}, r\{regName2}""");
-		}
-		case ge -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp    \{regName1}, \{regName2}
-					              mov    \{regName1}, 0
-					              mov    \{regName2}, 1
-					              cmovge r\{regName1}, r\{regName2}""");
-		}
-		case gt -> {
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
-			writeIndented(STR."""
-					              cmp   \{regName1}, \{regName2}
-					              mov   \{regName1}, 0
-					              mov   \{regName2}, 1
-					              cmovg r\{regName1}, r\{regName2}""");
-		}
+		case lt -> writeRelationCommand("l", "b", reg1, reg2, type);
+		case le -> writeRelationCommand("le", "be", reg1, reg2, type);
+		case eq -> writeRelationCommand("e", "e", reg1, reg2, type);
+		case neq -> writeRelationCommand("ne", "ne", reg1, reg2, type);
+		case ge -> writeRelationCommand("ge", "ae", reg1, reg2, type);
+		case gt -> writeRelationCommand("g", "a", reg1, reg2, type);
 		default -> throw new IllegalStateException("not implemented " + operation);
 		}
+	}
+
+	private void writeRelationCommand(String cmovSuffixSigned, String cmovSuffixUnsigned, int reg1, int reg2, Type type) throws IOException {
+		final String cmovSuffix = type == Type.U8 || type == Type.U16 || type == Type.U32 || type == Type.U64
+				? cmovSuffixUnsigned
+				: cmovSuffixSigned;
+		// there are no cmovXX commands for 8-bit registers
+		final String regName1 = getRegName(reg1, 2);
+		final String regName2 = getRegName(reg2, 2);
+		writeIndented(STR."""
+				              cmp   \{getRegName(reg1, type)}, \{getRegName(reg2, type)}
+				              mov   \{regName1}, 0
+				              mov   \{regName2}, 1
+				              cmov\{cmovSuffix} \{regName1}, \{regName2}""");
 	}
 
 	private void writePrintInt(Type type) throws IOException {

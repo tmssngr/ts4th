@@ -40,7 +40,7 @@ tsf_while_1:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovg rcx, rax
+        cmovg cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_1 --
@@ -116,7 +116,7 @@ tsf_while_2:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovl rcx, rax
+        cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_2 --
@@ -270,7 +270,7 @@ tsf_while_3:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovl rcx, rax
+        cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_3 --
@@ -340,7 +340,7 @@ tsf_while_4:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovl rcx, rax
+        cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_4 --

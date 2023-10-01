@@ -43,10 +43,10 @@ tsf_while_1:
         ; -- literal r1, #0 --
         mov ax, 0
         ; -- neq r0, r1 (i16) --
-        cmp    cx, ax
-        mov    cx, 0
-        mov    ax, 1
-        cmovne rcx, rax
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
+        cmovne cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_1 --

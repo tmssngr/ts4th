@@ -141,7 +141,7 @@ tsf_while_1:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovl rcx, rax
+        cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z else_2 --
@@ -187,7 +187,7 @@ tsf_else_2:
         cmp   cx, ax
         mov   cx, 0
         mov   ax, 1
-        cmovg rcx, rax
+        cmovg cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z endwhile_1 --
