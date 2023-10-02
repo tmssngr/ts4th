@@ -40,6 +40,53 @@ public class InlinerTest {
 	}
 
 	@Test
+	public void testInlineWithLabels() {
+		assertEquals(List.of(
+				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
+						             literal(true),
+						             branch(".i1", ".i2"),
+						             label(".i1"),
+						             literal(1),
+						             jump(".i3"),
+						             label(".i2"),
+						             literal(-1),
+						             label(".i3"),
+						             command("print"),
+
+						             literal(false),
+						             branch(".i4", ".i5"),
+						             label(".i4"),
+						             literal(1),
+						             jump(".i6"),
+						             label(".i5"),
+						             literal(-1),
+						             label(".i6"),
+						             command("print")
+				             ))
+		             ),
+		             Inliner.process(List.of(
+				             new Function("boolToInt", TypeList.BOOL, TypeList.INT, true, List.of(
+						             branch("if", "else"),
+						             label("if"),
+						             literal(1),
+						             jump("end"),
+						             label("else"),
+						             literal(-1),
+						             label("end"),
+						             ret()
+				             )),
+				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
+						             literal(true),
+						             command("boolToInt"),
+						             command("print"),
+						             literal(false),
+						             command("boolToInt"),
+						             command("print")
+				             ))
+		             )));
+	}
+
+	@Test
 	public void testInlineFailure() {
 		try {
 			Inliner.process(List.of(

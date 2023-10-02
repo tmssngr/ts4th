@@ -27,7 +27,7 @@ tsf_strlen:
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-tsf_while_1:
+.i1:
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
@@ -49,8 +49,8 @@ tsf_while_1:
         cmovne cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_1 --
-        jz tsf_endwhile_1
+        ; -- jump z .i3 --
+        jz .i3
         ; -- pop 1 (ptr) --
         mov rax, [r15]
         add r15, 8
@@ -81,9 +81,9 @@ tsf_while_1:
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-        ; -- jump while_1 --
-        jmp tsf_while_1
-tsf_endwhile_1:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
@@ -107,13 +107,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .1
+        jns    .x1
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.1:
+.x1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '

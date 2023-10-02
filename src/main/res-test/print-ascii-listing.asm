@@ -39,8 +39,8 @@ tsf_printNibble:
         cmova cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_1 --
-        jz tsf_endif_1
+        ; -- jump z .i2 --
+        jz .i2
         ; -- literal r0, #65 --
         mov cl, 65
         ; -- literal r1, #57 --
@@ -61,7 +61,7 @@ tsf_printNibble:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-tsf_endif_1:
+.i2:
         ; -- pop 0 (u8) --
         mov cl, [r15]
         add r15, 1
@@ -124,7 +124,7 @@ tsf_main:
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
-tsf_while_2:
+.i1:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- push 0 (u8) --
@@ -144,8 +144,8 @@ tsf_while_2:
         cmovb cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_2 --
-        jz tsf_endwhile_2
+        ; -- jump z .i3 --
+        jz .i3
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- literal r1, #7 --
@@ -161,15 +161,15 @@ tsf_while_2:
         cmove cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_3 --
-        jz tsf_endif_3
+        ; -- jump z .i5 --
+        jz .i5
         ; -- literal r0, #32 --
         mov cl, 32
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
-tsf_endif_3:
+.i5:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- push 0 (u8) --
@@ -185,9 +185,9 @@ tsf_endif_3:
         add cl, al
         ; -- write var [<empty> (u8)], 0 --
         mov [rsp+0], cx
-        ; -- jump while_2 --
-        jmp tsf_while_2
-tsf_endwhile_2:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- literal r0, #10 --
         mov cl, 10
         ; -- emit --
@@ -210,7 +210,7 @@ tsf_endwhile_2:
         add r15, 1
         ; -- push var r0 (u8) --
         push cx
-tsf_while_4:
+.i6:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- push 0 (u8) --
@@ -230,8 +230,8 @@ tsf_while_4:
         cmovb cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_4 --
-        jz tsf_endwhile_4
+        ; -- jump z .i8 --
+        jz .i8
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- literal r1, #15 --
@@ -247,8 +247,8 @@ tsf_while_4:
         cmove cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_5 --
-        jz tsf_endif_5
+        ; -- jump z .i10 --
+        jz .i10
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- push 0 (u8) --
@@ -256,7 +256,7 @@ tsf_while_4:
         mov [r15], cl
         ; -- printHex8 --
         call tsf_printHex8
-tsf_endif_5:
+.i10:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- literal r1, #7 --
@@ -272,15 +272,15 @@ tsf_endif_5:
         cmove cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_6 --
-        jz tsf_endif_6
+        ; -- jump z .i12 --
+        jz .i12
         ; -- literal r0, #32 --
         mov cl, 32
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
-tsf_endif_6:
+.i12:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- emit --
@@ -302,15 +302,15 @@ tsf_endif_6:
         cmove cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_7 --
-        jz tsf_endif_7
+        ; -- jump z .i14 --
+        jz .i14
         ; -- literal r0, #10 --
         mov cl, 10
         ; -- emit --
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
-tsf_endif_7:
+.i14:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- literal r1, #1 --
@@ -319,9 +319,9 @@ tsf_endif_7:
         add cl, al
         ; -- write var [<empty> (u8)], 0 --
         mov [rsp+0], cx
-        ; -- jump while_4 --
-        jmp tsf_while_4
-tsf_endwhile_4:
+        ; -- jump .i6 --
+        jmp .i6
+.i8:
         ; -- drop vars u8, u8 --
         add rsp, 4
         ; -- ret --

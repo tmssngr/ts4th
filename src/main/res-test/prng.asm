@@ -189,7 +189,7 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-tsf_while_1:
+.i1:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
@@ -205,8 +205,8 @@ tsf_while_1:
         cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_1 --
-        jz tsf_endwhile_1
+        ; -- jump z .i3 --
+        jz .i3
         ; -- randomU8 --
         call tsf_randomU8
         ; -- pop 0 (u8) --
@@ -235,9 +235,9 @@ tsf_while_1:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- jump while_1 --
-        jmp tsf_while_1
-tsf_endwhile_1:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2

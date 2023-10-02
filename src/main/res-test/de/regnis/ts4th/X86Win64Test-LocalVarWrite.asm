@@ -20,7 +20,7 @@ tsf_main:
         mov cx, 0
         ; -- push var r0 (i16) --
         push cx
-tsf_while_1:
+.i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- literal r1, #10 --
@@ -32,20 +32,20 @@ tsf_while_1:
         cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_1 --
-        jz tsf_endwhile_1
+        ; -- jump z .i3 --
+        jz .i3
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .1
+        jns    .x1
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.1:
+.x1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -59,9 +59,9 @@ tsf_while_1:
         add cx, ax
         ; -- write var [<empty> (i16)], 0 --
         mov [rsp+0], cx
-        ; -- jump while_1 --
-        jmp tsf_while_1
-tsf_endwhile_1:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- drop vars i16 --
         add rsp, 2
         ; -- ret --

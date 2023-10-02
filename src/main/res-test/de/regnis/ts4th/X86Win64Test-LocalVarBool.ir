@@ -9,12 +9,12 @@ main:
 	pushVar r0 (i16)
 	read r0, var[1(bool)]
 	boolTest r0, r0 (i16)
-	jump z, endif_1
+	jump z, .i2
 	r1 = constant 0
 	r0 = 7 (i16)
 	printString r1 (0)
 	r0 = 1 (i16)
 	printInt r0(i16)
-endif_1:
+.i2:
 	dropVars i16, bool
 	ret

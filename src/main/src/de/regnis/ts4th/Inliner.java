@@ -3,6 +3,8 @@ package de.regnis.ts4th;
 import java.util.*;
 import java.util.function.*;
 
+import org.jetbrains.annotations.*;
+
 /**
  * @author Thomas Singer
  */
@@ -81,24 +83,36 @@ public class Inliner {
 
 	private Function inline(Function function) {
 		final List<Instruction> inlinedInstructions = new ArrayList<>();
-		inline(function, false, inlinedInstructions::add);
+		inline(function, false, inlinedInstructions::add, new LabelMapping());
 		return new Function(function.locationStart(), function.locationEnd(), function.name(), function.typesInOut(), function.isInline(), inlinedInstructions);
 	}
 
-	private void inline(Function function, boolean skipRet, Consumer<Instruction> consumer) {
+	private void inline(Function function, boolean skipRet, Consumer<Instruction> consumer, LabelMapping labelMapping) {
 		final List<Instruction> instructions = function.instructions();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Command(String command, _)) {
+			if (instruction instanceof Instruction.Label(String oldLabel, Location location)) {
+				final String newLabel = labelMapping.getNew(oldLabel);
+				instruction = new Instruction.Label(newLabel, location);
+			}
+			else if (instruction instanceof Instruction.Jump(String oldLabel, Location location)) {
+				final String newLabel = labelMapping.getNew(oldLabel);
+				instruction = new Instruction.Jump(newLabel, location);
+			}
+			else if (instruction instanceof Instruction.Branch(String oldIfTarget, String oldElseTarget, Location location)) {
+				final String newIfLabel = labelMapping.getNew(oldIfTarget);
+				final String newElseLabel = labelMapping.getNew(oldElseTarget);
+				instruction = new Instruction.Branch(newIfLabel, newElseLabel, location);
+			}
+			else if (instruction instanceof Instruction.Command(String command, _)) {
 				if (Intrinsics.get(command) == null) {
 					final Function invokedFunction = nameToFunction.get(command);
 					if (invokedFunction != null && invokedFunction.isInline()) {
-						inline(invokedFunction, true, consumer);
+						inline(invokedFunction, true, consumer, labelMapping.createChild());
 						continue;
 					}
 				}
 			}
-
-			if (instruction instanceof Instruction.Ret) {
+			else if (instruction instanceof Instruction.Ret) {
 				final int i = instructions.indexOf(instruction);
 				Utils.assertTrue(i == instructions.size() - 1);
 
@@ -108,6 +122,42 @@ public class Inliner {
 			}
 
 			consumer.accept(instruction);
+		}
+	}
+
+	private static final class LabelFactory {
+		private int next;
+
+		public String produce() {
+			next++;
+			return ".i" + next;
+		}
+	}
+
+	private static final class LabelMapping {
+		private final Map<String, String> oldToNew = new HashMap<>();
+		private final LabelFactory labelFactory;
+
+		public LabelMapping() {
+			this.labelFactory = new LabelFactory();
+		}
+
+		private LabelMapping(@NotNull LabelFactory labelFactory) {
+			this.labelFactory = labelFactory;
+		}
+
+		@NotNull
+		public String getNew(@NotNull String oldLabel) {
+			String newLabel = oldToNew.get(oldLabel);
+			if (newLabel == null) {
+				newLabel = labelFactory.produce();
+				oldToNew.put(oldLabel, newLabel);
+			}
+			return newLabel;
+		}
+
+		public LabelMapping createChild() {
+			return new LabelMapping(labelFactory);
 		}
 	}
 }

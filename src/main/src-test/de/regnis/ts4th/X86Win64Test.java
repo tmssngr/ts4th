@@ -395,6 +395,24 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testInline() throws IOException {
+		compileWrite("""
+				             fn inline printBool(bool)
+				                if
+				                    "true\\n"
+				                else
+				                    "false\\n"
+				                end
+				                printString
+				             end
+
+				             fn main()
+				                1 2 < printBool
+				                1 2 > printBool
+				             end""");
+	}
+
+	@Test
 	public void testFiles() throws IOException {
 		compileFileWrite("rule110-localvars");
 		compileFileWrite("print-ascii-listing");

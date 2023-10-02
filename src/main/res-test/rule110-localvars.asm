@@ -31,7 +31,7 @@ tsf_fill:
         add r15, 8
         ; -- push var r0 (ptr) --
         push rcx
-tsf_while_1:
+.i1:
         ; -- read var r0, [ptr (i16)] --
         mov cx, [rsp+8]
         ; -- literal r1, #0 --
@@ -43,8 +43,8 @@ tsf_while_1:
         cmovg cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_1 --
-        jz tsf_endwhile_1
+        ; -- jump z .i3 --
+        jz .i3
         ; -- read var r0, [<empty> (ptr)] --
         mov rcx, [rsp+0]
         ; -- push 0 (ptr) --
@@ -75,9 +75,9 @@ tsf_while_1:
         sub cx, ax
         ; -- write var [ptr (i16)], 0 --
         mov [rsp+8], cx
-        ; -- jump while_1 --
-        jmp tsf_while_1
-tsf_endwhile_1:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- drop vars ptr, i16, u8 --
         add rsp, 12
         ; -- ret --
@@ -95,7 +95,7 @@ tsf_printBoard:
         mov cx, 0
         ; -- push var r0 (i16) --
         push cx
-tsf_while_2:
+.i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- push 0 (i16) --
@@ -119,8 +119,8 @@ tsf_while_2:
         cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_2 --
-        jz tsf_endwhile_2
+        ; -- jump z .i3 --
+        jz .i3
         ; -- literal r0, "0 --
         lea rcx, [string_0]
         ; -- push 0 (ptr) --
@@ -175,9 +175,9 @@ tsf_while_2:
         add cx, ax
         ; -- write var [<empty> (i16)], 0 --
         mov [rsp+0], cx
-        ; -- jump while_2 --
-        jmp tsf_while_2
-tsf_endwhile_2:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- drop vars i16 --
         add rsp, 2
         ; -- literal r0, #124 --
@@ -245,7 +245,7 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-tsf_while_3:
+.i1:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
@@ -273,8 +273,8 @@ tsf_while_3:
         cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_3 --
-        jz tsf_endwhile_3
+        ; -- jump z .i3 --
+        jz .i3
         ; -- printBoard --
         call tsf_printBoard
         ; -- var r1, @board --
@@ -319,7 +319,7 @@ tsf_while_3:
         add r15, 2
         ; -- push var r0 (i16) --
         push cx
-tsf_while_4:
+.i4:
         ; -- read var r0, [i16 (i16)] --
         mov cx, [rsp+2]
         ; -- push 0 (i16) --
@@ -343,8 +343,8 @@ tsf_while_4:
         cmovl cx, ax
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endwhile_4 --
-        jz tsf_endwhile_4
+        ; -- jump z .i6 --
+        jz .i6
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- mov 1, 0 (i16) --
@@ -455,9 +455,9 @@ tsf_while_4:
         add cx, ax
         ; -- write var [i16 (i16)], 0 --
         mov [rsp+2], cx
-        ; -- jump while_4 --
-        jmp tsf_while_4
-tsf_endwhile_4:
+        ; -- jump .i4 --
+        jmp .i4
+.i6:
         ; -- drop vars i16, i16 --
         add rsp, 4
         ; -- pop 0 (i16) --
@@ -470,9 +470,9 @@ tsf_endwhile_4:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- jump while_3 --
-        jmp tsf_while_3
-tsf_endwhile_3:
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2

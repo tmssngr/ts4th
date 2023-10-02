@@ -34,8 +34,8 @@ tsf_main:
         mov cx, [rsp+2]
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z endif_1 --
-        jz tsf_endif_1
+        ; -- jump z .i2 --
+        jz .i2
         ; -- literal r1, "0 --
         lea rax, [string_0]
         ; -- literal r0, #7 --
@@ -51,19 +51,19 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .1
+        jns    .x1
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.1:
+.x1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
-tsf_endif_1:
+.i2:
         ; -- drop vars i16, bool --
         add rsp, 4
         ; -- ret --

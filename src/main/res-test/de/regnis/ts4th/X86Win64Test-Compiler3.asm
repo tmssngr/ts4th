@@ -21,13 +21,13 @@ tsf_main:
         ; -- printInt r0(i8) --
         movsx rcx, cl
         test   rcx, rcx
-        jns    .1
+        jns    .x1
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.1:
+.x1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -38,13 +38,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .2
+        jns    .x2
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.2:
+.x2:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -55,13 +55,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .3
+        jns    .x3
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.3:
+.x3:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -72,13 +72,13 @@ tsf_main:
         ; -- printInt r0(i32) --
         movsxd rcx, ecx
         test   rcx, rcx
-        jns    .4
+        jns    .x4
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.4:
+.x4:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -88,13 +88,13 @@ tsf_main:
         mov rcx, -64
         ; -- printInt r0(i64) --
         test   rcx, rcx
-        jns    .5
+        jns    .x5
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.5:
+.x5:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -114,13 +114,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .6
+        jns    .x6
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.6:
+.x6:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '

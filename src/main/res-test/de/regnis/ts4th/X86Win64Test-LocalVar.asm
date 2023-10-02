@@ -35,13 +35,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .1
+        jns    .x1
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.1:
+.x1:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '
@@ -52,13 +52,13 @@ tsf_main:
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
-        jns    .2
+        jns    .x2
         neg    rcx
         push   rcx
           mov    cl, '-'
           call   tsfbi_emit
         pop    rcx
-.2:
+.x2:
         sub  rsp, 8
           call tsfbi_printUint
           mov  cl, ' '

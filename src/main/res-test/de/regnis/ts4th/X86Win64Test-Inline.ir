@@ -1,0 +1,43 @@
+const %0: 74 72 75 65 0a
+const %1: 66 61 6c 73 65 0a
+
+main:
+	r0 = 1 (i16)
+	r1 = 2 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, .i2
+	r0 = constant 0
+	push r0 (ptr)
+	r0 = 5 (i16)
+	push r0 (i16)
+	jump .i3
+.i2:
+	r0 = constant 1
+	push r0 (ptr)
+	r0 = 6 (i16)
+	push r0 (i16)
+.i3:
+	pop r0 (i16)
+	pop r1 (ptr)
+	printString r1 (0)
+	r0 = 1 (i16)
+	r1 = 2 (i16)
+	gt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, .i5
+	r0 = constant 0
+	push r0 (ptr)
+	r0 = 5 (i16)
+	push r0 (i16)
+	jump .i6
+.i5:
+	r0 = constant 1
+	push r0 (ptr)
+	r0 = 6 (i16)
+	push r0 (i16)
+.i6:
+	pop r0 (i16)
+	pop r1 (ptr)
+	printString r1 (0)
+	ret

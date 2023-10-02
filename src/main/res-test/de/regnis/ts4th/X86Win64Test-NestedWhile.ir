@@ -1,22 +1,22 @@
 main:
 	r0 = 0 (i16)
 	push r0 (i16)
-while_1:
+.i1:
 	pop r0 (i16)
 	push r0 (i16)
 	r1 = 10 (i16)
 	lt r0, r1 (i16)
 	boolTest r0, r0 (i16)
-	jump z, endwhile_1
+	jump z, .i3
 	r0 = 0 (i16)
 	push r0 (i16)
-while_2:
+.i4:
 	pop r0 (i16)
 	push r0 (i16)
 	r1 = 20 (i16)
 	lt r0, r1 (i16)
 	boolTest r0, r0 (i16)
-	jump z, endwhile_2
+	jump z, .i6
 	pop r1 (i16)
 	pop r0 (i16)
 	push r0 (i16)
@@ -27,8 +27,8 @@ while_2:
 	r1 = 1 (i16)
 	add r0, r1 (i16)
 	push r0 (i16)
-	jump while_2
-endwhile_2:
+	jump .i4
+.i6:
 	pop r0 (i16)
 	r0 = 10 (u8)
 	emit
@@ -36,7 +36,7 @@ endwhile_2:
 	r1 = 1 (i16)
 	add r0, r1 (i16)
 	push r0 (i16)
-	jump while_1
-endwhile_1:
+	jump .i1
+.i3:
 	pop r0 (i16)
 	ret

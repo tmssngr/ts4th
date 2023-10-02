@@ -16,140 +16,104 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- literal r0, #1000 --
-        mov cx, 1000
+        ; -- literal r0, #1 --
+        mov cx, 1
+        ; -- literal r1, #2 --
+        mov ax, 2
+        ; -- lt r0, r1 (i16) --
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
+        cmovl cx, ax
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i2 --
+        jz .i2
+        ; -- literal r0, "0 --
+        lea rcx, [string_0]
+        ; -- push 0 (ptr) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal r0, #5 --
+        mov cx, 5
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- printInt r0(i16) --
-        movsx rcx, cx
-        test   rcx, rcx
-        jns    .x1
-        neg    rcx
-        push   rcx
-          mov    cl, '-'
-          call   tsfbi_emit
-        pop    rcx
-.x1:
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
-        ; -- literal r0, #61 --
-        mov cl, 61
-        ; -- emit --
+        ; -- jump .i3 --
+        jmp .i3
+.i2:
+        ; -- literal r0, "1 --
+        lea rcx, [string_1]
+        ; -- push 0 (ptr) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal r0, #6 --
+        mov cx, 6
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+.i3:
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- pop 1 (ptr) --
+        mov rax, [r15]
+        add r15, 8
+        ; -- printString r1 (0) --
+        movsx rdx, cx
+        mov rcx, rax
         sub rsp, 8
-          call tsfbi_emit
+          call tsfbi_printString
         add rsp, 8
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
+        ; -- literal r0, #1 --
+        mov cx, 1
+        ; -- literal r1, #2 --
+        mov ax, 2
+        ; -- gt r0, r1 (i16) --
+        cmp   cx, ax
+        mov   cx, 0
+        mov   ax, 1
+        cmovg cx, ax
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i5 --
+        jz .i5
+        ; -- literal r0, "0 --
+        lea rcx, [string_0]
+        ; -- push 0 (ptr) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal r0, #5 --
+        mov cx, 5
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
-        ; -- literal r0, #8 --
-        mov cx, 8
-        ; -- shr r1, r0 (i16) --
-        shr ax, cl
-        ; -- mov 0, 1 (i16) --
-        mov cx, ax
-        ; -- printInt r0(i16) --
-        movsx rcx, cx
-        test   rcx, rcx
-        jns    .x2
-        neg    rcx
-        push   rcx
-          mov    cl, '-'
-          call   tsfbi_emit
-        pop    rcx
-.x2:
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
+        ; -- jump .i6 --
+        jmp .i6
+.i5:
+        ; -- literal r0, "1 --
+        lea rcx, [string_1]
+        ; -- push 0 (ptr) --
+        sub r15, 8
+        mov [r15], rcx
+        ; -- literal r0, #6 --
+        mov cx, 6
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+.i6:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
-        ; -- printInt r0(u8) --
-        movzx rcx, cl
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
-        ; -- literal r0, #10 --
-        mov cl, 10
-        ; -- emit --
+        ; -- pop 1 (ptr) --
+        mov rax, [r15]
+        add r15, 8
+        ; -- printString r1 (0) --
+        movsx rdx, cx
+        mov rcx, rax
         sub rsp, 8
-          call tsfbi_emit
+          call tsfbi_printString
         add rsp, 8
-        ; -- literal r0, #-1 --
-        mov cx, -1
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- printInt r0(i16) --
-        movsx rcx, cx
-        test   rcx, rcx
-        jns    .x3
-        neg    rcx
-        push   rcx
-          mov    cl, '-'
-          call   tsfbi_emit
-        pop    rcx
-.x3:
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
-        ; -- literal r0, #61 --
-        mov cl, 61
-        ; -- emit --
-        sub rsp, 8
-          call tsfbi_emit
-        add rsp, 8
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- printInt r0(u8) --
-        movzx rcx, cl
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- printInt r0(u16) --
-        movzx rcx, cx
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- cast 0, (i16 -> u32) --
-        movsx ecx, cx
-        ; -- printInt r0(u32) --
-        sub  rsp, 8
-          call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
-        add  rsp, 8
         ; -- ret --
         ret
 
@@ -240,6 +204,10 @@ tsfbi_printUint:
         leave ; Set SP to BP, then pop BP
         ret
 .end start
+; string constants
+section '.data' data readable
+        string_0 db 'true', 0x0a
+        string_1 db 'false', 0x0a
 
 section '.data' data readable writeable
 

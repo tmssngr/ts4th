@@ -250,7 +250,7 @@ public class X86Win64 {
 	private void write(AsmIR instruction) throws IOException {
 		switch (instruction) {
 		case AsmIR.Label(String name) -> {
-			writeLabel(LABEL_PREFIX + name);
+			writeLabel(prefixLabel(name));
 		}
 		case AsmIR.IntLiteral(int targetReg, int value, Type type) -> {
 			writeComment(STR."literal r\{targetReg}, #\{value}");
@@ -397,7 +397,7 @@ public class X86Win64 {
 	private void writeJump(@Nullable AsmIR.Condition condition, String target) throws IOException {
 		if (condition == null) {
 			writeComment(STR."jump \{target}");
-			writeIndented(STR."jmp \{LABEL_PREFIX}\{target}");
+			writeIndented(STR."jmp \{prefixLabel(target)}");
 			return;
 		}
 
@@ -409,7 +409,7 @@ public class X86Win64 {
 			case le -> "jle ";
 			case ge -> "jge ";
 			case gt -> "jg ";
-		} + LABEL_PREFIX + target);
+		} + prefixLabel(target));
 	}
 
 	private void writeRet() throws IOException {
@@ -561,7 +561,7 @@ public class X86Win64 {
 	}
 
 	private String nextLocalLabel() {
-		return "." + (++labelIndex);
+		return ".x" + (++labelIndex);
 	}
 
 	private int getByteCountForPush(Type type) {
@@ -632,5 +632,12 @@ public class X86Win64 {
 			case 8 -> "qword";
 			default -> throw new IllegalStateException("unsupported size " + valueSize);
 		};
+	}
+
+	@NotNull
+	private static String prefixLabel(String name) {
+		return name.startsWith(".")
+				? name
+				: LABEL_PREFIX + name;
 	}
 }
