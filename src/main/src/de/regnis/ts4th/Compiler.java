@@ -13,16 +13,61 @@ import org.jetbrains.annotations.*;
 public class Compiler {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		final Path forthFile = Paths.get(args[0]);
+		Path forthFile = null;
+		boolean outputIr = false;
+		boolean runExe = false;
+
+		for (String arg : args) {
+			if (forthFile != null) {
+				error("not more than 1 file excepted as last argument");
+			}
+
+			if (arg.equals("-ir")) {
+				outputIr = true;
+			}
+			else if (arg.equals("-run")) {
+				runExe = true;
+			}
+			else {
+				try {
+					forthFile = Paths.get(arg);
+				}
+				catch (InvalidPathException e) {
+					error(arg + " is no valid file path");
+				}
+			}
+		}
+
+		if (forthFile == null) {
+			error("the file is missing");
+			return;
+		}
 
 		final List<Declaration> declarations = Parser.parseFile(forthFile);
 		final Program program = Program.fromDeclarations(declarations);
 		final AsmIRProgram irProgram = compile(program);
 
-		final Path asmFile = forthFile.resolveSibling(getAsmName(forthFile));
+		if (outputIr) {
+			final Path irFile = resolveSiblingWithSuffix(forthFile, ".ir");
+			System.out.println("writing intermediate represenation to " + irFile);
+			irProgram.write(irFile);
+		}
+
+		final Path asmFile = resolveSiblingWithSuffix(forthFile, ".asm");
+		System.out.println("writing asm to " + asmFile);
 		writeAsmFile(asmFile, irProgram);
 
 		launchFasm(asmFile);
+
+		if (runExe) {
+			final Path exeFile = resolveSiblingWithSuffix(forthFile, ".exe");
+			runExe(exeFile);
+		}
+	}
+
+	private static void error(String message) {
+		System.out.println(message);
+		System.exit(1);
 	}
 
 	@NotNull
@@ -50,6 +95,8 @@ public class Compiler {
 		final String fasmHome = System.getenv("FASM_HOME");
 		final Path fasmExe = fasmHome != null ? Paths.get(fasmHome, "fasm.exe") : Paths.get("fasm.exe");
 
+		System.out.println("starting " + fasmExe);
+
 		final ProcessBuilder processBuilder = new ProcessBuilder(fasmExe.toString(), asmFile.toString());
 		processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
@@ -74,14 +121,26 @@ public class Compiler {
 		}
 	}
 
+	private static void runExe(Path exeFile) throws IOException, InterruptedException {
+		System.out.println("starting " + exeFile);
+
+		final ProcessBuilder processBuilder = new ProcessBuilder(exeFile.toString());
+		processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		final Process process = processBuilder.start();
+		final int exitCode = process.waitFor();
+		if (exitCode != 0) {
+			System.out.println(exeFile + " failed with exit code " + exitCode);
+		}
+	}
+
 	@NotNull
-	private static String getAsmName(Path forthFile) {
-		String name = forthFile.getFileName().toString();
+	private static Path resolveSiblingWithSuffix(Path file, String suffix) {
+		String name = file.getFileName().toString();
 		int dotIndex = name.lastIndexOf('.');
 		if (dotIndex >= 0) {
 			name = name.substring(0, dotIndex);
 		}
-		name = name + ".asm";
-		return name;
+		return file.resolveSibling(name + suffix);
 	}
 }
