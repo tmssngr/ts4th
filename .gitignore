@@ -1,4 +1,5 @@
 /.*
 *.exe
+*.types
 !.git*
 !/.idea

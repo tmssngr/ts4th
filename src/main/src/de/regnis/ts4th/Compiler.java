@@ -15,6 +15,7 @@ public class Compiler {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Path forthFile = null;
 		boolean outputIr = false;
+		boolean outputTypes = false;
 		boolean runExe = false;
 
 		for (String arg : args) {
@@ -24,6 +25,9 @@ public class Compiler {
 
 			if (arg.equals("-ir")) {
 				outputIr = true;
+			}
+			else if (arg.equals("-types")) {
+				outputTypes = true;
 			}
 			else if (arg.equals("-run")) {
 				runExe = true;
@@ -45,7 +49,21 @@ public class Compiler {
 
 		final List<Declaration> declarations = Parser.parseFile(forthFile);
 		final Program program = Program.fromDeclarations(declarations);
-		final AsmIRProgram irProgram = compile(program);
+
+		final OutputStream loggingStream = outputTypes
+				? Files.newOutputStream(resolveSiblingWithSuffix(forthFile, ".types")) : null;
+		final AsmIRConverter.Logging logging = loggingStream != null
+				? new TypeLogging(loggingStream)
+				: AsmIRConverter.DEFAULT_LOGGING;
+		final AsmIRProgram irProgram;
+		try {
+			irProgram = compile(program, logging);
+		}
+		finally {
+			if (loggingStream != null) {
+				loggingStream.close();
+			}
+		}
 
 		if (outputIr) {
 			final Path irFile = resolveSiblingWithSuffix(forthFile, ".ir");
@@ -65,13 +83,13 @@ public class Compiler {
 		}
 	}
 
-	private static void error(String message) {
-		System.out.println(message);
-		System.exit(1);
+	@NotNull
+	public static AsmIRProgram compile(Program program) {
+		return compile(program, AsmIRConverter.DEFAULT_LOGGING);
 	}
 
 	@NotNull
-	public static AsmIRProgram compile(Program program) {
+	public static AsmIRProgram compile(Program program, AsmIRConverter.Logging logging) {
 		final NameToFunction nameToFunction = new NameToFunction(program);
 
 		final Function main = nameToFunction.get("main");
@@ -84,7 +102,7 @@ public class Compiler {
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
 		for (Function function : inlinedFunctions) {
-			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, nameToFunction, stringLiterals);
+			final AsmIRFunction irFunction = AsmIRConverter.convertToIR(function, nameToFunction, stringLiterals, logging);
 			processedFunctions.add(irFunction);
 		}
 
@@ -112,6 +130,11 @@ public class Compiler {
 			process.destroy();
 		}
 		return process.exitValue();
+	}
+
+	private static void error(String message) {
+		System.out.println(message);
+		System.exit(1);
 	}
 
 	private static void writeAsmFile(Path asmFile, AsmIRProgram program) throws IOException {
@@ -142,5 +165,45 @@ public class Compiler {
 			name = name.substring(0, dotIndex);
 		}
 		return file.resolveSibling(name + suffix);
+	}
+
+	private static class TypeLogging implements AsmIRConverter.Logging {
+
+		private final PrintStream out;
+
+		public TypeLogging(OutputStream stream) {
+			out = new PrintStream(stream, true);
+		}
+
+		@Override
+		public void beforeFunction(Function function) {
+			out.println("fn " + function.name() + "(" + function.typesInOut().in() + " -- " + function.typesInOut().out() + ")");
+		}
+
+		@Override
+		public void beforeInstruction(Instruction instruction, TypeList input) {
+			if (!(instruction instanceof Instruction.Label)) {
+				out.print("\t");
+			}
+			out.print(instruction);
+			out.print("\t// ");
+			if (instruction instanceof Instruction.LocationProvider locP) {
+				out.print(locP.location());
+			}
+		}
+
+		@Override
+		public void handleIR(AsmIR asmIR) {
+		}
+
+		@Override
+		public void afterInstruction(Instruction instruction, TypeList output) {
+			out.println(" -> (" + output + ")");
+		}
+
+		@Override
+		public void afterFunction(Function function) {
+			out.println();
+		}
 	}
 }

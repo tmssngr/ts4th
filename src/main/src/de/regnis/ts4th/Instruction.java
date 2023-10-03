@@ -11,7 +11,11 @@ public sealed interface Instruction permits
 		Instruction.Command, Instruction.Jump, Instruction.Branch, Instruction.Ret,
 		Instruction.BindVars, Instruction.ReleaseVars {
 
-	record Label(String name, Location location) implements Instruction {
+	interface LocationProvider {
+		Location location();
+	}
+
+	record Label(String name, Location location) implements Instruction, LocationProvider {
 		public Label(String name) {
 			this(name, Location.DUMMY);
 		}
@@ -50,7 +54,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record Command(String name, Location location) implements Instruction {
+	record Command(String name, Location location) implements Instruction, LocationProvider {
 		public Command(String command) {
 			this(command, Location.DUMMY);
 		}
@@ -61,7 +65,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record Jump(String target, Location location) implements Instruction {
+	record Jump(String target, Location location) implements Instruction, LocationProvider {
 		public Jump(String target) {
 			this(target, Location.DUMMY);
 		}
@@ -72,7 +76,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record Branch(String ifTarget, String elseTarget, Location location) implements Instruction {
+	record Branch(String ifTarget, String elseTarget, Location location) implements Instruction, LocationProvider {
 		public Branch(String ifTarget, String elseTarget) {
 			this(ifTarget, elseTarget, Location.DUMMY);
 		}
@@ -90,7 +94,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record BindVars(List<String> varNames, Location location) implements Instruction {
+	record BindVars(List<String> varNames, Location location) implements Instruction, LocationProvider {
 		@Override
 		public String toString() {
 			return "bindVars " + varNames;

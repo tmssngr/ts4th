@@ -12,35 +12,31 @@ import static de.regnis.ts4th.AsmIR.BinOperation.boolTest;
  */
 public class AsmIRConverter {
 
+	public static final Logging DEFAULT_LOGGING = new ConsoleLogging(false);
 	public static final int REG_0 = 0;
 	public static final int REG_1 = 1;
 	public static final int REG_2 = 2;
 
-	private static boolean debug = false;
-
 	@NotNull
-	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull NameToFunction nameToFunction, @NotNull AsmIRStringLiterals stringLiterals) {
+	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull NameToFunction nameToFunction, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Logging logging) {
+		logging.beforeFunction(function);
+
 		final List<Instruction> instructions = InstructionSimplifier.simplify(function.instructions());
 
 		final List<AsmIR> asmInstructions = new ArrayList<>();
 		final AsmIRConverter converter = new AsmIRConverter(nameToFunction, function, stringLiterals, ir -> {
-			if (debug) {
-				System.out.println(ir);
-			}
+			logging.handleIR(ir);
 			asmInstructions.add(ir);
 		});
 
 		InstructionTypeEvaluator.iterate(instructions, function.typesInOut().in(), (instruction, input) -> {
-			if (debug) {
-				System.out.print("; ");
-				System.out.println(instruction);
-			}
-			return converter.process(instruction, input);
+			logging.beforeInstruction(instruction, input);
+			final TypeList output = converter.process(instruction, input);
+			logging.afterInstruction(instruction, output);
+			return output;
 		});
 
-		if (debug) {
-			System.out.println();
-		}
+		logging.afterFunction(function);
 
 		final List<AsmIR> irInstructions = AsmIRSimplifier.simplify(asmInstructions);
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);
@@ -182,10 +178,10 @@ public class AsmIRConverter {
 				while (it.hasPrevious()) {
 					final String name = it.previous();
 					if (Intrinsics.get(name) != null) {
-						throw new CompilerException(location, STR."There already is a built-in command defined with the name \{name}.");
+						throw new CompilerException(location, STR. "There already is a built-in command defined with the name \{ name }." );
 					}
 					if (nameToFunction.get(name) != null) {
-						throw new CompilerException(location, STR."There already is a function defined with the name \{name}.");
+						throw new CompilerException(location, STR. "There already is a function defined with the name \{ name }." );
 					}
 
 					final Type type = types.type();
@@ -211,5 +207,57 @@ public class AsmIRConverter {
 		};
 	}
 
+	public interface Logging {
+		void beforeFunction(Function function);
+
+		void beforeInstruction(Instruction instruction, TypeList input);
+
+		void handleIR(AsmIR asmIR);
+
+		void afterInstruction(Instruction instruction, TypeList output);
+
+		void afterFunction(Function function);
+	}
+
 	private record LocalVar(@NotNull String name, @NotNull Type type) {}
+
+	private static class ConsoleLogging implements Logging {
+		private final boolean logging;
+
+		public ConsoleLogging(boolean logging) {
+			this.logging = logging;
+		}
+
+		@Override
+		public void beforeFunction(Function function) {
+			if (logging) {
+				System.out.println("fn " + function.name() + "(" + function.typesInOut().in() + " -- " + function.typesInOut().out() + ")");
+			}
+		}
+
+		@Override
+		public void beforeInstruction(Instruction instruction, TypeList input) {
+			if (logging) {
+				System.out.println("; " + instruction + " " + input);
+			}
+		}
+
+		@Override
+		public void handleIR(AsmIR asmIR) {
+			if (logging) {
+				System.out.println(asmIR);
+			}
+		}
+
+		@Override
+		public void afterInstruction(Instruction instruction, TypeList output) {
+		}
+
+		@Override
+		public void afterFunction(Function function) {
+			if (logging) {
+				System.out.println();
+			}
+		}
+	}
 }
