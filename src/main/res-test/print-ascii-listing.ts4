@@ -1,16 +1,4 @@
-fn printNibble(u8)
-	0xFu8 and
-	'0' +
-	dup '9' > if
-		'A' '9' - 1u8 - +
-	end
-	emit
-end
-
-fn printHex8(u8)
-	dup 4u8 shr printNibble
-	printNibble
-end
+include "hex.ts4"
 
 fn main(--)
 	0u8 0x10u8
