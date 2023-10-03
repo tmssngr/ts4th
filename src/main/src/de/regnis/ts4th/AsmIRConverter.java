@@ -15,7 +15,6 @@ public class AsmIRConverter {
 	public static final int REG_0 = 0;
 	public static final int REG_1 = 1;
 	public static final int REG_2 = 2;
-	public static final int PTR_SIZE = 8;
 
 	private static boolean debug = false;
 
