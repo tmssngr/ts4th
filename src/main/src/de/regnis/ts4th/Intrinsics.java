@@ -257,7 +257,7 @@ public class Intrinsics {
 					output.accept(AsmIRFactory.binCommand(add, REG_0, REG_1, type1));
 					output.accept(AsmIRFactory.push(REG_0, type1));
 				}
-				else{
+				else {
 					throw new IllegalStateException();
 				}
 			}
@@ -425,6 +425,30 @@ public class Intrinsics {
 		return Utils.join(types, Type::toString, ", ");
 	}
 
+	@NotNull
+	private static TypeList processBinary(String name, Location location, TypeList input) {
+		//noinspection ConstantValue,LoopStatementThatDoesntLoop
+		do {
+			final Type type = input.type();
+			if (type == null || !Type.INT_TYPES.contains(type)) {
+				break;
+			}
+
+			final TypeList prev = input.prev();
+			if (prev == null) {
+				break;
+			}
+
+			if (prev.type() != type) {
+				break;
+			}
+
+			return prev;
+		}
+		while (false);
+		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
+	}
+
 	public interface Command {
 		TypeList process(String name, Location location, TypeList input);
 
@@ -481,30 +505,6 @@ public class Intrinsics {
 			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
 			output.accept(AsmIRFactory.push(REG_0, type));
 		}
-	}
-
-	@NotNull
-	private static TypeList processBinary(String name, Location location, TypeList input) {
-		//noinspection ConstantValue,LoopStatementThatDoesntLoop
-		do {
-			final Type type = input.type();
-			if (type == null || !Type.INT_TYPES.contains(type)) {
-				break;
-			}
-
-			final TypeList prev = input.prev();
-			if (prev == null) {
-				break;
-			}
-
-			if (prev.type() != type) {
-				break;
-			}
-
-			return prev;
-		}
-		while (false);
-		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
 	}
 
 	private record RelationalCommand(AsmIR.BinOperation operation) implements Command {
