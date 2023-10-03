@@ -4,7 +4,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
 
 import org.jetbrains.annotations.*;
 import org.junit.*;
@@ -454,7 +453,7 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	private void compileWrite(AsmIRProgram irProgram, String name) throws IOException {
-		writeIr(irProgram, createPath(name + ".ir"));
+		irProgram.write(createPath(name + ".ir"));
 
 		final Path asmFile = createPath(name + ".asm");
 		writeX86(irProgram, asmFile);
@@ -485,59 +484,6 @@ public class X86Win64Test extends AbstractFileTest {
 		}
 
 		assertEquals(0, process.exitValue());
-	}
-
-	private void writeIr(AsmIRProgram program, Path path) throws IOException {
-		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-			writeIrConstants(program.stringLiterals(), writer);
-
-			for (AsmIRFunction function : program.functions()) {
-				writeIrFunction(function, writer);
-			}
-
-			writeIrVars(program.vars(), writer);
-		}
-	}
-
-	private void writeIrConstants(List<Supplier<byte[]>> stringLiterals, BufferedWriter writer) throws IOException {
-		for (int i = 0; i < stringLiterals.size(); i++) {
-			writer.write("const %" + i + ":");
-			final byte[] bytes = stringLiterals.get(i).get();
-			for (byte value : bytes) {
-				writer.write(" ");
-				writer.write(Utils.toHex(value, 2));
-			}
-			writer.newLine();
-		}
-
-		if (stringLiterals.size() > 0) {
-			writer.newLine();
-		}
-	}
-
-	private void writeIrVars(List<Var> vars, BufferedWriter writer) throws IOException {
-		if (vars.size() > 0) {
-			writer.newLine();
-		}
-
-		for (Var var : vars) {
-			writer.write("var " + var.name() + ", " + var.size());
-			writer.newLine();
-		}
-	}
-
-	private void writeIrFunction(AsmIRFunction function, BufferedWriter writer) throws IOException {
-		writer.write(function.name());
-		writer.write(":");
-		writer.newLine();
-
-		for (AsmIR instruction : function.instructions()) {
-			if (!(instruction instanceof AsmIR.Label)) {
-				writer.write("\t");
-			}
-			writer.write(instruction.toString());
-			writer.newLine();
-		}
 	}
 
 	private void writeX86(AsmIRProgram program, Path path) throws IOException {
