@@ -413,6 +413,21 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testFibonacci() throws IOException {
+		compileWrite("""
+				             fn main()
+				                1 2 var a b do
+				                   while a 100 < do
+					                   a print
+					                   b
+					                      a b + b!
+					                   a!
+					               end
+				                end
+				             end""");
+	}
+
+	@Test
 	public void testFiles() throws IOException {
 		compileFileWrite("rule110-localvars");
 		compileFileWrite("print-ascii-listing");
