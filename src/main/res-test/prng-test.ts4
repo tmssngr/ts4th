@@ -1,0 +1,11 @@
+include "prng.ts4"
+
+fn main()
+	7439742u32 initRandom
+	0 while dup 50 < do
+		randomU8 print
+		'\n' emit
+		1 +
+	end
+	drop
+end

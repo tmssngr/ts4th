@@ -23,13 +23,3 @@ end
 fn randomU8(-- u8)
 	random as_u8
 end
-
-fn main()
-	7439742u32 initRandom
-	0 while dup 50 < do
-		randomU8 print
-		'\n' emit
-		1 +
-	end
-	drop
-end

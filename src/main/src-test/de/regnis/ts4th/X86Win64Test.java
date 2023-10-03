@@ -431,7 +431,7 @@ public class X86Win64Test extends AbstractFileTest {
 	public void testFiles() throws IOException {
 		compileFileWrite("rule110-localvars");
 		compileFileWrite("print-ascii-listing");
-		compileFileWrite("prng");
+		compileFileWrite("prng-test");
 	}
 
 	@NotNull
