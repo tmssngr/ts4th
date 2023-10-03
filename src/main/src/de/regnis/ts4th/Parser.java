@@ -385,8 +385,8 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions, Location location) {
 		if (instructions.size() > 0) {
-			final Instruction lastInstruction = instructions.get(instructions.size() - 1);
-			if (lastInstruction instanceof Instruction.Jump || lastInstruction instanceof Instruction.Label) {
+			final Instruction lastInstruction = instructions.getLast();
+			if (lastInstruction instanceof Instruction.Jump || lastInstruction instanceof Instruction.Branch) {
 				return;
 			}
 		}

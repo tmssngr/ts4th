@@ -63,6 +63,50 @@ public final class ParserTest {
 	}
 
 	@Test
+	public void testNestedIf() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("foo", TypeList.INT2, TypeList.EMPTY,
+				             false, List.of(
+						literal(0),
+						command(">="),
+						branch("if_1", "else_1"),
+
+						label("if_1"),
+						literal(0),
+						command(">="),
+						branch("if_2", "endif_2"),
+
+						label("if_2"),
+						literal("both greater 0"),
+						command("printString"),
+						jump("endif_2"),
+
+						label("endif_2"),
+						jump("endif_1"),
+
+						label("else_1"),
+						literal("tos < 0"),
+						command("printString"),
+						jump("endif_1"),
+
+						label("endif_1"),
+						ret()
+				)
+				)
+		), Parser.parseString("""
+				                      fn foo(int int)
+				                         0 >= if
+				                            0 >= if
+				                               "both greater 0" printString
+				                            end
+				                         else
+				                            "tos < 0" printString
+				                         end
+				                      end
+				                      """));
+	}
+
+	@Test
 	public void testWhileDoEnd() {
 		TestUtils.assertFunctionsEquals(List.of(
 				new Function("loopTest", TypeList.EMPTY, TypeList.EMPTY,
@@ -223,6 +267,7 @@ public final class ParserTest {
 						jump("endwhile_1"),
 
 						label("endif_3"),
+						jump("endif_2"),
 
 						label("endif_2"),
 						jump("while_1"),
@@ -347,11 +392,13 @@ public final class ParserTest {
 				new Function("foo", TypeList.EMPTY, TypeList.EMPTY,
 				             false, List.of(
 						literal(1),
+
 						label("while_1"),
 						command("dup"),
 						literal(10),
 						command("<"),
 						branch("whilebody_1", "endwhile_1"),
+
 						label("whilebody_1"),
 						bindVars(List.of("i")),
 						command("i"),
@@ -359,12 +406,15 @@ public final class ParserTest {
 						literal(5),
 						command("=="),
 						branch("if_2", "endif_2"),
+
 						label("if_2"),
 						releaseVars(1), // << this is important here
 						jump("while_1"),
+
 						label("endif_2"),
 						releaseVars(1),
 						jump("while_1"),
+
 						label("endwhile_1"),
 						ret()
 				)

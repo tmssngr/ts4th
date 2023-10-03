@@ -25,6 +25,10 @@ public class InstructionFactory {
 		return new Instruction.BoolLiteral(value);
 	}
 
+	public static Instruction literal(String value) {
+		return new Instruction.StringLiteral(value);
+	}
+
 	public static Instruction jump(String target) {
 		return new Instruction.Jump(target);
 	}
