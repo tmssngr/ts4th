@@ -9,19 +9,21 @@ import java.util.function.*;
 public class InstructionTypeEvaluator {
 
 	public static void iterate(List<Instruction> instructions, TypeList input, BiFunction<Instruction, TypeList, TypeList> consumer) {
-		final Map<String, TypeList> labelToType = new HashMap<>();
+		final Map<String, Pair<TypeList, Location>> labelToType = new HashMap<>();
 
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Label(String name, Location location)) {
-				final TypeList labelInput = labelToType.get(name);
+				final Pair<TypeList, Location> existing = labelToType.get(name);
 				if (input == null) {
-					if (labelInput == null) {
+					// after a jump or branch...
+					if (existing == null) {
 						throw new IllegalStateException("Expected types at " + location);
 					}
-					input = labelInput;
+
+					input = existing.first();
 				}
-				if (labelInput != null && !labelInput.equals(input)) {
-					throw new InvalidTypeException(location, "Invalid types: " + labelInput + " vs. " + input);
+				else if (existing != null) {
+					checkExisting(input, location, existing);
 				}
 			}
 
@@ -39,15 +41,20 @@ public class InstructionTypeEvaluator {
 		}
 	}
 
-	private static void setTargetTypes(TypeList input, String target, Location location, Map<String, TypeList> labelToType) {
-		final TypeList targetInput = labelToType.get(target);
-		if (targetInput != null) {
-			if (!targetInput.equals(input)) {
-				throw new InvalidTypeException(location, "Invalid types: " + targetInput + " vs. " + input);
-			}
+	private static void setTargetTypes(TypeList input, String target, Location location, Map<String, Pair<TypeList, Location>> labelToType) {
+		final Pair<TypeList, Location> existing = labelToType.get(target);
+		if (existing != null) {
+			checkExisting(input, location, existing);
 		}
 		else {
-			labelToType.put(target, input);
+			labelToType.put(target, new Pair<>(input, location));
+		}
+	}
+
+	private static void checkExisting(TypeList input, Location location, Pair<TypeList, Location> existing) {
+		final TypeList existingInput = existing.first();
+		if (!existingInput.equals(input)) {
+			throw new InvalidTypeException(location, STR."Invalid types: \{existingInput} (from: \{ existing.second()}) vs. \{ input }");
 		}
 	}
 }
