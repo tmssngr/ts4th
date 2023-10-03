@@ -429,14 +429,18 @@ public class X86Win64 {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
+			final int size = type.getByteCount(PTR_SIZE);
+			final String regName1 = getRegName(reg1, size);
+			final String regName2 = getRegName(reg2, size);
+			final String regA = getRegName("a", size);
+			final String regC = getRegName("c", size);
+			final String regD = getRegName("d", size);
 			writeIndented(STR."""
-					              mov dx, \{regName2}
+					              mov \{regD}, \{regName2}
 					              xor eax, eax
-					              mov ax, \{regName1}
+					              mov \{regA}, \{regName1}
 					              xor ecx, ecx
-					              mov cx, dx
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
 					              mov ecx, eax""");
@@ -445,14 +449,18 @@ public class X86Win64 {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
 			// (edx eax) % %reg -> edx
-			final String regName1 = getRegName(reg1, type);
-			final String regName2 = getRegName(reg2, type);
+			final int size = type.getByteCount(PTR_SIZE);
+			final String regName1 = getRegName(reg1, size);
+			final String regName2 = getRegName(reg2, size);
+			final String regA = getRegName("a", size);
+			final String regC = getRegName("c", size);
+			final String regD = getRegName("d", size);
 			writeIndented(STR."""
-					              mov dx, \{regName2}
+					              mov \{regD}, \{regName2}
 					              xor eax, eax
-					              mov ax, \{regName1}
+					              mov \{regA}, \{regName1}
 					              xor ecx, ecx
-					              mov cx, dx
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
 					              mov ecx, edx""");
@@ -594,31 +602,21 @@ public class X86Win64 {
 
 	@NotNull
 	private static String getRegName(int reg, int size) {
+		return getRegName(switch (reg) {
+			case AsmIRConverter.REG_0 -> "c";
+			case AsmIRConverter.REG_1 -> "a";
+			case AsmIRConverter.REG_2 -> "b";
+			default -> throw new IllegalStateException("unsupported reg " + reg);
+		}, size);
+	}
+
+	@NotNull
+	private static String getRegName(String reg, int size) {
 		return switch (size) {
-			case 1 -> switch (reg) {
-				case AsmIRConverter.REG_0 -> "cl";
-				case AsmIRConverter.REG_1 -> "al";
-				case AsmIRConverter.REG_2 -> "bl";
-				default -> throw new IllegalStateException("unsupported reg " + reg);
-			};
-			case 2 -> switch (reg) {
-				case AsmIRConverter.REG_0 -> "cx";
-				case AsmIRConverter.REG_1 -> "ax";
-				case AsmIRConverter.REG_2 -> "bx";
-				default -> throw new IllegalStateException("unsupported reg " + reg);
-			};
-			case 4 -> switch (reg) {
-				case AsmIRConverter.REG_0 -> "ecx";
-				case AsmIRConverter.REG_1 -> "eax";
-				case AsmIRConverter.REG_2 -> "ebx";
-				default -> throw new IllegalStateException("unsupported reg " + reg);
-			};
-			case 8 -> switch (reg) {
-				case AsmIRConverter.REG_0 -> "rcx";
-				case AsmIRConverter.REG_1 -> "rax";
-				case AsmIRConverter.REG_2 -> "rbx";
-				default -> throw new IllegalStateException("unsupported reg " + reg);
-			};
+			case 1 -> reg + "l";
+			case 2 -> reg + "x";
+			case 4 -> "e" + reg + "x";
+			case 8 -> "r" + reg + "x";
 			default -> throw new IllegalStateException("unsupported size " + size);
 		};
 	}
