@@ -46,6 +46,31 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testLogical() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				                "and: " printString
+				             	false false and print ' ' emit
+				             	false true  and print ' ' emit
+				             	true  false and print ' ' emit
+				             	true  true  and print '\\n' emit
+
+				                "or:  " printString
+				             	false false or print ' ' emit
+				             	false true  or print ' ' emit
+				             	true  false or print ' ' emit
+				             	true  true  or print '\\n' emit
+
+				                "xor: " printString
+				             	false false xor print ' ' emit
+				             	false true  xor print ' ' emit
+				             	true  false xor print ' ' emit
+				             	true  true  xor print '\\n' emit
+				             end
+				             """);
+	}
+
+	@Test
 	public void testCompiler2() throws IOException {
 		compileWrite("""
 				             fn main(--)

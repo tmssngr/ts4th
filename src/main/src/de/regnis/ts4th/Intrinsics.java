@@ -266,9 +266,9 @@ public class Intrinsics {
 		nameToCommand.put(MUL, new BinaryCommand(imul));
 		nameToCommand.put(DIV, new BinaryCommand(idiv));
 		nameToCommand.put(MOD, new BinaryCommand(imod));
-		nameToCommand.put(AND, new BinaryCommand(and));
-		nameToCommand.put(OR, new BinaryCommand(or));
-		nameToCommand.put(XOR, new BinaryCommand(xor));
+		nameToCommand.put(AND, new LogicalBinaryCommand(and));
+		nameToCommand.put(OR, new LogicalBinaryCommand(or));
+		nameToCommand.put(XOR, new LogicalBinaryCommand(xor));
 		nameToCommand.put(SHL, new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
@@ -419,12 +419,36 @@ public class Intrinsics {
 		return nameToCommand.get(name);
 	}
 
+	@Nullable
+	private static TypeList processLogical(TypeList input) {
+		//noinspection ConstantValue,LoopStatementThatDoesntLoop
+		do {
+			final Type type = input.type();
+			if (type != Type.Bool) {
+				break;
+			}
+
+			final TypeList prev = input.prev();
+			if (prev == null) {
+				break;
+			}
+
+			if (prev.type() != type) {
+				break;
+			}
+
+			return prev;
+		}
+		while (false);
+		return null;
+	}
+
 	private static String typesToString(List<Type> types) {
 		return Utils.join(types, Type::toString, "|");
 	}
 
-	@NotNull
-	private static TypeList processBinary(String name, Location location, TypeList input) {
+	@Nullable
+	private static TypeList processBinary(TypeList input) {
 		//noinspection ConstantValue,LoopStatementThatDoesntLoop
 		do {
 			final Type type = input.type();
@@ -444,7 +468,16 @@ public class Intrinsics {
 			return prev;
 		}
 		while (false);
-		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesToString(Type.INT_TYPES) + " but got " + input);
+		return null;
+	}
+
+	@NotNull
+	private static TypeList processBinary(String name, Location location, TypeList input) {
+		final TypeList output = processBinary(input);
+		if (output == null) {
+			throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesToString(Type.INT_TYPES) + " but got " + input);
+		}
+		return output;
 	}
 
 	public interface Command {
@@ -493,6 +526,30 @@ public class Intrinsics {
 	private record BinaryCommand(AsmIR.BinOperation operation) implements Command {
 		public TypeList process(String name, Location location, TypeList input) {
 			return processBinary(name, location, input);
+		}
+
+		@Override
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			final Type type = types.type();
+			output.accept(AsmIRFactory.pop(REG_1, type));
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
+			output.accept(AsmIRFactory.push(REG_0, type));
+		}
+	}
+
+	private record LogicalBinaryCommand(AsmIR.BinOperation operation) implements Command {
+		public TypeList process(String name, Location location, TypeList input) {
+			final TypeList result = processLogical(input);
+			if (result != null) {
+				return result;
+			}
+
+			final TypeList output = processBinary(input);
+			if (output == null) {
+				throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + "|bool but got " + input);
+			}
+			return output;
 		}
 
 		@Override

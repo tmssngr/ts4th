@@ -35,7 +35,8 @@ As char literals they can contain usual escape sequences, e.g. `"hello \"world\"
 
 ## Built-in commands (Intrinsics)
 Following commands are supported:
-- `+`, `-`, `*`, `/`, `%` (mod), `and`, `or`, `xor` (logical), `shl` and `shr` (all require the same integer type 2 times on the stack and will produce the same type)
+- `+`, `-`, `*`, `/`, `%` (mod), `shl` and `shr` (all require the same integer type 2 times on the stack and will produce the same type)
+- `and`, `or` and `xor` (bitwise: require the same integer type 2 times and produce the same type; logical: requires `bool` 2 times and produces a `bool`)
 - `<`, `<=`, `==`, `!=`, `>=`, `>` (all require the same integer type 2 times on the stack and will produce a `bool`)
 - read from memory: `@8 (ptr--u8)`, ..., `@64 (ptr--u64)`
 - write to memory: `@8 (ptr u8--)`, ..., `@64 (ptr u64--)`

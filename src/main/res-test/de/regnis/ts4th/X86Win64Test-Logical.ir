@@ -1,0 +1,87 @@
+const %0: 61 6e 64 3a 20
+const %1: 6f 72 3a 20 20
+const %2: 78 6f 72 3a 20
+
+main:
+	r1 = constant 0
+	r0 = 5 (i16)
+	printString r1 (0)
+	r0 = false
+	r1 = false
+	and r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = false
+	r1 = true
+	and r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = false
+	and r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = true
+	and r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 10 (u8)
+	emit
+	r1 = constant 1
+	r0 = 5 (i16)
+	printString r1 (0)
+	r0 = false
+	r1 = false
+	or r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = false
+	r1 = true
+	or r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = false
+	or r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = true
+	or r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 10 (u8)
+	emit
+	r1 = constant 2
+	r0 = 5 (i16)
+	printString r1 (0)
+	r0 = false
+	r1 = false
+	xor r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = false
+	r1 = true
+	xor r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = false
+	xor r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 32 (u8)
+	emit
+	r0 = true
+	r1 = true
+	xor r0, r1 (bool)
+	printInt r0(bool)
+	r0 = 10 (u8)
+	emit
+	ret
