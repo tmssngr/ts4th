@@ -216,7 +216,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             end
 
 				             fn main(--)
-				             	"hello world\\0" // ptr int
+				             	"hello world\\x0" // ptr int
 				             	drop // ptr
 				             	strlen
 				             	print

@@ -75,9 +75,13 @@ ParenClose: ')';
 
 Number: ( [0-9]+            ([iu] BitCount)?
         | '-' [0-9]+        ('i'  BitCount)?
-        | '0x' [0-9A-Fa-f]+ ('u'  BitCount)?
+        | '0x' HexDigit+    ('u'  BitCount)?
         | '\'' Char '\''
         );
+
+fragment HexDigit
+	: [0-9A-Fa-f]
+	;
 
 fragment BitCount
 	: '8' | '16' | '32' | '64'
@@ -89,7 +93,9 @@ fragment Char
     ;
 
 fragment EscapedChar
-	: '\\' [0tnr\\"]
+	: '\\' ( [0tnr\\"]
+	       | 'x' HexDigit HexDigit
+	       )
 	;
 
 String: '"' StringChar* '"';

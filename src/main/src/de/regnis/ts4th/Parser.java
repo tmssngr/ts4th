@@ -34,7 +34,52 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		return parse(CharStreams.fromString(s), includeHandler);
 	}
 
-	private final Stack<ControlFlowStructure> stack = new Stack<ControlFlowStructure>();
+	static String unescape(String s, Location location) {
+		final StringBuilder buffer = new StringBuilder();
+		boolean escaped = false;
+		for (int i = 0; i < s.length(); i++) {
+			char chr = s.charAt(i);
+			if (escaped) {
+				buffer.append(switch (chr) {
+					case 't' -> '\t';
+					case 'n' -> '\n';
+					case 'r' -> '\r';
+					case 'x' -> {
+						final int start = i;
+						char hexValue = 0;
+						for (i++; i < s.length(); i++) {
+							chr = s.charAt(i);
+							int digit = getHexDigit(chr);
+							if (digit < 0) {
+								break;
+							}
+
+							hexValue = (char)((hexValue << 4) + digit);
+						}
+						i--;
+						if (i == start) {
+							throw new CompilerException(location, "Invalid escape sequence " + s.substring(start - 1));
+						}
+						yield hexValue;
+					}
+					default -> chr;
+				});
+				escaped = false;
+			}
+			else if (chr == '\\') {
+				escaped = true;
+			}
+			else {
+				buffer.append(chr);
+			}
+		}
+		if (escaped) {
+			throw new CompilerException(location, "Unclosed escape at end of string");
+		}
+
+		return buffer.toString();
+	}
+	private final Stack<ControlFlowStructure> stack = new Stack<>();
 	private final IncludeHandler includeHandler;
 
 	private int index;
@@ -163,7 +208,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		}
 
 		if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
-			final String unescape = unescape(text.substring(1, text.length() - 1));
+			final String unescape = unescape(text.substring(1, text.length() - 1), createLocation(node));
 			if (unescape.length() != 1) {
 				throw new CompilerException(createLocation(node), "invalid char " + text);
 			}
@@ -384,7 +429,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	private String parseStringLiteral(TerminalNode node) {
 		final String text = node.getText();
 		final String raw = text.substring(1, text.length() - 1);
-		return unescape(raw);
+		return unescape(raw, createLocation(node));
 	}
 
 	private void addJumpIfPrevIsNoJumpOrBranch(String target, List<Instruction> instructions, Location location) {
@@ -397,38 +442,24 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		instructions.add(new Instruction.Jump(target, location));
 	}
 
+	private static int getHexDigit(char chr) {
+		if (chr >= '0' && chr <= '9') {
+			return chr - '0';
+		}
+
+		chr = Character.toUpperCase(chr);
+		if (chr >= 'A' && chr <= 'F') {
+			return chr - 'A' + 10;
+		}
+		return -1;
+	}
+
 	private static Location createLocation(TerminalNode token) {
 		return createLocation(token.getSymbol());
 	}
 
 	private static Location createLocation(Token token) {
 		return new Location(token.getLine(), token.getCharPositionInLine());
-	}
-
-	private static String unescape(String s) {
-		final StringBuilder buffer = new StringBuilder();
-		boolean escaped = false;
-		for (int i = 0; i < s.length(); i++) {
-			final char chr = s.charAt(i);
-			if (escaped) {
-				buffer.append(switch (chr) {
-					case '0' -> '\0';
-					case 't' -> '\t';
-					case 'n' -> '\n';
-					case 'r' -> '\r';
-					default -> chr;
-				});
-				escaped = false;
-			}
-			else if (chr == '\\') {
-				escaped = true;
-			}
-			else {
-				buffer.append(chr);
-			}
-		}
-		Utils.assertTrue(!escaped);
-		return buffer.toString();
 	}
 
 	private static List<Declaration> parse(CharStream charStream, IncludeHandler includeHandler) {

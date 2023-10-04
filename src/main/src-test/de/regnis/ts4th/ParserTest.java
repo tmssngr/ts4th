@@ -5,6 +5,7 @@ import java.util.*;
 import org.junit.*;
 
 import static de.regnis.ts4th.InstructionFactory.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Thomas Singer
@@ -60,6 +61,69 @@ public final class ParserTest {
 				                        drop
 				                      end
 				                      """));
+	}
+
+	@SuppressWarnings("UnnecessaryUnicodeEscape")
+	@Test
+	public void testUnescape() {
+		assertEquals("\t", Parser.unescape("\\t", Location.DUMMY));
+		assertEquals("\n", Parser.unescape("\\n", Location.DUMMY));
+		assertEquals("\r", Parser.unescape("\\r", Location.DUMMY));
+		assertEquals("\\", Parser.unescape("\\\\", Location.DUMMY));
+		assertEquals("\u0001", Parser.unescape("\\x1", Location.DUMMY));
+		assertEquals("\u0012", Parser.unescape("\\x12", Location.DUMMY));
+		assertEquals("\u0123", Parser.unescape("\\x123", Location.DUMMY));
+		assertEquals("\u1234", Parser.unescape("\\x1234", Location.DUMMY));
+		assertEquals("\u1234", Parser.unescape("\\x1234", Location.DUMMY));
+		assertEquals("\u2345", Parser.unescape("\\x12345", Location.DUMMY));
+		assertEquals("\ucafe", Parser.unescape("\\xcafe", Location.DUMMY));
+		assertEquals("\ucafeg", Parser.unescape("\\xcafeg", Location.DUMMY));
+		assertEquals("\ubabeg", Parser.unescape("\\xBABEg", Location.DUMMY));
+
+		try {
+			Parser.unescape("\\", Location.DUMMY);
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+
+		try {
+			Parser.unescape("\\x", Location.DUMMY);
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+
+		try {
+			Parser.unescape("\\xg", Location.DUMMY);
+			fail();
+		}
+		catch (CompilerException _) {
+		}
+	}
+
+	@SuppressWarnings("UnnecessaryUnicodeEscape")
+	@Test
+	public void testCharEscapes() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("charEscapes", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
+						literal("\\\t\n\r\u0001\u009a\u0DEFg\uCDEFg"),
+						command("drop"),
+						command("drop"),
+						ret()
+				))
+		), Parser.parseString("""
+				                      fn charEscapes()
+				                        "\\\\\\t\\n\\r\\x1\\x9a\\xdefg\\xabcdefg"
+				                        drop drop
+				                      end"""));
+
+		try {
+			Parser.parseString("fn invalidCharEscapes() \"\\x\" end");
+			fail();
+		}
+		catch (CompilerException _) {
+		}
 	}
 
 	@Test
@@ -373,7 +437,7 @@ public final class ParserTest {
 							  end
 							end"""
 			);
-			Assert.fail();
+			fail();
 		}
 		catch (CompilerException ignored) {
 		}

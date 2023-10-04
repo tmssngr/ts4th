@@ -30,8 +30,14 @@ Integer literals by default are of type `int` unless they are suffixed with `i8`
 To convert between different integer types, use `as_i8`, ..., `as_u64`.
 At the moment no conversion happens automatically, and casts from one type to itself is rejected.
 
+### String literals
 String literals like `"hello world"` will put a `ptr` and an its length `int` (=`i16`) onto the stack.
-As char literals they can contain usual escape sequences, e.g. `"hello \"world\""`.
+
+Following escape sequences are supported
+- `\t` tab character
+- `\n` line feed
+- `\r` carriage return
+- `\xh...` where `h` represents 1 or more hex characters
 
 ## Built-in commands (Intrinsics)
 Following commands are supported:
