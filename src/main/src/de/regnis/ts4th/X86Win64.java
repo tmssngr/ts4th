@@ -68,11 +68,16 @@ public class X86Win64 {
 		writeUintPrint();
 		write(".end start");
 
+		write("""
+				      ; string constants
+				      section '.data' data readable
+				      true_string db 'true'
+				      false_string db 'false'
+
+				      """);
+
 		final List<Supplier<byte[]>> stringLiterals = program.stringLiterals();
 		if (stringLiterals.size() > 0) {
-			write("""
-					      ; string constants
-					      section '.data' data readable""");
 			for (int i = 0; i < stringLiterals.size(); i++) {
 				final String encoded = encode(stringLiterals.get(i).get());
 				writeIndented(STRING_PREFIX + i + " db " + encoded);
@@ -320,8 +325,27 @@ public class X86Win64 {
 		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) -> {
 			writeBinCommand(operation, reg1, reg2, type);
 		}
-		case AsmIR.PrintInt(Type type) -> {
-			writePrintInt(type);
+		case AsmIR.Print(Type type) -> {
+			if (type == Type.Bool) {
+				writeComment("printBool");
+				final String printLabel = nextLocalLabel();
+				writeIndented(STR."""
+						              or cl, cl
+						              lea rcx, [false_string]
+						              mov rdx, 5
+						              jz \{ printLabel}
+						              lea rcx, [true_string]
+						              mov rdx, 4
+						              """);
+				writeLabel(printLabel);
+				writeIndented(STR. """
+				              sub  rsp, 8
+				                call \{ PRINT_STRING }
+				              add rsp, 8""" );
+			}
+			else {
+				writePrintInt(type);
+			}
 		}
 		case AsmIR.Emit() -> {
 			writeEmit();

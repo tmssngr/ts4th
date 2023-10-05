@@ -37,6 +37,50 @@ tsf_main:
           mov  cl, ' '
           call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #10 --
+        mov cl, 10
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
+        ; -- literal r0, #true --
+        mov cx, 1
+        ; -- printBool --
+        or cl, cl
+        lea rcx, [false_string]
+        mov rdx, 5
+        jz .x2
+        lea rcx, [true_string]
+        mov rdx, 4
+.x2:
+        sub  rsp, 8
+          call tsfbi_printString
+        add rsp, 8
+        ; -- literal r0, #10 --
+        mov cl, 10
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
+        ; -- literal r0, #false --
+        mov cx, 0
+        ; -- printBool --
+        or cl, cl
+        lea rcx, [false_string]
+        mov rdx, 5
+        jz .x3
+        lea rcx, [true_string]
+        mov rdx, 4
+.x3:
+        sub  rsp, 8
+          call tsfbi_printString
+        add rsp, 8
+        ; -- literal r0, #10 --
+        mov cl, 10
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- ret --
         ret
 
@@ -127,6 +171,10 @@ tsfbi_printUint:
         leave ; Set SP to BP, then pop BP
         ret
 .end start
+; string constants
+section '.data' data readable
+true_string db 'true'
+false_string db 'false'
 
 section '.data' data readable writeable
 

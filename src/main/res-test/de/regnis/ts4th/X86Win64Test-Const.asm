@@ -135,6 +135,8 @@ tsfbi_printUint:
 .end start
 ; string constants
 section '.data' data readable
+true_string db 'true'
+false_string db 'false'
         string_0 db 'doit'
 
 section '.data' data readable writeable

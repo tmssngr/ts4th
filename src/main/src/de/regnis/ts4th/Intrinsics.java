@@ -350,12 +350,10 @@ public class Intrinsics {
 				}
 
 				final Type type = input.type();
-				final List<Type> allowed = List.of(Type.I8, Type.I16, Type.I32, Type.I64, Type.U8, Type.U16, Type.U32, Type.U64);
-				if (!allowed.contains(type)) {
-					throw new InvalidTypeException(location, name + " (a --) only can work on " + typesToString(allowed) + ", but got " + input);
+				if (type == Type.Bool || Type.INT_TYPES.contains(type)) {
+					return input.prev();
 				}
-
-				return input.prev();
+				throw new InvalidTypeException(location, name + " (a --) only can work on " + typesToString(Type.INT_TYPES) + "|" + Type.Bool + ", but got " + input);
 			}
 
 			@Override
@@ -422,7 +420,7 @@ public class Intrinsics {
 	}
 
 	private static String typesToString(List<Type> types) {
-		return Utils.join(types, Type::toString, ", ");
+		return Utils.join(types, Type::toString, "|");
 	}
 
 	@NotNull
@@ -446,7 +444,7 @@ public class Intrinsics {
 			return prev;
 		}
 		while (false);
-		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
+		throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesToString(Type.INT_TYPES) + " but got " + input);
 	}
 
 	public interface Command {
@@ -528,7 +526,7 @@ public class Intrinsics {
 				return prev.prev().append(Type.Bool);
 			}
 			while (false);
-			throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + Utils.join(Type.INT_TYPES, Type::toString, "|") + " but got " + input);
+			throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + typesToString(Type.INT_TYPES) + " but got " + input);
 		}
 
 		@Override

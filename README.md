@@ -39,7 +39,7 @@ Following commands are supported:
 - `<`, `<=`, `==`, `!=`, `>=`, `>` (all require the same integer type 2 times on the stack and will produce a `bool`)
 - read from memory: `@8 (ptr--u8)`, ..., `@64 (ptr--u64)`
 - write to memory: `@8 (ptr u8--)`, ..., `@64 (ptr u64--)`
-- print any integer: `print`
+- print any integer or `bool`: `print`
 - print a character: `emit (u8--)`
 - print a string: `printString (ptr u16--)`
 - abort the compilation and log the function's data stack types: `???`

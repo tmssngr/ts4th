@@ -89,7 +89,7 @@ public class AsmIRFactory {
 	}
 
 	public static AsmIR print(Type type) {
-		return new AsmIR.PrintInt(type);
+		return new AsmIR.Print(type);
 	}
 
 	public static AsmIR mem() {

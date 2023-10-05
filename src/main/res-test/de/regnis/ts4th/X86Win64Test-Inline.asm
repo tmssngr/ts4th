@@ -206,6 +206,8 @@ tsfbi_printUint:
 .end start
 ; string constants
 section '.data' data readable
+true_string db 'true'
+false_string db 'false'
         string_0 db 'true', 0x0a
         string_1 db 'false', 0x0a
 

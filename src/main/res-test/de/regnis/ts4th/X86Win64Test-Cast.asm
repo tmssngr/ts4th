@@ -240,6 +240,10 @@ tsfbi_printUint:
         leave ; Set SP to BP, then pop BP
         ret
 .end start
+; string constants
+section '.data' data readable
+true_string db 'true'
+false_string db 'false'
 
 section '.data' data readable writeable
 

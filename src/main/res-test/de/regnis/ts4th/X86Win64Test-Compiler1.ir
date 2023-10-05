@@ -3,4 +3,14 @@ main:
 	r1 = 2048 (i16)
 	sub r0, r1 (i16)
 	printInt r0(i16)
+	r0 = 10 (u8)
+	emit
+	r0 = true
+	printInt r0(bool)
+	r0 = 10 (u8)
+	emit
+	r0 = false
+	printInt r0(bool)
+	r0 = 10 (u8)
+	emit
 	ret

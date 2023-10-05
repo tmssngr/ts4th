@@ -37,7 +37,10 @@ public class X86Win64Test extends AbstractFileTest {
 		compileWrite("""
 				             fn main(--)
 				             	1024 2048 -
-				             	print
+				             	print       '\\n' emit
+
+				             	true print  '\\n' emit
+				             	false print '\\n' emit
 				             end
 				             """);
 	}
