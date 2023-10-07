@@ -15,4 +15,13 @@ public record Function(Location locationStart, Location locationEnd, String name
 	public Location location() {
 		return locationStart;
 	}
+
+	public void printInstructions() {
+		for (Instruction instruction : instructions) {
+			if (!(instruction instanceof Instruction.Label)) {
+				System.out.print("    ");
+			}
+			System.out.println(instruction);
+		}
+	}
 }
