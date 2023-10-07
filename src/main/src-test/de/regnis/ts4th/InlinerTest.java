@@ -25,15 +25,15 @@ public class InlinerTest {
 				             ))
 		             ),
 		             Inliner.process(List.of(
-				             new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
+				             new Function("1plus", TypeList.INT, TypeList.INT, true, List.of(
 						             literal(1),
 						             command("+"),
 						             ret()
 				             )),
 				             new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
 						             literal(10),
-						             command("1+"),
-						             command("1+"),
+						             command("1plus"),
+						             command("1plus"),
 						             command("print")
 				             ))
 		             )));
@@ -90,7 +90,7 @@ public class InlinerTest {
 	public void testInlineFailure() {
 		try {
 			Inliner.process(List.of(
-					new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
+					new Function("1plus", TypeList.INT, TypeList.INT, true, List.of(
 					)),
 					new Function("main", TypeList.EMPTY, TypeList.EMPTY, true, List.of(
 					))
@@ -102,8 +102,8 @@ public class InlinerTest {
 
 		try {
 			Inliner.process(List.of(
-					new Function("1+", TypeList.INT, TypeList.INT, true, List.of(
-							command("1+")
+					new Function("1plus", TypeList.INT, TypeList.INT, true, List.of(
+							command("1plus")
 					)),
 					new Function("main", TypeList.EMPTY, TypeList.EMPTY, false, List.of(
 					))

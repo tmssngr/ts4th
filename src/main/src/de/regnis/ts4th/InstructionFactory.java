@@ -98,6 +98,16 @@ public class InstructionFactory {
 	}
 
 	@NotNull
+	public static Instruction inc() {
+		return command(Intrinsics.INC);
+	}
+
+	@NotNull
+	public static Instruction dec() {
+		return command(Intrinsics.DEC);
+	}
+
+	@NotNull
 	public static Instruction isLE() {
 		return command(Intrinsics.IS_LE);
 	}

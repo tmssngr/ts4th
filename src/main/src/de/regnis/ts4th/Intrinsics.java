@@ -40,6 +40,9 @@ public class Intrinsics {
 	public static final String SHL = "shl";
 	public static final String SHR = "shr";
 
+	public static final String INC = "1+";
+	public static final String DEC = "1-";
+
 	public static final String MEM = "mem";
 	public static final String LOAD8 = "@8";
 	public static final String STORE8 = "!8";
@@ -299,6 +302,8 @@ public class Intrinsics {
 				output.accept(AsmIRFactory.push(REG_1, type));
 			}
 		});
+		nameToCommand.put(INC, new UnaryIntCommand(add));
+		nameToCommand.put(DEC, new UnaryIntCommand(sub));
 
 		nameToCommand.put(MEM, new Command() {
 			@Override
@@ -644,6 +649,30 @@ public class Intrinsics {
 			output.accept(AsmIRFactory.pop(REG_0, type));
 			output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 			output.accept(AsmIRFactory.store(REG_1, REG_0, type));
+		}
+	}
+
+	private record UnaryIntCommand(AsmIR.BinOperation operation) implements Command {
+		@Override
+		public TypeList process(String name, Location location, TypeList input) {
+			if (input.isEmpty()) {
+				throw new InvalidTypeException(location, name + " (a -- a) can't operate on empty stack");
+			}
+
+			final Type type = input.type();
+			if (Type.INT_TYPES.contains(type) || type == Type.Ptr) {
+				return input;
+			}
+			throw new InvalidTypeException(location, name + " (a -- a) requires " + typesToString(Type.INT_TYPES) + "|" + Type.Ptr + ", but got " + input);
+		}
+
+		@Override
+		public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+			final Type type = types.type();
+			output.accept(AsmIRFactory.pop(REG_0, type));
+			output.accept(AsmIRFactory.literal(REG_1, 1, type));
+			output.accept(AsmIRFactory.binCommand(operation, REG_0, REG_1, type));
+			output.accept(AsmIRFactory.push(REG_0, type));
 		}
 	}
 }

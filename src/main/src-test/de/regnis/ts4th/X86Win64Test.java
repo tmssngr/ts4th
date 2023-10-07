@@ -157,7 +157,7 @@ public class X86Win64Test extends AbstractFileTest {
 				               over over
 				               !8
 				               drop
-				               1 +
+				               1+
 				             end
 				             """);
 	}
@@ -239,7 +239,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 				             		'\\n' emit
 
-				             		1 +
+				             		1+
 				             	end
 				             	drop
 				             end

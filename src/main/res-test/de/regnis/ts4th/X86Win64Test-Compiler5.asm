@@ -177,9 +177,7 @@ tsf_appendChar:
         mov rcx, [r15]
         add r15, 8
         ; -- literal r1, #1 --
-        mov ax, 1
-        ; -- cast 1, (i16 -> ptr) --
-        movsx rax, ax
+        mov rax, 1
         ; -- add r0, r1 (ptr) --
         add rcx, rax
         ; -- push 0 (ptr) --
