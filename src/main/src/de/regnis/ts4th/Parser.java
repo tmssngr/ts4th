@@ -259,7 +259,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		final List<Instruction> instructions = new ArrayList<>();
 
-		stack.push(new WhileCondition());
+		stack.push(new LoopCondition());
 		try {
 			instructions.add(new Instruction.Label(labelWhile, createLocation(ctx.While())));
 
@@ -274,7 +274,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		instructions.add(new Instruction.Label(labelWhileBody, doLocation));
 
-		stack.push(new WhileBody(labelWhile, labelWhileEnd));
+		stack.push(new LoopBody(labelWhile, labelWhileEnd));
 		try {
 			instructions.addAll(visitInstructions(ctx.body));
 			instructions.add(InstructionFactory.jump(labelWhile));
@@ -322,11 +322,11 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
 			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
-			case WhileBody(_, String breakLabel) -> {
+			case LoopBody(_, String breakLabel) -> {
 				instructions.add(new Instruction.Jump(breakLabel, location));
 				return instructions;
 			}
-			case WhileCondition _ -> throw new CompilerException(location, "`break` only can be used inside `while-do-end` between `do` and `end`");
+			case LoopCondition _ -> throw new CompilerException(location, "`break` only can be used inside `while-do-end` between `do` and `end`");
 			}
 		}
 
@@ -341,11 +341,11 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
 			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
-			case WhileBody(String continueLabel, _) -> {
+			case LoopBody(String continueLabel, _) -> {
 				instructions.add(new Instruction.Jump(continueLabel, location));
 				return instructions;
 			}
-			case WhileCondition _ -> throw new CompilerException(location, "`continue` only can be used inside `while-do-end` between `do` and `end`");
+			case LoopCondition _ -> throw new CompilerException(location, "`continue` only can be used inside `while-do-end` between `do` and `end`");
 			}
 		}
 
@@ -463,7 +463,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		List<Declaration> include(String fileString);
 	}
 
-	private sealed interface ControlFlowStructure permits WhileCondition, WhileBody, LocalVarsBlock {
+	private sealed interface ControlFlowStructure permits LoopCondition, LoopBody, LocalVarsBlock {
 	}
 
 	private static class FileIncludeHandler implements IncludeHandler {
@@ -510,9 +510,9 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		}
 	}
 
-	private record WhileCondition() implements ControlFlowStructure {}
+	private record LoopCondition() implements ControlFlowStructure {}
 
-	private record WhileBody(String continueLabel, String breakLabel) implements ControlFlowStructure {
+	private record LoopBody(String continueLabel, String breakLabel) implements ControlFlowStructure {
 	}
 
 	private record LocalVarsBlock(int count) implements ControlFlowStructure {
