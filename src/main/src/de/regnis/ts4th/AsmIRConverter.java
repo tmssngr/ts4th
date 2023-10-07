@@ -238,6 +238,9 @@ public class AsmIRConverter {
 		@Override
 		public void beforeInstruction(Instruction instruction, TypeList input) {
 			if (logging) {
+				if (!(instruction instanceof Instruction.Label)) {
+					printIndentation();
+				}
 				System.out.println("; " + instruction + " " + input);
 			}
 		}
@@ -245,8 +248,15 @@ public class AsmIRConverter {
 		@Override
 		public void handleIR(AsmIR asmIR) {
 			if (logging) {
+				if (!(asmIR instanceof AsmIR.Label)) {
+					printIndentation();
+				}
 				System.out.println(asmIR);
 			}
+		}
+
+		private void printIndentation() {
+			System.out.print("    ");
 		}
 
 		@Override
