@@ -205,7 +205,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Instruction> visitIf(TS4thParser.IfContext ctx) {
 		index++;
 		final String labelIf = "if_" + index;
-		final String labelEnd = "endif_" + index;
+		final String labelEnd = labelIf + "_end";
 
 		final Location ifLocation = createLocation(ctx.If());
 
@@ -226,8 +226,8 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Instruction> visitIfElse(TS4thParser.IfElseContext ctx) {
 		index++;
 		final String labelIf = "if_" + index;
-		final String labelElse = "else_" + index;
-		final String labelEnd = "endif_" + index;
+		final String labelElse = labelIf + "_else";
+		final String labelEnd = labelIf + "_end";
 
 		final Location ifLocation = createLocation(ctx.If());
 
@@ -254,8 +254,8 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	public List<Instruction> visitWhile(TS4thParser.WhileContext ctx) {
 		index++;
 		final String labelWhile = "while_" + index;
-		final String labelWhileBody = "whilebody_" + index;
-		final String labelWhileEnd = "endwhile_" + index;
+		final String labelWhileBody = labelWhile + "_body";
+		final String labelWhileEnd = labelWhile + "_end";
 
 		final List<Instruction> instructions = new ArrayList<>();
 

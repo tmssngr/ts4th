@@ -32,13 +32,13 @@ public final class ParserTest {
 				             false, List.of(
 						dup2Int(),
 						isLT(),
-						branch("if_1", "endif_1"),
+						branch("if_1", "if_1_end"),
 
 						label("if_1"),
 						swapInt(),
-						jump("endif_1"),
+						jump("if_1_end"),
 
-						label("endif_1"),
+						label("if_1_end"),
 						dropInt(),
 						ret()
 				)
@@ -69,27 +69,27 @@ public final class ParserTest {
 				             false, List.of(
 						literal(0),
 						command(">="),
-						branch("if_1", "else_1"),
+						branch("if_1", "if_1_else"),
 
 						label("if_1"),
 						literal(0),
 						command(">="),
-						branch("if_2", "endif_2"),
+						branch("if_2", "if_2_end"),
 
 						label("if_2"),
 						literal("both greater 0"),
 						command("printString"),
-						jump("endif_2"),
+						jump("if_2_end"),
 
-						label("endif_2"),
-						jump("endif_1"),
+						label("if_2_end"),
+						jump("if_1_end"),
 
-						label("else_1"),
+						label("if_1_else"),
 						literal("tos < 0"),
 						command("printString"),
-						jump("endif_1"),
+						jump("if_1_end"),
 
-						label("endif_1"),
+						label("if_1_end"),
 						ret()
 				)
 				)
@@ -116,16 +116,16 @@ public final class ParserTest {
 						dup(),
 						literal(10),
 						isLT(),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						dup(),
 						command("print"),
 						literal(1),
 						add(),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						dropInt(),
 						ret()
 				)
@@ -145,19 +145,19 @@ public final class ParserTest {
 				             false, List.of(
 						label("while_1"),
 						literal(true),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						dup2Int(),
 						isGE(),
-						branch("if_2", "endif_2"),
+						branch("if_2", "if_2_end"),
 
 						label("if_2"),
 						dropInt(),
 						dropInt(),
-						jump("endwhile_1"),
+						jump("while_1_end"),
 
-						label("endif_2"),
+						label("if_2_end"),
 						swapInt(),
 						dup(),
 						command("."),
@@ -166,7 +166,7 @@ public final class ParserTest {
 						swapInt(),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						ret()
 				)
 				)
@@ -195,28 +195,28 @@ public final class ParserTest {
 
 						label("while_1"),
 						literal(true),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						dup(),
 						literal(10),
 						isLT(),
-						branch("if_2", "else_2"),
+						branch("if_2", "if_2_else"),
 
 						label("if_2"),
 						dup(),
 						print(),
 						literal(1),
 						add(),
-						jump("endif_2"),
+						jump("if_2_end"),
 
-						label("else_2"),
-						jump("endwhile_1"),
+						label("if_2_else"),
+						jump("while_1_end"),
 
-						label("endif_2"),
+						label("if_2_end"),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						ret()
 				)
 				)
@@ -240,39 +240,39 @@ public final class ParserTest {
 				             false, List.of(
 						label("while_1"),
 						literal(true),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						dup2Int(),
 						isLT(),
-						branch("if_2", "else_2"),
+						branch("if_2", "if_2_else"),
 
 						label("if_2"),
 						overInt(),
 						sub(),
-						jump("endif_2"),
+						jump("if_2_end"),
 
-						label("else_2"),
+						label("if_2_else"),
 						dup2Int(),
 						isGT(),
-						branch("if_3", "else_3"),
+						branch("if_3", "if_3_else"),
 
 						label("if_3"),
 						swapInt(),
 						overInt(),
 						sub(),
-						jump("endif_3"),
+						jump("if_3_end"),
 
-						label("else_3"),
-						jump("endwhile_1"),
+						label("if_3_else"),
+						jump("while_1_end"),
 
-						label("endif_3"),
-						jump("endif_2"),
+						label("if_3_end"),
+						jump("if_2_end"),
 
-						label("endif_2"),
+						label("if_2_end"),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						dropInt(),
 						ret()
 				)
@@ -312,13 +312,13 @@ public final class ParserTest {
 						dup(),
 						literal(10),
 						isLT(),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						dup(),
 						literal(3),
 						command("=="),
-						branch("if_2", "endif_2"),
+						branch("if_2", "if_2_end"),
 
 						label("if_2"),
 						literal("three "),
@@ -326,13 +326,13 @@ public final class ParserTest {
 						command("1+"),
 						jump("while_1"),
 
-						label("endif_2"),
+						label("if_2_end"),
 						dup(),
 						command("print"),
 						command("1+"),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						command("drop"),
 						ret()
 				)
@@ -454,25 +454,25 @@ public final class ParserTest {
 						command("dup"),
 						literal(10),
 						command("<"),
-						branch("whilebody_1", "endwhile_1"),
+						branch("while_1_body", "while_1_end"),
 
-						label("whilebody_1"),
+						label("while_1_body"),
 						bindVars(List.of("i")),
 						command("i"),
 						command("i"),
 						literal(5),
 						command("=="),
-						branch("if_2", "endif_2"),
+						branch("if_2", "if_2_end"),
 
 						label("if_2"),
 						releaseVars(1), // << this is important here
 						jump("while_1"),
 
-						label("endif_2"),
+						label("if_2_end"),
 						releaseVars(1),
 						jump("while_1"),
 
-						label("endwhile_1"),
+						label("while_1_end"),
 						ret()
 				)
 				)
