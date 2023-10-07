@@ -9,6 +9,7 @@ import java.util.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.*;
 
 /**
@@ -79,6 +80,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		return buffer.toString();
 	}
+
 	private final Stack<ControlFlowStructure> stack = new Stack<>();
 	private final IncludeHandler includeHandler;
 
@@ -199,27 +201,8 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	@Override
 	public List<Instruction> visitNumber(TS4thParser.NumberContext ctx) {
 		final TerminalNode node = ctx.Number();
-		String text = node.getText();
-		if (text.startsWith("0x")) {
-			final Type[] type = new Type[] {Type.I16};
-			final String hexText = stripTypeSuffix(text.substring(2), type);
-			final int value = Integer.parseInt(hexText, 16);
-			return List.of(InstructionFactory.literal(value, type[0]));
-		}
-
-		if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
-			final String unescape = unescape(text.substring(1, text.length() - 1), createLocation(node));
-			if (unescape.length() != 1) {
-				throw new CompilerException(createLocation(node), "invalid char " + text);
-			}
-			final int value = unescape.charAt(0);
-			return List.of(InstructionFactory.literal(value, Type.U8));
-		}
-
-		final Type[] type = new Type[] {Type.I16};
-		text = stripTypeSuffix(text, type);
-		final int value = Integer.parseInt(text);
-		return List.of(InstructionFactory.literal(value, type[0]));
+		final Instruction.IntLiteral literal = parseNumber(node.getText(), createLocation(node));
+		return List.of(literal);
 	}
 
 	@Override
@@ -335,13 +318,83 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	}
 
 	@Override
+	public List<Instruction> visitFor(TS4thParser.ForContext ctx) {
+		index++;
+		final String labelFor = "for_" + index;
+		final String labelBody = labelFor + "_body";
+		final String labelNext = labelFor + "_next";
+		final String labelEnd = labelFor + "_end";
+
+		final String varName = getValidVarName(ctx.var);
+		final String maxName = "max." + index;
+
+		final Token stepToken = ctx.step;
+		final Token by = ctx.by;
+		int step = 1;
+		Type type = Type.I16;
+		if (stepToken != null && by != null) {
+			final Location stepLocation = createLocation(stepToken);
+			if (!"step".equals(stepToken.getText())) {
+				throw new CompilerException(stepLocation, "Expected 'step', but got '" + stepToken.getText() + "'");
+			}
+
+			final Instruction.IntLiteral byLiteral = parseNumber(by.getText(), createLocation(by));
+			step = byLiteral.value();
+			if (step == 0) {
+				throw new CompilerException(stepLocation, "Step value must not be zero");
+			}
+			type = byLiteral.type();
+		}
+
+		final List<Instruction> instructions = new ArrayList<>();
+		instructions.add(new Instruction.BindVars(List.of(varName, maxName), createLocation(ctx.For())));
+
+		instructions.add(new Instruction.Label(labelFor, createLocation(ctx.For())));
+
+		instructions.add(new Instruction.Command(varName));
+		instructions.add(new Instruction.Command(maxName));
+		instructions.add(step > 0 ? InstructionFactory.isLT() : InstructionFactory.isGT());
+
+		final Location doLocation = createLocation(ctx.Do());
+		instructions.add(new Instruction.Branch(labelBody, labelEnd, doLocation));
+
+		instructions.add(new Instruction.Label(labelBody, doLocation));
+
+		stack.push(new LoopBody(labelNext, labelEnd));
+		try {
+			instructions.addAll(visitInstructions(ctx.instructions()));
+		}
+		finally {
+			stack.pop();
+		}
+
+		instructions.add(new Instruction.Label(labelNext, createLocation(ctx.For())));
+		instructions.add(new Instruction.Command(varName));
+		if (step == 1) {
+			instructions.add(InstructionFactory.inc());
+		}
+		else if (step == -1) {
+			instructions.add(InstructionFactory.dec());
+		}
+		else {
+			instructions.add(new Instruction.IntLiteral(step, type));
+			instructions.add(InstructionFactory.add());
+		}
+		instructions.add(new Instruction.Command(varName + "!"));
+
+		final Location endLocation = createLocation(ctx.End());
+		instructions.add(new Instruction.Jump(labelFor, endLocation));
+
+		instructions.add(new Instruction.Label(labelEnd, endLocation));
+		instructions.add(new Instruction.ReleaseVars(2));
+		return instructions;
+	}
+
+	@Override
 	public List<Instruction> visitVar(TS4thParser.VarContext ctx) {
 		final List<String> varNames = new ArrayList<>();
 		for (TerminalNode identifier : ctx.Identifier()) {
-			final String varName = identifier.getText();
-			if (!varName.matches("[a-z_][a-zA-Z0-9_]*")) {
-				throw new CompilerException(createLocation(identifier), "invalid variable name '" + varName + "'");
-			}
+			final String varName = getValidVarName(identifier.getSymbol());
 			varNames.add(varName);
 		}
 		final int count = varNames.size();
@@ -397,6 +450,38 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		}
 
 		throw new CompilerException(location, "`continue` needs an outer `while` loop");
+	}
+
+	private Instruction.IntLiteral parseNumber(String text, Location location) {
+		if (text.startsWith("0x")) {
+			final Type[] type = new Type[] {Type.I16};
+			final String hexText = stripTypeSuffix(text.substring(2), type);
+			final int value = Integer.parseInt(hexText, 16);
+			return InstructionFactory.literal(value, type[0]);
+		}
+
+		if (text.length() >= 3 && text.startsWith("'") && text.endsWith("'")) {
+			final String unescape = unescape(text.substring(1, text.length() - 1), location);
+			if (unescape.length() != 1) {
+				throw new CompilerException(location, "invalid char " + text);
+			}
+			final int value = unescape.charAt(0);
+			return InstructionFactory.literal(value, Type.U8);
+		}
+
+		final Type[] type = new Type[] {Type.I16};
+		text = stripTypeSuffix(text, type);
+		final int value = Integer.parseInt(text);
+		return InstructionFactory.literal(value, type[0]);
+	}
+
+	@NotNull
+	private String getValidVarName(Token token) {
+		final String varName = token.getText();
+		if (!varName.matches("[a-z_][a-zA-Z0-9_]*")) {
+			throw new CompilerException(createLocation(token), "invalid variable name '" + varName + "'");
+		}
+		return varName;
 	}
 
 	private String stripTypeSuffix(String text, Type[] type) {

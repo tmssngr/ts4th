@@ -89,6 +89,25 @@ drop           // drop the counter
 ```
 **Note: The condition needs to produce a `bool` value and the method body must not change the stack types!**
 
+### For loop
+The for-loop (`<start> <end> for <variable> (step <number>)? do ... end`) will iterate the variable `variable` starting with `start` to (not including) `end`.
+With `step <number>` you can set the step size.
+If it is ommitted, step size 1 is used (increasing).
+You can use `continue` to start a new iteration or `break` to leave the loop.
+
+This will print all numbers from 1 up to 9:
+```
+1 10 for i do
+  i print
+end
+```
+This will print all numbers from 9 down to 1:
+```
+9 0 for i step -1 do
+  i print
+end
+```
+
 ## Local Variables
 Local variables can be defined between `var` and `do` and used between `do` and `end`.
 They take their initial value and type from the stack in the order they occur.

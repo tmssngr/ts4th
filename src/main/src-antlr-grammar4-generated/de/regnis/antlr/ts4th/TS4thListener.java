@@ -219,4 +219,16 @@ public interface TS4thListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVar(TS4thParser.VarContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code for}
+	 * labeled alternative in {@link TS4thParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor(TS4thParser.ForContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code for}
+	 * labeled alternative in {@link TS4thParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor(TS4thParser.ForContext ctx);
 }

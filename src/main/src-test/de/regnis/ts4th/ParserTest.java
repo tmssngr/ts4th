@@ -554,4 +554,145 @@ public final class ParserTest {
 						end"""
 		));
 	}
+
+	@Test
+	public void testFor() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("main", TypeList.EMPTY, TypeList.EMPTY,
+				             false, List.of(
+						literal(0),
+						literal(10),
+						bindVars(List.of("i", "max.1")),
+
+						label("for_1"),
+						command("i"),
+						command("max.1"),
+						isLT(),
+						branch("for_1_body", "for_1_end"),
+
+						label("for_1_body"),
+						command("i"),
+						literal(5),
+						command("=="),
+						branch("if_2", "if_2_end"),
+
+						label("if_2"),
+						jump("for_1_next"),
+
+						label("if_2_end"),
+						command("i"),
+						command("print"),
+
+						label("for_1_next"),
+						command("i"),
+						inc(),
+						command("i!"),
+						jump("for_1"),
+
+						label("for_1_end"),
+						releaseVars(2),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn main()
+							0 10 for i do
+								i 5 == if
+									continue
+								end
+
+								i print
+							end
+						end"""
+		));
+
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("main", TypeList.EMPTY, TypeList.EMPTY,
+				             false, List.of(
+						literal(0),
+						literal(10),
+						bindVars(List.of("i", "max.1")),
+
+						label("for_1"),
+						command("i"),
+						command("max.1"),
+						isLT(),
+						branch("for_1_body", "for_1_end"),
+
+						label("for_1_body"),
+						command("i"),
+						command("print"),
+
+						label("for_1_next"),
+						command("i"),
+						literal(2),
+						add(),
+						command("i!"),
+						jump("for_1"),
+
+						label("for_1_end"),
+						releaseVars(2),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn main()
+							0 10 for i step 2 do
+								i print
+							end
+						end"""
+		));
+
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("main", TypeList.EMPTY, TypeList.EMPTY,
+				             false, List.of(
+						literal(10),
+						literal(0),
+						bindVars(List.of("i", "max.1")),
+
+						label("for_1"),
+						command("i"),
+						command("max.1"),
+						isGT(),
+						branch("for_1_body", "for_1_end"),
+
+						label("for_1_body"),
+						command("i"),
+						literal(5),
+						command("=="),
+						branch("if_2", "if_2_end"),
+
+						label("if_2"),
+						jump("for_1_next"),
+
+						label("if_2_end"),
+						command("i"),
+						command("print"),
+
+						label("for_1_next"),
+						command("i"),
+						dec(),
+						command("i!"),
+						jump("for_1"),
+
+						label("for_1_end"),
+						releaseVars(2),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn main()
+							10 0 for i step -1 do
+								i 5 == if
+									continue
+								end
+
+								i print
+							end
+						end"""
+		));
+	}
 }

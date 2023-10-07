@@ -17,7 +17,7 @@ public class InstructionFactory {
 		return literal(value, Type.I16);
 	}
 
-	public static Instruction literal(int value, Type type) {
+	public static Instruction.IntLiteral literal(int value, Type type) {
 		return new Instruction.IntLiteral(value, type);
 	}
 

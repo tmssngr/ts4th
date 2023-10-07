@@ -461,6 +461,20 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testFor() throws IOException {
+		compileWrite("""
+				             fn main()
+				             	0 10 for i do
+				             		i 5 == if
+				             			continue
+				             		end
+
+				             		i print
+				             	end
+				             end""");
+	}
+
+	@Test
 	public void testFibonacci() throws IOException {
 		compileWrite("""
 				             fn main()

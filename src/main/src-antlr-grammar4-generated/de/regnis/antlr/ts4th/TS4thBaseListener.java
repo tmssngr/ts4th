@@ -239,6 +239,18 @@ public class TS4thBaseListener implements TS4thListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVar(TS4thParser.VarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFor(TS4thParser.ForContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFor(TS4thParser.ForContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

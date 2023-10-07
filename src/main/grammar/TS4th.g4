@@ -52,6 +52,9 @@ instruction
     | Break                                                         #break
     | Continue                                                      #continue
     | Var Identifier+ Do instructions End                           #var
+    | For var=Identifier (step=Identifier by=Number)? Do
+        instructions
+      End                                                           #for
     ;
 
 TypeSeparator: '--';
@@ -64,6 +67,7 @@ If: 'if';
 Else: 'else';
 Do: 'do';
 While: 'while';
+For: 'for';
 Break: 'break';
 Continue: 'continue';
 True: 'true';
