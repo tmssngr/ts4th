@@ -317,37 +317,39 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 	@Override
 	public List<Instruction> visitBreak(TS4thParser.BreakContext ctx) {
 		final Token token = ctx.Break().getSymbol();
+		final Location location = createLocation(token);
 		final List<Instruction> instructions = new ArrayList<>();
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
 			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
 			case WhileBody(_, String breakLabel) -> {
-				instructions.add(new Instruction.Jump(breakLabel));
+				instructions.add(new Instruction.Jump(breakLabel, location));
 				return instructions;
 			}
-			case WhileCondition _ -> throw new CompilerException(createLocation(token), "`break` only can be used inside `while-do-end` between `do` and `end`");
+			case WhileCondition _ -> throw new CompilerException(location, "`break` only can be used inside `while-do-end` between `do` and `end`");
 			}
 		}
 
-		throw new CompilerException(createLocation(token), "`break` needs an outer `while` loop");
+		throw new CompilerException(location, "`break` needs an outer `while` loop");
 	}
 
 	@Override
 	public List<Instruction> visitContinue(TS4thParser.ContinueContext ctx) {
 		final Token token = ctx.Continue().getSymbol();
+		final Location location = createLocation(token);
 		final List<Instruction> instructions = new ArrayList<>();
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
 			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
-			case WhileBody(String continueLabel, String breakLabel) -> {
-				instructions.add(new Instruction.Jump(continueLabel));
+			case WhileBody(String continueLabel, _) -> {
+				instructions.add(new Instruction.Jump(continueLabel, location));
 				return instructions;
 			}
-			case WhileCondition _ -> throw new CompilerException(createLocation(token), "`continue` only can be used inside `while-do-end` between `do` and `end`");
+			case WhileCondition _ -> throw new CompilerException(location, "`continue` only can be used inside `while-do-end` between `do` and `end`");
 			}
 		}
 
-		throw new CompilerException(createLocation(token), "`continue` needs an outer `while` loop");
+		throw new CompilerException(location, "`continue` needs an outer `while` loop");
 	}
 
 	private String stripTypeSuffix(String text, Type[] type) {
