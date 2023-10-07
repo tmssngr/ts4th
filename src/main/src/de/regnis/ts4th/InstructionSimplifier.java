@@ -57,10 +57,9 @@ public class InstructionSimplifier {
 
 		final List<Instruction> newInstructions = new ArrayList<>();
 		for (Instruction instruction : instructions) {
-			if (instruction instanceof Instruction.Jump j) {
-				final String target = j.target();
+			if (instruction instanceof Instruction.Jump(String target, Location location)) {
 				final String newTarget = getNewTarget(target, fromTo);
-				newInstructions.add(InstructionFactory.jump(newTarget));
+				newInstructions.add(new Instruction.Jump(newTarget, location));
 			}
 			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, Location location)) {
 				final String newIfTarget = getNewTarget(ifTarget, fromTo);
