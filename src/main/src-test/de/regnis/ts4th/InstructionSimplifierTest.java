@@ -1,11 +1,11 @@
 package de.regnis.ts4th;
 
-import org.junit.*;
-
 import java.util.*;
 
+import org.junit.*;
+
 import static de.regnis.ts4th.InstructionFactory.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Thomas Singer
@@ -42,7 +42,7 @@ public class InstructionSimplifierTest {
 				label("start"),
 				command("foo"),
 				branch("start", "end"),
-				jump("start"),
+
 				label("end")
 		), List.of(
 				label("start"),
@@ -51,6 +51,7 @@ public class InstructionSimplifierTest {
 				jump("start"),
 				command("foo"),
 				literal(1),
+
 				label("end")
 		));
 	}
@@ -73,6 +74,25 @@ public class InstructionSimplifierTest {
 		), List.of(
 				label("start"),
 				literal(1)
+		));
+
+		testSimplify(List.of(
+				branch("end2", "end"),
+
+				label("end"),
+				command("nop"),
+
+				label("end2")
+		), List.of(
+				branch("if", "end"),
+
+				label("if"),
+				jump("end2"),
+
+				label("end"),
+				command("nop"),
+
+				label("end2")
 		));
 
 		testSimplifyExpectNoChange(List.of(

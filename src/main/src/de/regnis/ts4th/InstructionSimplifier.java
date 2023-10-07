@@ -89,7 +89,8 @@ public class InstructionSimplifier {
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
-				if (i1 instanceof Instruction.Jump && !(i2 instanceof Instruction.Label)) {
+				if ((i1 instanceof Instruction.Jump || i1 instanceof Instruction.Branch)
+				    && !(i2 instanceof Instruction.Label)) {
 					removeNext();
 					again();
 				}
