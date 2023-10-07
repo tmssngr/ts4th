@@ -302,6 +302,63 @@ public final class ParserTest {
 	}
 
 	@Test
+	public void testWhileContinue() {
+		TestUtils.assertFunctionsEquals(List.of(
+				new Function("main", TypeList.EMPTY, TypeList.EMPTY,
+				             false, List.of(
+						literal(0),
+
+						label("while_1"),
+						dup(),
+						literal(10),
+						isLT(),
+						branch("whilebody_1", "endwhile_1"),
+
+						label("whilebody_1"),
+						dup(),
+						literal(3),
+						command("=="),
+						branch("if_2", "endif_2"),
+
+						label("if_2"),
+						literal("three "),
+						command("printString"),
+						command("1+"),
+						jump("while_1"),
+
+						label("endif_2"),
+						dup(),
+						command("print"),
+						command("1+"),
+						jump("while_1"),
+
+						label("endwhile_1"),
+						command("drop"),
+						ret()
+				)
+				)
+		), Parser.parseString(
+				"""
+						fn main(--)
+						   0
+						   while dup 10 < do
+						       dup 3 == if
+						           "three " printString
+								   1+
+						           continue
+						       end
+
+						       dup print
+
+							   1+
+							end
+							drop
+						end
+						"""
+		));
+	}
+
+	@Test
 	public void testBreakNotAllowedBetweenWhileAndDo() {
 		try {
 			Parser.parseString(
