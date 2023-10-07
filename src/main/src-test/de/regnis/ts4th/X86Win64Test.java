@@ -225,6 +225,27 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testWhileContinue() throws IOException {
+		compileWrite("""
+				             fn main(--)
+				                0
+				                while dup 10 < do
+				                    dup 3 == if
+				                        "three and four " printString
+				                        2 +
+				                        continue
+				                    end
+
+				                    dup print
+
+				             		1+
+				             	end
+				             	drop
+				             end
+				             """);
+	}
+
+	@Test
 	public void testNestedWhile() throws IOException {
 		compileWrite("""
 				             fn main(--)
