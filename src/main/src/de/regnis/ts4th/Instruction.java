@@ -1,5 +1,7 @@
 package de.regnis.ts4th;
 
+import jdk.jshell.execution.*;
+
 import java.util.*;
 
 /**
@@ -50,7 +52,20 @@ public sealed interface Instruction permits
 	record StringLiteral(String value) implements Instruction {
 		@Override
 		public String toString() {
-			return "\"" + value + "\"";
+			final StringBuilder buffer = new StringBuilder();
+			buffer.append('"');
+			for (int i = 0; i < value.length(); i++) {
+				final char chr = value.charAt(i);
+				if (chr >= 0x20 && chr < 0x80) {
+					buffer.append(chr);
+				}
+				else {
+					buffer.append("\\u");
+					Utils.toHex(chr, 4, buffer);
+				}
+			}
+			buffer.append('"');
+			return buffer.toString();
 		}
 	}
 
