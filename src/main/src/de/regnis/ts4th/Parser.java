@@ -277,13 +277,15 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		stack.push(new LoopBody(labelWhile, labelWhileEnd));
 		try {
 			instructions.addAll(visitInstructions(ctx.body));
-			instructions.add(InstructionFactory.jump(labelWhile));
 		}
 		finally {
 			stack.pop();
 		}
 
-		instructions.add(new Instruction.Label(labelWhileEnd, createLocation(ctx.End())));
+		final Location endLocation = createLocation(ctx.End());
+		instructions.add(new Instruction.Jump(labelWhile, endLocation));
+
+		instructions.add(new Instruction.Label(labelWhileEnd, endLocation));
 		return instructions;
 	}
 
