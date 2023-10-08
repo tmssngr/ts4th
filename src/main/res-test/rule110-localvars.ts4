@@ -22,14 +22,11 @@ fputc('\n', stdout);
 */
 fn printBoard(--)
 	'|' emit
-	0 var i do
-		while i BOARD_CAP 2 - < do
-			" *" drop
-			  board i + @8 as_i16
-			+ @8
-			emit
-			i 1 + i!
-		end
+	0 BOARD_CAP 2 - for i do
+		" *" drop
+		  board i + @8 as_i16
+		+ @8
+		emit
 	end
 	'|'  emit
 	'\n' emit
@@ -39,8 +36,7 @@ fn main(--)
 	board BOARD_CAP 0u8 fill
 	// board[BOARD_CAP - 2] = 1;
 	board BOARD_CAP 2 - + 1u8 !8
-	0
-	while dup BOARD_CAP 2 - < do
+	0 BOARD_CAP 2 - for _ do
 		printBoard
 
 		/*
@@ -52,10 +48,10 @@ fn main(--)
         */
 		board     @8 as_i16
 		board 1 + @8 as_i16
-		    or      1
+	    or
+		var pattern do
 		// for (size_t j = 1; j < BOARD_CAP - 1; ++j) {
-		var pattern j do
-			while j BOARD_CAP 1 - < do
+			0 BOARD_CAP 1 - for j do
 				// ((pattern << 1) & 7)
 				pattern 1 shl 7 and
 				// ... | board[j + 1];
@@ -72,11 +68,7 @@ fn main(--)
 				board j +
 				swap as_u8
 				!8
-				j 1 + j!
 			end
 		end
-
-		1 +
 	end
-	drop
 end
