@@ -1,7 +1,9 @@
 format pe64 console
 include 'win64ax.inc'
 
-STD_OUTPUT_HANDLE = -11
+STD_IN_HANDLE = -10
+STD_OUT_HANDLE = -11
+STD_ERR_HANDLE = -12
 STACK_SIZE = 1024 * 8
 
 .code
@@ -9,6 +11,7 @@ start:
         mov r15, rsp
         sub rsp, STACK_SIZE
         sub rsp, 8
+          call init
           call tsf_main
         add rsp, 8
         invoke ExitProcess, 0
@@ -36,6 +39,28 @@ tsf_main:
         ; -- ret --
         ret
 
+init:
+           sub  rsp, 20h
+             mov  rcx, STD_IN_HANDLE
+             call [GetStdHandle]
+             ; handle in rax, 0 if invalid
+             lea rcx, [hStdIn]
+             mov qword [rcx], rax
+
+             mov  rcx, STD_OUT_HANDLE
+             call [GetStdHandle]
+             ; handle in rax, 0 if invalid
+             lea rcx, [hStdOut]
+             mov qword [rcx], rax
+
+             mov  rcx, STD_ERR_HANDLE
+             call [GetStdHandle]
+             ; handle in rax, 0 if invalid
+             lea rcx, [hStdErr]
+             mov qword [rcx], rax
+           add  rsp, 20h
+        ret
+
 tsfbi_emit:
         push rcx ; = sub rsp, 8
           mov rcx, rsp
@@ -47,19 +72,11 @@ tsfbi_emit:
 tsfbi_printString:
         mov     rdi, rsp
         and     spl, 0xf0
-        push    rcx
-          push    rdx
 
-            sub  rsp, 20h
-              mov  rcx, STD_OUTPUT_HANDLE
-              call [GetStdHandle]
-              ; handle in rax, 0 if invalid
-            add  rsp, 20h
-
-          pop     r8
-        pop     rdx
-
-        mov     rcx, rax
+        mov     r8, rdx
+        mov     rdx, rcx
+        lea     rcx, [hStdOut]
+        mov     rcx, qword [rcx]
         xor     r9, r9
         push    0
           sub     rsp, 20h
@@ -129,7 +146,10 @@ true_string db 'true'
 false_string db 'false'
 
 section '.data' data readable writeable
-; buffer
-var_0 rb 960
+        hStdIn  rb 8
+        hStdOut rb 8
+        hStdErr rb 8
+        ; buffer
+        var_0 rb 960
 
 mem rb 640000

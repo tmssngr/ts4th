@@ -39,7 +39,9 @@ public class X86Win64 {
 				      format pe64 console
 				      include 'win64ax.inc'
 
-				      STD_OUTPUT_HANDLE = -11
+				      STD_IN_HANDLE = -10
+				      STD_OUT_HANDLE = -11
+				      STD_ERR_HANDLE = -12
 				      STACK_SIZE = 1024 * 8
 
 				      .code
@@ -49,6 +51,7 @@ public class X86Win64 {
 				              mov \{REG_DSP}, rsp
 				              sub rsp, STACK_SIZE
 				              sub rsp, 8
+				                call init
 				                call \{LABEL_PREFIX}main
 				              add rsp, 8
 				              invoke ExitProcess, 0""");
@@ -61,6 +64,8 @@ public class X86Win64 {
 
 		writeNL();
 
+		writeInit();
+		writeNL();
 		writeCharPrint();
 		writeNL();
 		writeStringPrint();
@@ -87,9 +92,13 @@ public class X86Win64 {
 
 		write("""
 				      section '.data' data readable writeable""");
+		writeIndented("""
+				              hStdIn  rb 8
+				              hStdOut rb 8
+				              hStdErr rb 8""");
 
 		for (Var var : program.vars()) {
-			write(STR."""
+			writeIndented(STR."""
 					      ; \{var.name()}
 					      \{VAR_PREFIX + var.index()} rb \{var.size()}
 					      """);
@@ -128,6 +137,31 @@ public class X86Win64 {
 		return buffer.toString();
 	}
 
+	private void writeInit() throws IOException {
+		writeLabel("init");
+		writeIndented("""
+			                  sub  rsp, 20h
+			                    mov  rcx, STD_IN_HANDLE
+			                    call [GetStdHandle]
+			                    ; handle in rax, 0 if invalid
+			                    lea rcx, [hStdIn]
+			                    mov qword [rcx], rax
+
+			                    mov  rcx, STD_OUT_HANDLE
+			                    call [GetStdHandle]
+			                    ; handle in rax, 0 if invalid
+			                    lea rcx, [hStdOut]
+			                    mov qword [rcx], rax
+
+			                    mov  rcx, STD_ERR_HANDLE
+			                    call [GetStdHandle]
+			                    ; handle in rax, 0 if invalid
+			                    lea rcx, [hStdErr]
+			                    mov qword [rcx], rax
+			                  add  rsp, 20h
+				              ret""");
+	}
+
 	private void writeCharPrint() throws IOException {
 		// rcx = char
 		writeLabel(EMIT);
@@ -154,19 +188,11 @@ public class X86Win64 {
 		writeIndented("""
 				              mov     rdi, rsp
 				              and     spl, 0xf0
-				              push    rcx
-				                push    rdx
 
-				                  sub  rsp, 20h
-				                    mov  rcx, STD_OUTPUT_HANDLE
-				                    call [GetStdHandle]
-				                    ; handle in rax, 0 if invalid
-				                  add  rsp, 20h
-
-				                pop     r8
-				              pop     rdx
-
-				              mov     rcx, rax
+				              mov     r8, rdx
+				              mov     rdx, rcx
+				              lea     rcx, [hStdOut]
+				              mov     rcx, qword [rcx]
 				              xor     r9, r9
 				              push    0
 				                sub     rsp, 20h
