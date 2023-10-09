@@ -1,5 +1,7 @@
 /.*
+/user.properties
 *.exe
+*.log
 *.types
 !.git*
 !/.idea

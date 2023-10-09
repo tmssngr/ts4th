@@ -1,0 +1,80 @@
+<project name="ts4" default="rebuild">
+
+    <property name="app" value="ts4"/>
+    <property name="build" value=".build"/>
+    <property name="build.classes" value="${build}/classes"/>
+    <property name="build.jars" value="${build}/jars"/>
+    <property name="graalvm.config.dir" value="${basedir}/graalvm-config"/>
+    <property file="user.properties"/>
+
+    <path id="classpath">
+        <pathelement location="src/main/lib/annotations.jar"/>
+        <pathelement location="src/main/lib/antlr-runtime-4.7.2.jar"/>
+    </path>
+
+    <target name="rebuild">
+        <delete dir="${build}" failonerror="false"/>
+        <mkdir dir="${build.classes}"/>
+
+        <javac destdir="${build.classes}" debug="on" optimize="off" deprecation="on" includeantruntime="false" source="21">
+            <src path="src/main/src"/>
+            <src path="src/main/src-antlr-grammar4-generated"/>
+            <classpath refid="classpath"/>
+            <compilerarg value="--enable-preview"/>
+        </javac>
+
+        <mkdir dir="${build.jars}"/>
+        <jar destfile="${build.jars}/${app}.jar">
+            <fileset dir="${build.classes}"/>
+            <manifest>
+                <attribute name="Main-Class" value="de.regnis.ts4th.Compiler"/>
+            </manifest>
+        </jar>
+
+        <copy todir="${build.jars}" flatten="true">
+            <path refid="classpath"/>
+        </copy>
+    </target>
+
+    <target name="analyze" depends="rebuild">
+        <delete dir="${graalvm.config.dir}"/>
+
+        <java fork="true" classname="de.regnis.ts4th.Compiler">
+            <jvmarg value="-agentlib:native-image-agent=config-output-dir=${graalvm.config.dir}"/>
+            <classpath>
+                <pathelement location="${build.jars}/${app}.jar"/>
+                <path refid="classpath"/>
+            </classpath>
+            <jvmarg value="--enable-preview"/>
+            <arg value="src/main/res-test/print-ascii-listing.ts4"/>
+            <env key="FASM_HOME" value="${fasm.home}"/>
+        </java>
+    </target>
+
+    <target name="native" depends="rebuild">
+        <pathconvert property="classpath.flat" pathsep="${path.separator}">
+            <path refid="classpath"/>
+            <path location="${build.jars}/${app}.jar"/>
+            <mapper>
+                <chainedmapper>
+                    <flattenmapper/>
+                </chainedmapper>
+            </mapper>
+        </pathconvert>
+
+        <exec executable="native-image.cmd" dir="${build.jars}" failonerror="true" output="native-image.log">
+            <arg value="--verbose"/>
+            <arg value="-H:Name=${app}"/>
+            <arg value="-cp"/>
+            <arg value="${classpath.flat}"/>
+            <arg value="--no-fallback"/>
+            <arg value="-H:JNIConfigurationFiles=${graalvm.config.dir}/jni-config.json"/>
+            <arg value="-H:+PrintClassInitialization"/>
+            <arg value="--initialize-at-build-time=*"/>
+            <arg value="--enable-preview"/>
+            <arg value="de.regnis.ts4th.Compiler"/>
+        </exec>
+
+        <move file="${build.jars}/${app}.exe" todir="${build}"/>
+    </target>
+</project>
