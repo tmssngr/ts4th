@@ -46,16 +46,41 @@ tsf_main:
         sub rsp, 8
           call tsfbi_emit
         add rsp, 8
+        ; -- literal r0, #1024 --
+        mov cx, 1024
+        ; -- not r0 (i16) --
+        not cx
+        ; -- printInt r0(i16) --
+        movsx rcx, cx
+        test   rcx, rcx
+        jns    .x2
+        neg    rcx
+        push   rcx
+          mov    cl, '-'
+          call   tsfbi_emit
+        pop    rcx
+.x2:
+        sub  rsp, 8
+          call tsfbi_printUint
+          mov  cl, ' '
+          call tsfbi_emit
+        add  rsp, 8
+        ; -- literal r0, #10 --
+        mov cl, 10
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- printBool --
         or cl, cl
         lea rcx, [false_string]
         mov rdx, 5
-        jz .x2
+        jz .x3
         lea rcx, [true_string]
         mov rdx, 4
-.x2:
+.x3:
         sub  rsp, 8
           call tsfbi_printString
         add rsp, 8
@@ -66,15 +91,36 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- printBool --
         or cl, cl
         lea rcx, [false_string]
         mov rdx, 5
-        jz .x3
+        jz .x4
         lea rcx, [true_string]
         mov rdx, 4
-.x3:
+.x4:
+        sub  rsp, 8
+          call tsfbi_printString
+        add rsp, 8
+        ; -- literal r0, #10 --
+        mov cl, 10
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
+        ; -- literal r0, #false --
+        mov cl, 0
+        ; -- not r0 (bool) --
+        not cl
+        ; -- printBool --
+        or cl, cl
+        lea rcx, [false_string]
+        mov rdx, 5
+        jz .x5
+        lea rcx, [true_string]
+        mov rdx, 4
+.x5:
         sub  rsp, 8
           call tsfbi_printString
         add rsp, 8

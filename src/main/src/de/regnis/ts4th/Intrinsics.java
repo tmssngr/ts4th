@@ -304,6 +304,28 @@ public class Intrinsics {
 		});
 		nameToCommand.put(INC, new UnaryIntCommand(add));
 		nameToCommand.put(DEC, new UnaryIntCommand(sub));
+		nameToCommand.put("not", new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				if (input.isEmpty()) {
+					throw new InvalidTypeException(location, name + " (a -- a) can't operate on empty stack");
+				}
+
+				final Type type = input.type();
+				if (Type.INT_TYPES.contains(type) || type == Type.Bool) {
+					return input;
+				}
+				throw new InvalidTypeException(location, name + " (a -- a) requires " + typesToString(Type.INT_TYPES) + "|" + Type.Bool + ", but got " + input);
+			}
+
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				final Type type = types.type();
+				output.accept(AsmIRFactory.pop(REG_0, type));
+				output.accept(AsmIRFactory.not(REG_0, type));
+				output.accept(AsmIRFactory.push(REG_0, type));
+			}
+		});
 
 		nameToCommand.put(MEM, new Command() {
 			@Override

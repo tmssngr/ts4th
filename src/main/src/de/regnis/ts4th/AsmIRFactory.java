@@ -99,4 +99,8 @@ public class AsmIRFactory {
 	public static AsmIR ret() {
 		return new AsmIR.Ret();
 	}
+
+	public static AsmIR not(int reg, Type type) {
+		return new AsmIR.Not(reg, type);
+	}
 }

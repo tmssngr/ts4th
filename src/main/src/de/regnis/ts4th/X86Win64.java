@@ -351,6 +351,10 @@ public class X86Win64 {
 		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) -> {
 			writeBinCommand(operation, reg1, reg2, type);
 		}
+		case AsmIR.Not(int reg, Type type) -> {
+			writeComment(STR. "not r\{ reg } (\{ type })" );
+			writeIndented(STR. "not \{ getRegName(reg, type) }" );
+		}
 		case AsmIR.Print(Type type) -> {
 			if (type == Type.Bool) {
 				writeComment("printBool");

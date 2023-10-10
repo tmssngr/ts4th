@@ -25,7 +25,7 @@ tsf_main:
         sub r15, 2
         mov [r15], cx
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- push var r0 (bool) --
         push cx
         ; -- pop 0 (i16) --

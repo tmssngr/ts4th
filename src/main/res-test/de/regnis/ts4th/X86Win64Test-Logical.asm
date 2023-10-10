@@ -30,9 +30,9 @@ tsf_main:
           call tsfbi_printString
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- and r0, r1 (bool) --
         and cl, al
         ; -- printBool --
@@ -53,9 +53,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- and r0, r1 (bool) --
         and cl, al
         ; -- printBool --
@@ -76,9 +76,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- and r0, r1 (bool) --
         and cl, al
         ; -- printBool --
@@ -99,9 +99,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- and r0, r1 (bool) --
         and cl, al
         ; -- printBool --
@@ -132,9 +132,9 @@ tsf_main:
           call tsfbi_printString
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- or r0, r1 (bool) --
         or cl, al
         ; -- printBool --
@@ -155,9 +155,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- or r0, r1 (bool) --
         or cl, al
         ; -- printBool --
@@ -178,9 +178,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- or r0, r1 (bool) --
         or cl, al
         ; -- printBool --
@@ -201,9 +201,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- or r0, r1 (bool) --
         or cl, al
         ; -- printBool --
@@ -234,9 +234,9 @@ tsf_main:
           call tsfbi_printString
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- xor r0, r1 (bool) --
         xor cl, al
         ; -- printBool --
@@ -257,9 +257,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #false --
-        mov cx, 0
+        mov cl, 0
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- xor r0, r1 (bool) --
         xor cl, al
         ; -- printBool --
@@ -280,9 +280,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #false --
-        mov ax, 0
+        mov al, 0
         ; -- xor r0, r1 (bool) --
         xor cl, al
         ; -- printBool --
@@ -303,9 +303,9 @@ tsf_main:
           call tsfbi_emit
         add rsp, 8
         ; -- literal r0, #true --
-        mov cx, 1
+        mov cl, -1
         ; -- literal r1, #true --
-        mov ax, 1
+        mov al, -1
         ; -- xor r0, r1 (bool) --
         xor cl, al
         ; -- printBool --

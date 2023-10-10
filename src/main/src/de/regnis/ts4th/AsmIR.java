@@ -10,7 +10,8 @@ public sealed interface AsmIR permits
 		AsmIR.PushVar, AsmIR.LocalVarRead, AsmIR.LocalVarWrite, AsmIR.DropVars,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
-		AsmIR.BinCommand, AsmIR.Print, AsmIR.PrintString, AsmIR.Emit, AsmIR.Mem, AsmIR.Ret {
+		AsmIR.BinCommand, AsmIR.Not,
+		AsmIR.Print, AsmIR.PrintString, AsmIR.Emit, AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
 		z, nz, lt, le, ge, gt
@@ -155,6 +156,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return operation + " r" + reg1 + ", r" + reg2 + " (" + type + ")";
+		}
+	}
+
+	record Not(int reg, Type type) implements AsmIR {
+		@Override
+		public String toString() {
+			return "not r" + reg + " (" + type + ")";
 		}
 	}
 

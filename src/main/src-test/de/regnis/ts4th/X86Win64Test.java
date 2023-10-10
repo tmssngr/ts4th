@@ -36,11 +36,12 @@ public class X86Win64Test extends AbstractFileTest {
 	public void testCompiler1() throws IOException {
 		compileWrite("""
 				             fn main(--)
-				             	1024 2048 -
-				             	print       '\\n' emit
+				             	1024 2048 - print  '\\n' emit
+				             	1024 not print     '\\n' emit
 
-				             	true print  '\\n' emit
-				             	false print '\\n' emit
+				             	true print      '\\n' emit
+				             	false print     '\\n' emit
+				             	false not print '\\n' emit
 				             end
 				             """);
 	}
