@@ -33,16 +33,16 @@ printHex8:
 	call printNibble
 	ret
 main:
+	r0 = 32 (u8)
+	emit
+	r0 = 120 (u8)
+	emit
 	r0 = 0 (u8)
 	push r0 (u8)
 	r0 = 16 (u8)
 	pushVar r0 (u8)
 	pop r0 (u8)
 	pushVar r0 (u8)
-	r0 = 32 (u8)
-	emit
-	r0 = 120 (u8)
-	emit
 .i1:
 	read r0, var[0(u8)]
 	push r0 (u8)
@@ -71,16 +71,16 @@ main:
 	write [0(u8)], r0
 	jump .i1
 .i3:
+	dropVars u8, u8
 	r0 = 10 (u8)
 	emit
-	dropVars u8, u8
 	r0 = 32 (u8)
 	push r0 (u8)
 	r0 = 128 (u8)
 	pushVar r0 (u8)
 	pop r0 (u8)
 	pushVar r0 (u8)
-.i6:
+.i7:
 	read r0, var[0(u8)]
 	push r0 (u8)
 	read r0, var[1(u8)]
@@ -88,28 +88,28 @@ main:
 	pop r0 (u8)
 	lt r0, r1 (u8)
 	boolTest r0, r0 (i16)
-	jump z, .i8
+	jump z, .i9
 	read r0, var[0(u8)]
 	r1 = 15 (u8)
 	and r0, r1 (u8)
 	r1 = 0 (u8)
 	eq r0, r1 (u8)
 	boolTest r0, r0 (i16)
-	jump z, .i10
+	jump z, .i11
 	read r0, var[0(u8)]
 	push r0 (u8)
 	call printHex8
-.i10:
+.i11:
 	read r0, var[0(u8)]
 	r1 = 7 (u8)
 	and r0, r1 (u8)
 	r1 = 0 (u8)
 	eq r0, r1 (u8)
 	boolTest r0, r0 (i16)
-	jump z, .i12
+	jump z, .i13
 	r0 = 32 (u8)
 	emit
-.i12:
+.i13:
 	read r0, var[0(u8)]
 	emit
 	read r0, var[0(u8)]
@@ -118,15 +118,15 @@ main:
 	r1 = 15 (u8)
 	eq r0, r1 (u8)
 	boolTest r0, r0 (i16)
-	jump z, .i14
+	jump z, .i15
 	r0 = 10 (u8)
 	emit
-.i14:
+.i15:
 	read r0, var[0(u8)]
 	r1 = 1 (u8)
 	add r0, r1 (u8)
 	write [0(u8)], r0
-	jump .i6
-.i8:
+	jump .i7
+.i9:
 	dropVars u8, u8
 	ret
