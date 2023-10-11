@@ -103,4 +103,8 @@ public class AsmIRFactory {
 	public static AsmIR not(int reg, Type type) {
 		return new AsmIR.Not(reg, type);
 	}
+
+	public static AsmIR setCursor() {
+		return new AsmIR.SetCursor();
+	}
 }

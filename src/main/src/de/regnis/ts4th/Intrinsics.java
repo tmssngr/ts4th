@@ -421,6 +421,35 @@ public class Intrinsics {
 				output.accept(AsmIRFactory.printString(REG_1, REG_0));
 			}
 		});
+		nameToCommand.put("setCursor", new Command() {
+			@SuppressWarnings("ConstantValue")
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				do {
+					Type type = input.type();
+					if (type != Type.U8) {
+						break;
+					}
+
+					final TypeList prev = input.prev();
+					type = prev.type();
+					if (type != Type.U8) {
+						break;
+					}
+
+					return prev.prev();
+				}
+				while (false);
+				throw new InvalidTypeException(location, name + " requires 2 " + Type.U8 + ", but got " + input);
+			}
+
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				output.accept(AsmIRFactory.pop(REG_1, Type.U8));
+				output.accept(AsmIRFactory.pop(REG_0, Type.U8));
+				output.accept(AsmIRFactory.setCursor());
+			}
+		});
 		nameToCommand.put("???", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {

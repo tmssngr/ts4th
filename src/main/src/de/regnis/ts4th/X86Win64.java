@@ -381,6 +381,33 @@ public class X86Win64 {
 		case AsmIR.PrintString(int ptrReg, int sizeReg) -> {
 			writePrintString(ptrReg, sizeReg);
 		}
+		case AsmIR.SetCursor() -> {
+			writeComment("setCursor");
+			// reg1(1) ... al -> x
+			// reg0(1) ... cl -> y
+			// typedef struct _COORD {
+			//  SHORT X;
+			//  SHORT Y;
+			//} COORD, *PCOORD;
+			//
+			// BOOL WINAPI SetConsoleCursorPosition(
+			//  _In_ HANDLE hConsoleOutput,
+			//  _In_ COORD  dwCursorPosition
+			//);
+			writeIndented(STR."""
+					mov rdi, rsp
+					and spl, 0xf0
+
+					movzx rdx, al
+					shl   rdx, 16
+					or    dl, cl
+					lea   rcx, [hStdOut]
+					mov   rcx, qword [rcx]
+					  sub    rsp, 20h
+					    call [SetConsoleCursorPosition]
+					  ; add    rsp, 20h
+					mov   rsp, rdi""");
+		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");
 			writeIndented(STR. "lea \{ getRegName(AsmIRConverter.REG_0, PTR_SIZE) }, [mem]" );
