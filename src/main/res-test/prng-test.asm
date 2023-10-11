@@ -167,7 +167,7 @@ tsf_random:
 
         ; -- proc randomU8 --
 tsf_randomU8:
-        ; -- random --
+        ; -- call random --
         call tsf_random
         ; -- pop 0 (u32) --
         mov ecx, [r15]
@@ -185,7 +185,7 @@ tsf_main:
         ; -- push 0 (u32) --
         sub r15, 4
         mov [r15], ecx
-        ; -- initRandom --
+        ; -- call initRandom --
         call tsf_initRandom
         ; -- literal r0, #0 --
         mov cx, 0
@@ -210,7 +210,7 @@ tsf_main:
         test cl, cl
         ; -- jump z .i3 --
         jz .i3
-        ; -- randomU8 --
+        ; -- call randomU8 --
         call tsf_randomU8
         ; -- pop 0 (u8) --
         mov cl, [r15]

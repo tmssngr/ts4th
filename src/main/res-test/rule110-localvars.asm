@@ -225,7 +225,7 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- fill --
+        ; -- call fill --
         call tsf_fill
         ; -- var r0, @board --
         lea rcx, [var_0]
@@ -293,7 +293,7 @@ tsf_main:
         test cl, cl
         ; -- jump z .i3 --
         jz .i3
-        ; -- printBoard --
+        ; -- call printBoard --
         call tsf_printBoard
         ; -- var r1, @board --
         lea rax, [var_0]

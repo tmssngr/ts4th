@@ -386,7 +386,7 @@ public class X86Win64 {
 			writeIndented(STR. "lea \{ getRegName(AsmIRConverter.REG_0, PTR_SIZE) }, [mem]" );
 		}
 		case AsmIR.Call(String name) -> {
-			writeComment(name);
+			writeComment("call " + name);
 			writeIndented(STR. "call \{ LABEL_PREFIX }\{ name }" );
 		}
 		case AsmIR.PushVar(int sourceReg, Type type) -> {

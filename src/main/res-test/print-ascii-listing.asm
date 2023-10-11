@@ -92,9 +92,9 @@ tsf_printHex8:
         ; -- push 1 (u8) --
         sub r15, 1
         mov [r15], al
-        ; -- printNibble --
+        ; -- call printNibble --
         call tsf_printNibble
-        ; -- printNibble --
+        ; -- call printNibble --
         call tsf_printNibble
         ; -- ret --
         ret
@@ -178,7 +178,7 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- printNibble --
+        ; -- call printNibble --
         call tsf_printNibble
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
@@ -257,7 +257,7 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- printHex8 --
+        ; -- call printHex8 --
         call tsf_printHex8
 .i11:
         ; -- read var r0, [<empty> (u8)] --

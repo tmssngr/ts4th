@@ -35,7 +35,7 @@ tsf_main:
         ; -- push 1 (i16) --
         sub r15, 2
         mov [r15], ax
-        ; -- gcd --
+        ; -- call gcd --
         call tsf_gcd
         ; -- pop 2 (i16) --
         mov bx, [r15]

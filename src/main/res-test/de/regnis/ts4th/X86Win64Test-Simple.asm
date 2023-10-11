@@ -19,7 +19,7 @@ start:
 
         ; -- proc main --
 tsf_main:
-        ; -- subr --
+        ; -- call subr --
         call tsf_subr
         ; -- ret --
         ret

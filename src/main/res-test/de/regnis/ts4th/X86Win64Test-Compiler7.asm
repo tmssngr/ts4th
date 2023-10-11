@@ -102,7 +102,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #12 --
         mov cx, 12
-        ; -- strlen --
+        ; -- call strlen --
         call tsf_strlen
         ; -- pop 0 (i16) --
         mov cx, [r15]

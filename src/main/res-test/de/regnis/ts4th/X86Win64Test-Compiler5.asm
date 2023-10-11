@@ -91,35 +91,35 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- appendChar --
+        ; -- call appendChar --
         call tsf_appendChar
         ; -- literal r0, #101 --
         mov cl, 101
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- appendChar --
+        ; -- call appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
         mov cl, 108
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- appendChar --
+        ; -- call appendChar --
         call tsf_appendChar
         ; -- literal r0, #108 --
         mov cl, 108
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- appendChar --
+        ; -- call appendChar --
         call tsf_appendChar
         ; -- literal r0, #111 --
         mov cl, 111
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- appendChar --
+        ; -- call appendChar --
         call tsf_appendChar
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
