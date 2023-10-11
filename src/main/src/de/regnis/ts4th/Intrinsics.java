@@ -450,6 +450,18 @@ public class Intrinsics {
 				output.accept(AsmIRFactory.setCursor());
 			}
 		});
+		nameToCommand.put("getChar", new Command() {
+			@Override
+			public TypeList process(String name, Location location, TypeList input) {
+				return input.append(Type.U16);
+			}
+
+			@Override
+			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
+				output.accept(AsmIRFactory.getChar());
+				output.accept(AsmIRFactory.push(REG_0, Type.U16));
+			}
+		});
 		nameToCommand.put("???", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {

@@ -120,6 +120,9 @@ public class X86Win64 {
 				             GetStdHandle,'GetStdHandle',\\
 				             SetConsoleCursorPosition,'SetConsoleCursorPosition',\\
 				             WriteFile,'WriteFile'
+
+				      import msvcrt,\\
+				             _getch,'_getch'
 				      """);
 	}
 
@@ -424,6 +427,17 @@ public class X86Win64 {
 					    call [SetConsoleCursorPosition]
 					  ; add    rsp, 20h
 					mov   rsp, rdi""");
+		}
+		case AsmIR.GetChar() -> {
+			// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getch-getwch?view=msvc-170
+			writeIndented(STR."""
+					mov rdi, rsp
+					and spl, 0xf0
+					  sub rsp, 20h
+					    call [_getch]
+					  ; add    rsp, 20h
+					mov rsp, rdi
+					mov rcx, rax""");
 		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");

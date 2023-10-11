@@ -107,4 +107,8 @@ public class AsmIRFactory {
 	public static AsmIR setCursor() {
 		return new AsmIR.SetCursor();
 	}
+
+	public static AsmIR getChar() {
+		return new AsmIR.GetChar();
+	}
 }

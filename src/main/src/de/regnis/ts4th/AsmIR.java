@@ -11,7 +11,7 @@ public sealed interface AsmIR permits
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
 		AsmIR.BinCommand, AsmIR.Not,
-		AsmIR.Print, AsmIR.PrintString, AsmIR.Emit, AsmIR.SetCursor,
+		AsmIR.Print, AsmIR.PrintString, AsmIR.Emit, AsmIR.SetCursor, AsmIR.GetChar,
 		AsmIR.Mem, AsmIR.Ret {
 
 	enum Condition {
@@ -192,6 +192,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return "setCursor";
+		}
+	}
+
+	record GetChar() implements AsmIR {
+		@Override
+		public String toString() {
+			return "getChar";
 		}
 	}
 

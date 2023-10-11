@@ -254,3 +254,6 @@ import kernel32,\
        GetStdHandle,'GetStdHandle',\
        SetConsoleCursorPosition,'SetConsoleCursorPosition',\
        WriteFile,'WriteFile'
+
+import msvcrt,\
+       _getch,'_getch'
