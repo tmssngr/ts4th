@@ -6,7 +6,10 @@ STD_OUT_HANDLE = -11
 STD_ERR_HANDLE = -12
 STACK_SIZE = 1024 * 8
 
-.code
+entry start
+
+section '.text' code readable executable
+
 start:
         mov r15, rsp
         sub rsp, STACK_SIZE
@@ -14,7 +17,9 @@ start:
           call init
           call tsf_main
         add rsp, 8
-        invoke ExitProcess, 0
+        mov rcx, 0
+        sub rsp, 0x20
+          call [ExitProcess]
 
 
         ; -- proc main --
@@ -235,7 +240,7 @@ tsfbi_printUint:
         ;add    rsp, 8
         leave ; Set SP to BP, then pop BP
         ret
-.end start
+
 ; string constants
 section '.data' data readable
 true_string db 'true'
@@ -247,3 +252,14 @@ section '.data' data readable writeable
         hStdErr rb 8
 
 mem rb 640000
+
+section '.idata' import data readable writeable
+
+library kernel32,'KERNEL32.DLL',\
+        msvcrt,'MSVCRT.DLL'
+
+import kernel32,\
+       ExitProcess,'ExitProcess',\
+       GetStdHandle,'GetStdHandle',\
+       SetConsoleCursorPosition,'SetConsoleCursorPosition',\
+       WriteFile,'WriteFile'

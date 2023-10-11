@@ -42,7 +42,10 @@ public class X86Win64 {
 				      STD_ERR_HANDLE = -12
 				      STACK_SIZE = 1024 * 8
 
-				      .code
+				      entry start
+
+				      section '.text' code readable executable
+
 				      start:
 				      """);
 		writeIndented(STR. """
@@ -52,7 +55,9 @@ public class X86Win64 {
 				                call init
 				                call \{ LABEL_PREFIX }main
 				              add rsp, 8
-				              invoke ExitProcess, 0""" );
+				              mov rcx, 0
+				              sub rsp, 0x20
+				                call [ExitProcess]""" );
 		writeNL();
 
 		for (AsmIRFunction function : program.functions()) {
@@ -69,7 +74,7 @@ public class X86Win64 {
 		writeStringPrint();
 		writeNL();
 		writeUintPrint();
-		write(".end start");
+		writeNL();
 
 		write("""
 				      ; string constants
@@ -103,7 +108,19 @@ public class X86Win64 {
 		}
 		write("""
 
-				      mem rb 640000""");
+				      mem rb 640000
+
+				      section '.idata' import data readable writeable
+
+				      library kernel32,'KERNEL32.DLL',\\
+				              msvcrt,'MSVCRT.DLL'
+
+				      import kernel32,\\
+				             ExitProcess,'ExitProcess',\\
+				             GetStdHandle,'GetStdHandle',\\
+				             SetConsoleCursorPosition,'SetConsoleCursorPosition',\\
+				             WriteFile,'WriteFile'
+				      """);
 	}
 
 	private String encode(byte[] bytes) {
