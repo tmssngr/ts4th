@@ -1,0 +1,6 @@
+fn main()
+	while true do
+		getChar print
+		'\n' emit
+	end
+end

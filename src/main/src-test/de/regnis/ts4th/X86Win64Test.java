@@ -34,7 +34,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler1() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	1024 2048 - print  '\\n' emit
 				             	1024 not print     '\\n' emit
@@ -48,7 +48,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testLogical() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				                "and: " printString
 				             	false false and print ' ' emit
@@ -73,7 +73,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler2() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	1024 768
 				             	dup2 gcd // w h gcd
@@ -106,7 +106,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler3() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	-8i8 print
 				             	-16 print
@@ -124,7 +124,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler4() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	mem 10u8 !8
 				             	mem @8 print
@@ -134,7 +134,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler5() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	mem     0x31u8 !8
 				             	mem 1 + 0x30u8 !8
@@ -165,7 +165,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler6() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn inline a(-- ptr)
 				             	mem
 				             end
@@ -206,7 +206,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCompiler7() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn strlen(ptr -- int)
 				             	0 swap               // 0 ptr
 				             	while dup @8 as_i16 0 != do
@@ -227,7 +227,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testWhileContinue() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				                0
 				                while dup 10 < do
@@ -248,7 +248,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testNestedWhile() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	0
 				             	while dup 10 < do
@@ -270,7 +270,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testShift() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				               1 2 shl print
 				               1024 1 shr print
@@ -279,7 +279,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testConst() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             const width 40 end
 				             const height 24 end
 				             const size width height * end
@@ -299,7 +299,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testVar() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             const width 40 end
 				             const height 24 end
 				             var buffer width height * end
@@ -312,7 +312,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testLocalVar() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				             	1 2
 				             	var a b do
@@ -399,7 +399,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testLocalVarBool() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				                   1     true
 				               var value isDebug do
@@ -413,7 +413,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testLocalVarWrite() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				               0 var i do
 				                 while i 10 < do
@@ -426,7 +426,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testCast() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main(--)
 				                1000
 				                    dup print
@@ -445,7 +445,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testInline() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn inline printBool(bool)
 				                if
 				                    "true\\n"
@@ -463,7 +463,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testFor() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main()
 				             	0 10 for i do
 				             		i 5 == if
@@ -477,7 +477,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testFibonacci() throws IOException {
-		compileWrite("""
+		compileWriteExecute("""
 				             fn main()
 				                1 2 var a b do
 				                   while a 100 < do
@@ -492,9 +492,11 @@ public class X86Win64Test extends AbstractFileTest {
 
 	@Test
 	public void testFiles() throws IOException {
-		compileFileWrite("rule110-localvars");
-		compileFileWrite("print-ascii-listing");
-		compileFileWrite("prng-test");
+		compileFileWriteExecute("rule110-localvars");
+		compileFileWriteExecute("print-ascii-listing");
+		compileFileWriteExecute("prng-test");
+
+		compileFileWrite("print-getchar");
 	}
 
 	@NotNull
@@ -504,19 +506,26 @@ public class X86Win64Test extends AbstractFileTest {
 		return Compiler.compile(program);
 	}
 
-	private void compileFileWrite(String name) throws IOException {
+	@NotNull
+	private Path compileFileWrite(String name) throws IOException {
 		final List<Declaration> declarations = Parser.parseFile(createPath(name + ".ts4"));
 		final Program program = Program.fromDeclarations(declarations);
 		final AsmIRProgram irProgram = Compiler.compile(program);
-		compileWrite(irProgram, name);
+		return compileWrite(irProgram, name);
 	}
 
-	private void compileWrite(String s) throws IOException {
+	private void compileFileWriteExecute(String name) throws IOException {
+		final Path exeFile = compileFileWrite(name);
+		execute(exeFile, name);
+	}
+
+	private void compileWriteExecute(String s) throws IOException {
 		final AsmIRProgram irProgram = compile(s);
-		compileWrite(irProgram, getTestClassMethodName());
+		compileWriteExecute(irProgram, getTestClassMethodName());
 	}
 
-	private void compileWrite(AsmIRProgram irProgram, String name) throws IOException {
+	@NotNull
+	private Path compileWrite(AsmIRProgram irProgram, String name) throws IOException {
 		irProgram.write(createPath(name + ".ir"));
 
 		final Path asmFile = createPath(name + ".asm");
@@ -526,7 +535,15 @@ public class X86Win64Test extends AbstractFileTest {
 		Files.deleteIfExists(exeFile);
 
 		invokeFasm(asmFile);
+		return exeFile;
+	}
 
+	private void compileWriteExecute(AsmIRProgram irProgram, String name) throws IOException {
+		final Path exeFile = compileWrite(irProgram, name);
+		execute(exeFile, name);
+	}
+
+	private void execute(Path exeFile, String name) throws IOException {
 		invokeExe(exeFile, createPath(name + ".out"));
 	}
 
