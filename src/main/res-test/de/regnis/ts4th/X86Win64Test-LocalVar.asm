@@ -52,9 +52,13 @@ tsf_main:
 .x1:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- read var r0, [i16 (i16)] --
         mov cx, [rsp+2]
         ; -- printInt r0(i16) --
@@ -69,8 +73,6 @@ tsf_main:
 .x2:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
         ; -- drop vars i16, i16 --
         add rsp, 4

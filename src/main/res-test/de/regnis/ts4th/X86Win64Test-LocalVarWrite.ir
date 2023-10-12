@@ -9,6 +9,8 @@ main:
 	jump z, .i3
 	read r0, var[0(i16)]
 	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
 	read r0, var[0(i16)]
 	r1 = 1 (i16)
 	add r0, r1 (i16)

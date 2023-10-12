@@ -94,9 +94,13 @@ tsf_main:
 .x1:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- pop 1 (i16) --
         mov ax, [r15]
         add r15, 2
@@ -124,8 +128,6 @@ tsf_main:
 .x2:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
         ; -- ret --
         ret

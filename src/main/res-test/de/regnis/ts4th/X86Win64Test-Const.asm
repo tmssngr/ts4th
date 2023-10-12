@@ -38,9 +38,13 @@ tsf_main:
 .x1:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r1, "0 --
         lea rax, [string_0]
         ; -- literal r0, #4 --

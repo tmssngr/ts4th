@@ -647,8 +647,6 @@ public class X86Win64 {
 		writeIndented(STR. """
 				              sub  rsp, 8
 				                call \{ PRINT_UINT }
-				                mov  cl, ' '
-				                call \{ EMIT }
 				              add  rsp, 8
 				              """ );
 	}

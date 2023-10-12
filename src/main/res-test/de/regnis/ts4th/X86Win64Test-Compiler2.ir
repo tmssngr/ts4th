@@ -19,6 +19,8 @@ main:
 	pop r0 (i16)
 	idiv r0, r1 (i16)
 	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
 	pop r1 (i16)
 	pop r0 (i16)
 	idiv r0, r1 (i16)

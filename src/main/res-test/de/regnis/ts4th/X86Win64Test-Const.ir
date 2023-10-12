@@ -3,6 +3,8 @@ const %0: 64 6f 69 74
 main:
 	r0 = 960 (i16)
 	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
 	r1 = constant 0
 	r0 = 4 (i16)
 	printString r1 (0)

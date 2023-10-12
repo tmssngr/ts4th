@@ -7,6 +7,8 @@ main:
 	pushVar r0 (i16)
 	read r0, var[0(i16)]
 	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
 	read r0, var[1(i16)]
 	printInt r0(i16)
 	dropVars i16, i16

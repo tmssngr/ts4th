@@ -36,8 +36,6 @@ tsf_main:
         movzx rcx, cx
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
         ; -- literal r0, #10 --
         mov cl, 10

@@ -38,9 +38,13 @@ tsf_main:
 .x1:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #-16 --
         mov cx, -16
         ; -- printInt r0(i16) --
@@ -55,9 +59,13 @@ tsf_main:
 .x2:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #-16 --
         mov cx, -16
         ; -- printInt r0(i16) --
@@ -72,9 +80,13 @@ tsf_main:
 .x3:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #-32 --
         mov ecx, -32
         ; -- printInt r0(i32) --
@@ -89,9 +101,13 @@ tsf_main:
 .x4:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #-64 --
         mov rcx, -64
         ; -- printInt r0(i64) --
@@ -105,18 +121,26 @@ tsf_main:
 .x5:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #8 --
         mov cl, 8
         ; -- printInt r0(u8) --
         movzx rcx, cl
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #16 --
         mov cx, 16
         ; -- printInt r0(i16) --
@@ -131,33 +155,43 @@ tsf_main:
 .x6:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #16 --
         mov cx, 16
         ; -- printInt r0(u16) --
         movzx rcx, cx
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #32 --
         mov ecx, 32
         ; -- printInt r0(u32) --
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
         ; -- literal r0, #64 --
         mov rcx, 64
         ; -- printInt r0(u64) --
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
         ; -- ret --
         ret

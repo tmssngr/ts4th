@@ -11,6 +11,8 @@ main:
 	shr r1, r0 (i16)
 	move r0, r1 (i16)
 	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
 	pop r0 (i16)
 	cast r0 (i16 -> u8)
 	printInt r0(u8)
@@ -25,10 +27,14 @@ main:
 	push r0 (i16)
 	cast r0 (i16 -> u8)
 	printInt r0(u8)
+	r0 = 32 (u8)
+	emit
 	pop r0 (i16)
 	push r0 (i16)
 	cast r0 (i16 -> u16)
 	printInt r0(u16)
+	r0 = 32 (u8)
+	emit
 	pop r0 (i16)
 	cast r0 (i16 -> u32)
 	printInt r0(u32)

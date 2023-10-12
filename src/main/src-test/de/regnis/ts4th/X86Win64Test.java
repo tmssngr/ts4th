@@ -80,6 +80,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	rot      // h gcd w
 				             	over     // h gcd w gcd
 				             	/ print  // h gcd
+				             	' ' emit
 				             	/ print
 				             end
 
@@ -109,14 +110,23 @@ public class X86Win64Test extends AbstractFileTest {
 		compileWriteExecute("""
 				             fn main(--)
 				             	-8i8 print
+				             	' ' emit
 				             	-16 print
+				             	' ' emit
 				             	-16i16 print
+				             	' ' emit
 				             	-32i32 print
+				             	' ' emit
 				             	-64i64 print
+				             	' ' emit
 				             	8u8 print
+				             	' ' emit
 				             	16 print
+				             	' ' emit
 				             	16u16 print
+				             	' ' emit
 				             	32u32 print
+				             	' ' emit
 				             	64u64 print
 				             end
 				             """);
@@ -237,7 +247,7 @@ public class X86Win64Test extends AbstractFileTest {
 				                        continue
 				                    end
 
-				                    dup print
+				                    dup print ' ' emit
 
 				             		1+
 				             	end
@@ -254,7 +264,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	while dup 10 < do
 				             		0
 				             		while dup 20 < do
-				             			dup2 + print
+				             			dup2 + print ' ' emit
 				             			1 +
 				             		end
 				             		drop
@@ -273,6 +283,7 @@ public class X86Win64Test extends AbstractFileTest {
 		compileWriteExecute("""
 				             fn main(--)
 				               1 2 shl print
+				               ' ' emit
 				               1024 1 shr print
 				             end""");
 	}
@@ -288,6 +299,7 @@ public class X86Win64Test extends AbstractFileTest {
 
 				             fn main(--)
 				               size print
+				               ' ' emit
 				               doit if
 				                 "doit" printString
 				               end
@@ -317,6 +329,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	1 2
 				             	var a b do
 				             		a print
+				             		' ' emit
 				             		b print
 				             	end
 				             end""");
@@ -417,7 +430,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             fn main(--)
 				               0 var i do
 				                 while i 10 < do
-				                   i print
+				                   i print ' ' emit
 				                   i 1 + i!
 				                 end
 				               end
@@ -432,13 +445,16 @@ public class X86Win64Test extends AbstractFileTest {
 				                    dup print
 				                    '=' emit
 				                    dup 8 shr print
+				                    ' ' emit
 				                    as_u8 print
 				                '\\n' emit
 				                -1
 				                    dup print
 				                    '=' emit
 				                    dup as_u8 print
+				                    ' ' emit
 				                    dup as_u16 print
+				                    ' ' emit
 				                    as_u32 print
 				             end""");
 	}
@@ -470,7 +486,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             			continue
 				             		end
 
-				             		i print
+				             		i print ' ' emit
 				             	end
 				             end""");
 	}
@@ -482,6 +498,7 @@ public class X86Win64Test extends AbstractFileTest {
 				                1 2 var a b do
 				                   while a 100 < do
 				                      a print
+				                      ' ' emit
 				                      b
 				                         a b + b!
 				                      a!

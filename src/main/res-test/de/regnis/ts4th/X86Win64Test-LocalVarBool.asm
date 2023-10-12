@@ -68,8 +68,6 @@ tsf_main:
 .x1:
         sub  rsp, 8
           call tsfbi_printUint
-          mov  cl, ' '
-          call tsfbi_emit
         add  rsp, 8
 .i2:
         ; -- drop vars i16, bool --
