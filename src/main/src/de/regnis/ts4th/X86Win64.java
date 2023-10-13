@@ -130,7 +130,7 @@ public class X86Win64 {
 		final StringBuilder buffer = new StringBuilder();
 		boolean stringIsOpen = false;
 		for (byte b : bytes) {
-			if (b >= 0x20 && b < 0x7f) {
+			if (b >= 0x20 && b < 0x7f && b != '\'') {
 				if (!stringIsOpen) {
 					if (buffer.length() > 0) {
 						buffer.append(", ");
