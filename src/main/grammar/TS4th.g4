@@ -97,8 +97,8 @@ fragment Char
     ;
 
 fragment EscapedChar
-	: '\\' ( [0tnr\\"]
-	       | 'x' HexDigit HexDigit
+	: '\\' ( [tnr\\"]
+	       | 'x' HexDigit+
 	       )
 	;
 
