@@ -376,38 +376,6 @@ public class X86Win64Test extends AbstractFileTest {
 		}
 		catch (CompilerException _) {
 		}
-
-		if (false) {
-			try {
-				compile("""
-						        const a 1 end
-
-						        fn main(--)
-						            1
-						            var a do
-						                a print
-						            end
-						        end""");
-				fail();
-			}
-			catch (CompilerException _) {
-			}
-
-			try {
-				compile("""
-						        var a 1 end
-
-						        fn main(--)
-						            1
-						            var a do
-						                a print
-						            end
-						        end""");
-				fail();
-			}
-			catch (CompilerException _) {
-			}
-		}
 	}
 
 	@Test
