@@ -35,8 +35,8 @@ public record ConstDeclaration(Location location, String name, List<Instruction>
 		}
 
 		final Object result = results.get(0);
-		if (result instanceof Long i) {
-			return InstructionFactory.literal(i);
+		if (result instanceof Pair p) {
+			return InstructionFactory.literal((Long)p.first(), (Type)p.second());
 		}
 
 		if (result instanceof Boolean b) {

@@ -296,6 +296,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             const size width height * end
 				             const dont false end
 				             const doit true end
+				             const space ' ' end
 
 				             fn main(--)
 				               size print
@@ -306,6 +307,7 @@ public class X86Win64Test extends AbstractFileTest {
 				               dont if
 				                 "dont" printString
 				               end
+				               space 20u8 == print
 				             end""");
 	}
 

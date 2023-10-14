@@ -55,6 +55,26 @@ tsf_main:
         sub rsp, 8
           call tsfbi_printString
         add rsp, 8
+        ; -- literal r0, #32 --
+        mov cl, 32
+        ; -- literal r1, #20 --
+        mov al, 20
+        ; -- eq r0, r1 (u8) --
+        cmp   cl, al
+        mov   cx, 0
+        mov   ax, 1
+        cmove cx, ax
+        ; -- printBool --
+        or cl, cl
+        lea rcx, [false_string]
+        mov rdx, 5
+        jz .x2
+        lea rcx, [true_string]
+        mov rdx, 4
+.x2:
+        sub  rsp, 8
+          call tsfbi_printString
+        add rsp, 8
         ; -- ret --
         ret
 

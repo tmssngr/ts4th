@@ -27,15 +27,31 @@ public class Interpreter {
 	protected boolean process(String name) {
 		switch (name) {
 		case Intrinsics.ADD -> {
-			final long a = popInt();
-			final long b = popInt();
-			push(a + b);
+			final Pair<Long, Type> a = popInt();
+			final Pair<Long, Type> b = popInt();
+			final Type aType = a.second();
+			final Type bType = b.second();
+			if (!Objects.equals(aType, bType)) {
+				throw new InterpretingFailedException("Need same type, but got " + aType + "," + bType);
+			}
+
+			long result = a.first() + b.first();
+			result = toType(result, aType);
+			push(result, aType);
 			return true;
 		}
 		case Intrinsics.MUL -> {
-			final long a = popInt();
-			final long b = popInt();
-			push(a * b);
+			final Pair<Long, Type> a = popInt();
+			final Pair<Long, Type> b = popInt();
+			final Type aType = a.second();
+			final Type bType = b.second();
+			if (!Objects.equals(aType, bType)) {
+				throw new InterpretingFailedException("Need same type, but got " + aType + "," + bType);
+			}
+
+			long result = a.first() * b.first();
+			result = toType(result, aType);
+			push(result, aType);
 			return true;
 		}
 		default -> {
@@ -44,17 +60,9 @@ public class Interpreter {
 		}
 	}
 
-	protected final void push(long value) {
-		stack.addLast(value);
-	}
-
-	protected final void push(boolean value) {
-		stack.addLast(value);
-	}
-
 	protected void process(Instruction instruction) {
 		if (instruction instanceof Instruction.IntLiteral(long value, Type type)) {
-			push(value);
+			push(value, type);
 			return;
 		}
 
@@ -73,14 +81,32 @@ public class Interpreter {
 		throw new InterpretingFailedException("unsupported instruction " + instruction);
 	}
 
-	private long popInt() {
+	private long toType(long result, Type type) {
+		return switch (type.getByteCount(8)) {
+			case 1 -> result & 0xFF;
+			case 2 -> result & 0xFFFF;
+			case 4 -> result & 0xFFFF_FFFFL;
+			case 8 -> result;
+			default -> throw new IllegalStateException("unsupported type " + type);
+		};
+	}
+
+	private void push(long value, Type type) {
+		stack.addLast(new Pair<>(value, type));
+	}
+
+	private void push(boolean value) {
+		stack.addLast(value);
+	}
+
+	private Pair<Long, Type> popInt() {
 		if (stack.isEmpty()) {
 			throw new InterpretingFailedException("empty stack");
 		}
 
 		final Object o = stack.removeLast();
-		if (o instanceof Long i) {
-			return i;
+		if (o instanceof Pair p) {
+			return p;
 		}
 
 		throw new InterpretingFailedException("expected int, but got " + o.getClass());
