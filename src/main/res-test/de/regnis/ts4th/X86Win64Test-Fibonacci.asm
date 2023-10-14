@@ -83,10 +83,8 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [i16 (i16)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2

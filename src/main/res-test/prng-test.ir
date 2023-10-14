@@ -12,8 +12,7 @@ random:
 	r1 = 524287 (u32)
 	and r0, r1 (u32)
 	push r0 (u32)
-	read r0, var[0(u32)]
-	move r1, r0 (u32)
+	read r1, var[0(u32)]
 	pop r0 (u32)
 	imul r0, r1 (u32)
 	move r1, r0 (u32)
@@ -23,8 +22,7 @@ random:
 	r0 = 15 (u32)
 	shr r1, r0 (u32)
 	push r1 (u32)
-	read r0, var[0(u32)]
-	move r1, r0 (u32)
+	read r1, var[0(u32)]
 	pop r0 (u32)
 	imul r0, r1 (u32)
 	push r0 (u32)

@@ -12,7 +12,7 @@ public class AsmIRSimplifier {
 			newInstructions = removeIndirectLabel(newInstructions);
 			newInstructions = removeCommandsAfterJump(newInstructions);
 			newInstructions = removePushPop(newInstructions);
-			newInstructions = removeLiteralMove(newInstructions);
+			newInstructions = removeLiteralOrVarRead_move(newInstructions);
 			newInstructions = swapLitPop(newInstructions);
 			newInstructions = squashDropVars(newInstructions);
 			removeUnusedLabels(newInstructions);
@@ -129,7 +129,7 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> removeLiteralMove(List<AsmIR> instructions) {
+	private static List<AsmIR> removeLiteralOrVarRead_move(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
 		new DualPeepHoleSimplifier<>(newInstructions) {
@@ -159,6 +159,12 @@ public class AsmIRSimplifier {
 						Utils.assertTrue(type == Type.Ptr);
 						removeNext();
 						replace(new AsmIR.StringLiteral(targetReg, index));
+					}
+					else if (i1 instanceof AsmIR.LocalVarRead(int tmpReg, Type typeRead, TypeList offset)
+					         && tmpReg == sourceReg) {
+						Utils.assertTrue(Objects.equals(typeRead, type));
+						removeNext();
+						replace(new AsmIR.LocalVarRead(targetReg, type, offset));
 					}
 				}
 			}

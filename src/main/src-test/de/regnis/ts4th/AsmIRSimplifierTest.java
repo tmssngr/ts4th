@@ -186,6 +186,17 @@ public class AsmIRSimplifierTest {
 	}
 
 	@Test
+	public void testReadVarMode() {
+		testSimplify(List.of(
+				             localVarRead(1, Type.U8, TypeList.EMPTY)
+		             ),
+		             List.of(
+				             localVarRead(0, Type.U8, TypeList.EMPTY),
+							 move(1, 0, Type.U8)
+		             ));
+	}
+
+	@Test
 	public void testDropVars() {
 		testSimplify(List.of(
 				             dropVar(TypeList.INT2.append(Type.Bool))

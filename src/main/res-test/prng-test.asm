@@ -54,10 +54,8 @@ tsf_random:
         ; -- push 0 (u32) --
         sub r15, 4
         mov [r15], ecx
-        ; -- read var r0, [<empty> (u32)] --
-        mov rcx, [rsp+0]
-        ; -- mov 1, 0 (u32) --
-        mov eax, ecx
+        ; -- read var r1, [<empty> (u32)] --
+        mov rax, [rsp+0]
         ; -- pop 0 (u32) --
         mov ecx, [r15]
         add r15, 4
@@ -80,10 +78,8 @@ tsf_random:
         ; -- push 1 (u32) --
         sub r15, 4
         mov [r15], eax
-        ; -- read var r0, [<empty> (u32)] --
-        mov rcx, [rsp+0]
-        ; -- mov 1, 0 (u32) --
-        mov eax, ecx
+        ; -- read var r1, [<empty> (u32)] --
+        mov rax, [rsp+0]
         ; -- pop 0 (u32) --
         mov ecx, [r15]
         add r15, 4

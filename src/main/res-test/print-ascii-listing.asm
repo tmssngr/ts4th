@@ -138,10 +138,8 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- read var r0, [u8 (u8)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (u8) --
-        mov al, cl
+        ; -- read var r1, [u8 (u8)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (u8) --
         mov cl, [r15]
         add r15, 1
@@ -224,10 +222,8 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- read var r0, [u8 (u8)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (u8) --
-        mov al, cl
+        ; -- read var r1, [u8 (u8)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (u8) --
         mov cl, [r15]
         add r15, 1

@@ -123,10 +123,8 @@ tsf_printBoard:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [i16 (i16)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
@@ -151,10 +149,8 @@ tsf_printBoard:
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-        ; -- read var r0, [<empty> (i16)] --
-        mov cx, [rsp+0]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [<empty> (i16)] --
+        mov ax, [rsp+0]
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
@@ -282,10 +278,8 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [i16 (i16)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
@@ -356,10 +350,8 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
-        mov cx, [rsp+2]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [i16 (i16)] --
+        mov ax, [rsp+2]
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
@@ -372,10 +364,8 @@ tsf_main:
         test cl, cl
         ; -- jump z .i6 --
         jz .i6
-        ; -- read var r0, [i16, i16 (i16)] --
-        mov cx, [rsp+4]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [i16, i16 (i16)] --
+        mov ax, [rsp+4]
         ; -- literal r0, #1 --
         mov cx, 1
         ; -- shl r1, r0 (i16) --
@@ -450,10 +440,8 @@ tsf_main:
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx
-        ; -- read var r0, [<empty> (i16)] --
-        mov cx, [rsp+0]
-        ; -- mov 1, 0 (i16) --
-        mov ax, cx
+        ; -- read var r1, [<empty> (i16)] --
+        mov ax, [rsp+0]
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
