@@ -18,9 +18,7 @@ main:
 	read r0, var[1(i16)]
 	push r0 (i16)
 	read r0, var[0(i16)]
-	push r0 (i16)
 	read r1, var[1(i16)]
-	pop r0 (i16)
 	add r0, r1 (i16)
 	write [1(i16)], r0
 	pop r0 (i16)

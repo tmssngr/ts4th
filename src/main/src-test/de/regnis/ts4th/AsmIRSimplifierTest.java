@@ -194,6 +194,16 @@ public class AsmIRSimplifierTest {
 				             localVarRead(0, Type.U8, TypeList.EMPTY),
 							 move(1, 0, Type.U8)
 		             ));
+
+		testSimplify(List.of(
+				             pop(0, Type.Ptr),
+				             localVarRead(1, Type.U8, TypeList.EMPTY)
+		             ),
+		             List.of(
+				             localVarRead(0, Type.U8, TypeList.EMPTY),
+							 move(1, 0, Type.U8),
+							 pop(0, Type.Ptr)
+		             ));
 	}
 
 	@Test

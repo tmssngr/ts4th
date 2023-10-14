@@ -45,9 +45,7 @@ main:
 	pushVar r0 (u8)
 .i1:
 	read r0, var[0(u8)]
-	push r0 (u8)
 	read r1, var[1(u8)]
-	pop r0 (u8)
 	lt r0, r1 (u8)
 	boolTest r0, r0 (i16)
 	jump z, .i3
@@ -81,9 +79,7 @@ main:
 	pushVar r0 (u8)
 .i7:
 	read r0, var[0(u8)]
-	push r0 (u8)
 	read r1, var[1(u8)]
-	pop r0 (u8)
 	lt r0, r1 (u8)
 	boolTest r0, r0 (i16)
 	jump z, .i9

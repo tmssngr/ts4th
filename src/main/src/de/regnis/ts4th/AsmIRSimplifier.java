@@ -13,7 +13,7 @@ public class AsmIRSimplifier {
 			newInstructions = removeCommandsAfterJump(newInstructions);
 			newInstructions = removePushPop(newInstructions);
 			newInstructions = removeLiteralOrVarRead_move(newInstructions);
-			newInstructions = swapLitPop(newInstructions);
+			newInstructions = swapLiteralOrVarRead_Pop(newInstructions);
 			newInstructions = squashDropVars(newInstructions);
 			removeUnusedLabels(newInstructions);
 			if (newInstructions.equals(instructions)) {
@@ -173,36 +173,35 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> swapLitPop(List<AsmIR> instructions) {
+	private static List<AsmIR> swapLiteralOrVarRead_Pop(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
 		new DualPeepHoleSimplifier<>(newInstructions) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
-				if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _, Type type)
-				    && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
-					if (targetRegLit == targetRegPop) {
-						// might happen after pushing a string literal and dropping the size
-						remove();
+				if (i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
+					if (i1 instanceof AsmIR.IntLiteral(int targetRegLit, _, _)) {
+						removeOrSwap(i1, i2, targetRegPop, targetRegLit);
 					}
-					else {
-						remove();
-						remove();
-						insert(i1);
-						insert(i2);
+					else if (i1 instanceof AsmIR.BoolLiteral(int targetRegLit, _)) {
+						removeOrSwap(i1, i2, targetRegPop, targetRegLit);
+					}
+					else if (i1 instanceof AsmIR.LocalVarRead(int targetReg, _, _)) {
+						removeOrSwap(i1, i2, targetRegPop, targetReg);
 					}
 				}
-				else if (i1 instanceof AsmIR.BoolLiteral(int targetRegLit, _)
-				         && i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
-					if (targetRegLit == targetRegPop) {
-						remove();
-					}
-					else {
-						remove();
-						remove();
-						insert(i1);
-						insert(i2);
-					}
+			}
+
+			private void removeOrSwap(AsmIR i1, AsmIR i2, int targetRegPop, int targetRegLit) {
+				if (targetRegLit == targetRegPop) {
+					// might happen after pushing a string literal and dropping the size
+					remove();
+				}
+				else {
+					remove();
+					remove();
+					insert(i1);
+					insert(i2);
 				}
 			}
 		}.process("swap literal pop");

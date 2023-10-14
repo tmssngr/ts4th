@@ -41,14 +41,8 @@ tsf_main:
 .i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- read var r1, [i16 (i16)] --
         mov ax, [rsp+2]
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt r0, r1 (i16) --
         cmp   cx, ax
         mov   cx, 0

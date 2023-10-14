@@ -7,9 +7,7 @@ main:
 	pushVar r0 (i16)
 .i1:
 	read r0, var[0(i16)]
-	push r0 (i16)
 	read r1, var[1(i16)]
-	pop r0 (i16)
 	lt r0, r1 (i16)
 	boolTest r0, r0 (i16)
 	jump z, .i3

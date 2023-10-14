@@ -53,16 +53,10 @@ tsf_fill:
         test cl, cl
         ; -- jump z .i3 --
         jz .i3
-        ; -- read var r0, [<empty> (ptr)] --
-        mov rcx, [rsp+0]
-        ; -- push 0 (ptr) --
-        sub r15, 8
-        mov [r15], rcx
+        ; -- read var r1, [<empty> (ptr)] --
+        mov rax, [rsp+0]
         ; -- read var r0, [ptr, i16 (u8)] --
         mov cx, [rsp+10]
-        ; -- pop 1 (ptr) --
-        mov rax, [r15]
-        add r15, 8
         ; -- store @1, 0 (u8) --
         mov byte [rax], cl
         ; -- read var r0, [<empty> (ptr)] --
@@ -120,14 +114,8 @@ tsf_printBoard:
 .i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- read var r1, [i16 (i16)] --
         mov ax, [rsp+2]
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt r0, r1 (i16) --
         cmp   cx, ax
         mov   cx, 0
@@ -146,14 +134,8 @@ tsf_printBoard:
         mov cx, 2
         ; -- var r0, @board --
         lea rcx, [var_0]
-        ; -- push 0 (ptr) --
-        sub r15, 8
-        mov [r15], rcx
         ; -- read var r1, [<empty> (i16)] --
         mov ax, [rsp+0]
-        ; -- pop 0 (ptr) --
-        mov rcx, [r15]
-        add r15, 8
         ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
@@ -275,14 +257,8 @@ tsf_main:
 .i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- read var r1, [i16 (i16)] --
         mov ax, [rsp+2]
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt r0, r1 (i16) --
         cmp   cx, ax
         mov   cx, 0
@@ -347,14 +323,8 @@ tsf_main:
 .i4:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
         ; -- read var r1, [i16 (i16)] --
         mov ax, [rsp+2]
-        ; -- pop 0 (i16) --
-        mov cx, [r15]
-        add r15, 2
         ; -- lt r0, r1 (i16) --
         cmp   cx, ax
         mov   cx, 0
@@ -414,16 +384,10 @@ tsf_main:
         or cx, ax
         ; -- write var [i16, i16 (i16)], 0 --
         mov [rsp+4], cx
-        ; -- literal r0, #110 --
-        mov cx, 110
-        ; -- push 0 (i16) --
-        sub r15, 2
-        mov [r15], cx
+        ; -- literal r1, #110 --
+        mov ax, 110
         ; -- read var r0, [i16, i16 (i16)] --
         mov cx, [rsp+4]
-        ; -- pop 1 (i16) --
-        mov ax, [r15]
-        add r15, 2
         ; -- shr r1, r0 (i16) --
         shr ax, cl
         ; -- mov 0, 1 (i16) --
@@ -437,14 +401,8 @@ tsf_main:
         mov [r15], cx
         ; -- var r0, @board --
         lea rcx, [var_0]
-        ; -- push 0 (ptr) --
-        sub r15, 8
-        mov [r15], rcx
         ; -- read var r1, [<empty> (i16)] --
         mov ax, [rsp+0]
-        ; -- pop 0 (ptr) --
-        mov rcx, [r15]
-        add r15, 8
         ; -- cast 1, (i16 -> ptr) --
         movsx rax, ax
         ; -- add r0, r1 (ptr) --
