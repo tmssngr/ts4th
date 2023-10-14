@@ -1,7 +1,57 @@
+printNibble:
+	pop r0 (u8)
+	r1 = 15 (u8)
+	and r0, r1 (u8)
+	r1 = 48 (u8)
+	add r0, r1 (u8)
+	push r0 (u8)
+	r1 = 57 (u8)
+	gt r0, r1 (u8)
+	boolTest r0, r0 (i16)
+	jump z, .i2
+	r0 = 65 (u8)
+	r1 = 57 (u8)
+	sub r0, r1 (u8)
+	r1 = 1 (u8)
+	sub r0, r1 (u8)
+	move r1, r0 (u8)
+	pop r0 (u8)
+	add r0, r1 (u8)
+	push r0 (u8)
+.i2:
+	pop r0 (u8)
+	emit
+	ret
+printHex2:
+	pop r0 (u8)
+	push r0 (u8)
+	move r1, r0 (u8)
+	r0 = 4 (u8)
+	shr r1, r0 (u8)
+	push r1 (u8)
+	call printNibble
+	call printNibble
+	ret
+printHex4:
+	pop r0 (u16)
+	push r0 (u16)
+	move r1, r0 (u16)
+	r0 = 8 (u16)
+	shr r1, r0 (u16)
+	move r0, r1 (u16)
+	cast r0 (u16 -> u8)
+	push r0 (u8)
+	call printHex2
+	pop r0 (u16)
+	cast r0 (u16 -> u8)
+	push r0 (u8)
+	call printHex2
+	ret
 main:
 .i1:
 	getChar
-	printInt r0(u16)
+	push r0 (u16)
+	call printHex4
 	r0 = 10 (u8)
 	emit
 	jump .i1

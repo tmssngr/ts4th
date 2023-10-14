@@ -1,6 +1,8 @@
+include "hex.ts4"
+
 fn main()
 	while true do
-		getChar print
+		getChar printHex4
 		'\n' emit
 	end
 end

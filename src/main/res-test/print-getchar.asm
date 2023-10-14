@@ -22,21 +22,132 @@ start:
           call [ExitProcess]
 
 
+        ; -- proc printNibble --
+tsf_printNibble:
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- literal r1, #15 --
+        mov al, 15
+        ; -- and r0, r1 (u8) --
+        and cl, al
+        ; -- literal r1, #48 --
+        mov al, 48
+        ; -- add r0, r1 (u8) --
+        add cl, al
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- literal r1, #57 --
+        mov al, 57
+        ; -- gt r0, r1 (u8) --
+        cmp   cl, al
+        mov   cx, 0
+        mov   ax, 1
+        cmova cx, ax
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i2 --
+        jz .i2
+        ; -- literal r0, #65 --
+        mov cl, 65
+        ; -- literal r1, #57 --
+        mov al, 57
+        ; -- sub r0, r1 (u8) --
+        sub cl, al
+        ; -- literal r1, #1 --
+        mov al, 1
+        ; -- sub r0, r1 (u8) --
+        sub cl, al
+        ; -- mov 1, 0 (u8) --
+        mov al, cl
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- add r0, r1 (u8) --
+        add cl, al
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+.i2:
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
+        ; -- ret --
+        ret
+
+        ; -- proc printHex2 --
+tsf_printHex2:
+        ; -- pop 0 (u8) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- mov 1, 0 (u8) --
+        mov al, cl
+        ; -- literal r0, #4 --
+        mov cl, 4
+        ; -- shr r1, r0 (u8) --
+        shr al, cl
+        ; -- push 1 (u8) --
+        sub r15, 1
+        mov [r15], al
+        ; -- call printNibble --
+        call tsf_printNibble
+        ; -- call printNibble --
+        call tsf_printNibble
+        ; -- ret --
+        ret
+
+        ; -- proc printHex4 --
+tsf_printHex4:
+        ; -- pop 0 (u16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (u16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- mov 1, 0 (u16) --
+        mov ax, cx
+        ; -- literal r0, #8 --
+        mov cx, 8
+        ; -- shr r1, r0 (u16) --
+        shr ax, cl
+        ; -- mov 0, 1 (u16) --
+        mov cx, ax
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- call printHex2 --
+        call tsf_printHex2
+        ; -- pop 0 (u16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- call printHex2 --
+        call tsf_printHex2
+        ; -- ret --
+        ret
+
         ; -- proc main --
 tsf_main:
 .i1:
-        mov rdi, rsp
-        and spl, 0xf0
-          sub rsp, 20h
-            call [_getch]
-          ; add    rsp, 20h
-        mov rsp, rdi
-        mov rcx, rax
-        ; -- printInt r0(u16) --
-        movzx rcx, cx
+        ; -- getChar --
         sub  rsp, 8
-          call tsfbi_printUint
-        add  rsp, 8
+          call tsfbi_getChar
+        add rsp, 8
+        ; -- push 0 (u16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call printHex4 --
+        call tsf_printHex4
         ; -- literal r0, #10 --
         mov cl, 10
         ; -- emit --
@@ -145,6 +256,26 @@ tsfbi_printUint:
           call   tsfbi_printString
         ;add    rsp, 8
         leave ; Set SP to BP, then pop BP
+        ret
+
+tsfbi_getChar:
+        mov rdi, rsp
+        and spl, 0xf0
+          sub rsp, 20h
+            call [_getch]
+            test al, al
+            js   .x1
+            jnz  .x2
+            dec  al
+.x1:
+            mov  rbx, rax
+            shl  rbx, 8
+            call [_getch]
+            or   rax, rbx
+.x2:
+            mov  rcx, rax
+          ; add rsp, 20h
+        mov rsp, rdi
         ret
 
 ; string constants

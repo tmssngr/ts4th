@@ -23,6 +23,7 @@ public class X86Win64 {
 	private static final String PRINT_STRING = LABEL_PREFIX_BI + "printString";
 	private static final String EMIT = LABEL_PREFIX_BI + "emit";
 	private static final String PRINT_UINT = LABEL_PREFIX_BI + "printUint";
+	private static final String GET_CHAR = LABEL_PREFIX_BI + "getChar";
 
 	private final Writer writer;
 
@@ -74,6 +75,8 @@ public class X86Win64 {
 		writeStringPrint();
 		writeNL();
 		writeUintPrint();
+		writeNL();
+		writeGetChar();
 		writeNL();
 
 		write("""
@@ -180,9 +183,40 @@ public class X86Win64 {
 				              ret""");
 	}
 
+	private void writeGetChar() throws IOException {
+		writeLabel(GET_CHAR);
+		// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getch-getwch?view=msvc-170
+		writeIndented("mov rdi, rsp");
+		writeIndented("and spl, 0xf0");
+
+		final String labelGetSecondByte = nextLocalLabel();
+		final String labelEnd = nextLocalLabel();
+		writeIndented("  sub rsp, 20h");
+		writeIndented("    call [_getch]");
+		writeIndented("    test al, al");
+		writeIndented("    js   " + labelGetSecondByte);
+		writeIndented("    jnz  " + labelEnd);
+		writeIndented("    dec  al"); // it must be something different than 0x00
+		writeLabel(labelGetSecondByte);
+		writeIndented("    mov  rbx, rax");
+		writeIndented("    shl  rbx, 8");
+		writeIndented("    call [_getch]");
+		writeIndented("    or   rax, rbx");
+
+		writeLabel(labelEnd);
+		writeIndented("    mov  rcx, rax");
+		writeIndented("  ; add rsp, 20h");
+
+		writeIndented("mov rsp, rdi");
+		writeIndented("ret");
+	}
+
 	private void writeCharPrint() throws IOException {
 		// rcx = char
 		writeLabel(EMIT);
+		// push char to stack
+		// use that address as buffer to print
+		// use length 1
 		writeIndented(STR. """
 				              push rcx ; = sub rsp, 8
 				                mov rcx, rsp
@@ -429,15 +463,11 @@ public class X86Win64 {
 					mov   rsp, rdi""");
 		}
 		case AsmIR.GetChar() -> {
-			// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getch-getwch?view=msvc-170
-			writeIndented(STR."""
-					mov rdi, rsp
-					and spl, 0xf0
-					  sub rsp, 20h
-					    call [_getch]
-					  ; add    rsp, 20h
-					mov rsp, rdi
-					mov rcx, rax""");
+			writeComment("getChar");
+			writeIndented(STR. """
+			              sub  rsp, 8
+			                call \{ GET_CHAR }
+			              add rsp, 8""" );
 		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");
