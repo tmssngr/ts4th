@@ -22,7 +22,7 @@ printNibble:
 	pop r0 (u8)
 	emit
 	ret
-printHex8:
+printHex2:
 	pop r0 (u8)
 	push r0 (u8)
 	move r1, r0 (u8)
@@ -31,6 +31,21 @@ printHex8:
 	push r1 (u8)
 	call printNibble
 	call printNibble
+	ret
+printHex4:
+	pop r0 (u16)
+	push r0 (u16)
+	move r1, r0 (u16)
+	r0 = 8 (u16)
+	shr r1, r0 (u16)
+	move r0, r1 (u16)
+	cast r0 (u16 -> u8)
+	push r0 (u8)
+	call printHex2
+	pop r0 (u16)
+	cast r0 (u16 -> u8)
+	push r0 (u8)
+	call printHex2
 	ret
 main:
 	r0 = 32 (u8)
@@ -92,7 +107,7 @@ main:
 	jump z, .i11
 	read r0, var[0(u8)]
 	push r0 (u8)
-	call printHex8
+	call printHex2
 .i11:
 	read r0, var[0(u8)]
 	r1 = 7 (u8)

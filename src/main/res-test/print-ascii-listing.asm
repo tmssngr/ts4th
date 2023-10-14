@@ -80,8 +80,8 @@ tsf_printNibble:
         ; -- ret --
         ret
 
-        ; -- proc printHex8 --
-tsf_printHex8:
+        ; -- proc printHex2 --
+tsf_printHex2:
         ; -- pop 0 (u8) --
         mov cl, [r15]
         add r15, 1
@@ -101,6 +101,38 @@ tsf_printHex8:
         call tsf_printNibble
         ; -- call printNibble --
         call tsf_printNibble
+        ; -- ret --
+        ret
+
+        ; -- proc printHex4 --
+tsf_printHex4:
+        ; -- pop 0 (u16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (u16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- mov 1, 0 (u16) --
+        mov ax, cx
+        ; -- literal r0, #8 --
+        mov cx, 8
+        ; -- shr r1, r0 (u16) --
+        shr ax, cl
+        ; -- mov 0, 1 (u16) --
+        mov cx, ax
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- call printHex2 --
+        call tsf_printHex2
+        ; -- pop 0 (u16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (u8) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- call printHex2 --
+        call tsf_printHex2
         ; -- ret --
         ret
 
@@ -246,8 +278,8 @@ tsf_main:
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- call printHex8 --
-        call tsf_printHex8
+        ; -- call printHex2 --
+        call tsf_printHex2
 .i11:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]

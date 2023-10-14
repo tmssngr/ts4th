@@ -7,7 +7,12 @@ fn printNibble(u8)
 	emit
 end
 
-fn printHex8(u8)
+fn printHex2(u8)
 	dup 4u8 shr printNibble
 	printNibble
+end
+
+fn printHex4(u16)
+	dup 8u16 shr as_u8 printHex2
+	as_u8 printHex2
 end

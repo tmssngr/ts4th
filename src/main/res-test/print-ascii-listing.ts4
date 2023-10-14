@@ -13,7 +13,7 @@ fn main(--)
 
 	0x20u8 0x80u8 for i do
 		i 0x0Fu8 and 0u8 == if
-			i printHex8
+			i printHex2
 		end
 		i 0x07u8 and 0u8 == if
 			' ' emit
