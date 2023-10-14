@@ -136,7 +136,7 @@ public class AsmIRSimplifier {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, Type type)) {
-					if (i1 instanceof AsmIR.IntLiteral(int tmp, int value, Type litType)
+					if (i1 instanceof AsmIR.IntLiteral(int tmp, long value, Type litType)
 					    && sourceReg == tmp) {
 						Utils.assertTrue(type == litType);
 						removeNext();

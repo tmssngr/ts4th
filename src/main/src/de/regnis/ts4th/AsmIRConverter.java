@@ -65,7 +65,7 @@ public class AsmIRConverter implements InstructionTypeEvaluator.Handler {
 				emit(AsmIRFactory.label(name));
 				yield input;
 			}
-			case Instruction.IntLiteral(int value, Type type) -> {
+			case Instruction.IntLiteral(long value, Type type) -> {
 				emit(AsmIRFactory.literal(REG_0, value, type));
 				emit(AsmIRFactory.push(REG_0, type));
 				yield input

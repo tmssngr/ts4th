@@ -8,7 +8,7 @@ public class AsmIRFactory {
 		return new AsmIR.Label(name);
 	}
 
-	public static AsmIR literal(int target, int value, Type type) {
+	public static AsmIR literal(int target, long value, Type type) {
 		return new AsmIR.IntLiteral(target, value, type);
 	}
 

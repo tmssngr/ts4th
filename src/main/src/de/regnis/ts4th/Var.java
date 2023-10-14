@@ -31,8 +31,8 @@ public record Var(int index, String name, int size) {
 		}
 
 		final Object result = results.get(0);
-		if (result instanceof Integer i) {
-			return new Var(index, declaration.name(), i);
+		if (result instanceof Long i) {
+			return new Var(index, declaration.name(), i.intValue());
 		}
 
 		throw new CompilerException(declaration.location() + ": unsupported const type " + result);

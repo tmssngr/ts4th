@@ -301,7 +301,7 @@ public class X86Win64 {
 		case AsmIR.Label(String name) -> {
 			writeLabel(prefixLabel(name));
 		}
-		case AsmIR.IntLiteral(int targetReg, int value, Type type) -> {
+		case AsmIR.IntLiteral(int targetReg, long value, Type type) -> {
 			writeComment(STR. "literal r\{ targetReg }, #\{ value }" );
 			writeIndented(STR. "mov \{ getRegName(targetReg, type) }, \{ value }" );
 		}

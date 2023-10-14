@@ -330,7 +330,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 
 		final Token stepToken = ctx.step;
 		final Token by = ctx.by;
-		int step = 1;
+		long step = 1;
 		Type type = Type.I16;
 		if (stepToken != null && by != null) {
 			final Location stepLocation = createLocation(stepToken);

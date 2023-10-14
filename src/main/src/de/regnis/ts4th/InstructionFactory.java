@@ -13,11 +13,11 @@ public class InstructionFactory {
 		return new Instruction.Label(name);
 	}
 
-	public static Instruction literal(int value) {
+	public static Instruction literal(long value) {
 		return literal(value, Type.I16);
 	}
 
-	public static Instruction.IntLiteral literal(int value, Type type) {
+	public static Instruction.IntLiteral literal(long value, Type type) {
 		return new Instruction.IntLiteral(value, type);
 	}
 

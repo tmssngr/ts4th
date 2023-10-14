@@ -33,7 +33,7 @@ public sealed interface AsmIR permits
 		}
 	}
 
-	record IntLiteral(int targetReg, int value, Type type) implements AsmIR {
+	record IntLiteral(int targetReg, long value, Type type) implements AsmIR {
 		@Override
 		public String toString() {
 			return "r" + targetReg + " = " + value + " (" + type + ")";

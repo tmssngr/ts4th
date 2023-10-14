@@ -27,14 +27,14 @@ public class Interpreter {
 	protected boolean process(String name) {
 		switch (name) {
 		case Intrinsics.ADD -> {
-			final int a = popInt();
-			final int b = popInt();
+			final long a = popInt();
+			final long b = popInt();
 			push(a + b);
 			return true;
 		}
 		case Intrinsics.MUL -> {
-			final int a = popInt();
-			final int b = popInt();
+			final long a = popInt();
+			final long b = popInt();
 			push(a * b);
 			return true;
 		}
@@ -44,7 +44,7 @@ public class Interpreter {
 		}
 	}
 
-	protected final void push(int value) {
+	protected final void push(long value) {
 		stack.addLast(value);
 	}
 
@@ -53,7 +53,7 @@ public class Interpreter {
 	}
 
 	protected void process(Instruction instruction) {
-		if (instruction instanceof Instruction.IntLiteral(int value, Type type)) {
+		if (instruction instanceof Instruction.IntLiteral(long value, Type type)) {
 			push(value);
 			return;
 		}
@@ -73,13 +73,13 @@ public class Interpreter {
 		throw new InterpretingFailedException("unsupported instruction " + instruction);
 	}
 
-	private int popInt() {
+	private long popInt() {
 		if (stack.isEmpty()) {
 			throw new InterpretingFailedException("empty stack");
 		}
 
 		final Object o = stack.removeLast();
-		if (o instanceof Integer i) {
+		if (o instanceof Long i) {
 			return i;
 		}
 

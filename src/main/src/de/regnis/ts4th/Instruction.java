@@ -28,7 +28,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record IntLiteral(int value, Type type) implements Instruction {
+	record IntLiteral(long value, Type type) implements Instruction {
 		@Override
 		public String toString() {
 			return String.valueOf(value);
