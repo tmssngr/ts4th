@@ -1,0 +1,33 @@
+main:
+	r0 = 0 (i16)
+	push r0 (i16)
+.i1:
+	pop r0 (i16)
+	push r0 (i16)
+	r1 = 10 (i16)
+	lt r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, .i3
+	pop r0 (i16)
+	push r0 (i16)
+	printInt r0(i16)
+	r0 = 32 (u8)
+	emit
+	pop r0 (i16)
+	r1 = 1 (i16)
+	add r0, r1 (i16)
+	push r0 (i16)
+	pushVar r0 (i16)
+	read r0, var[0(i16)]
+	r1 = 5 (i16)
+	eq r0, r1 (i16)
+	boolTest r0, r0 (i16)
+	jump z, .i5
+	dropVars i16
+	jump .i3
+.i5:
+	dropVars i16
+	jump .i1
+.i3:
+	pop r0 (i16)
+	ret

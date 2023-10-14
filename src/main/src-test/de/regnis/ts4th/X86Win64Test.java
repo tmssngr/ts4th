@@ -406,6 +406,23 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testLocalVarBreak() throws IOException {
+		compileWriteExecute("""
+				             fn main(--)
+				                0 while dup 10 < do
+				                    dup print ' ' emit
+				                    1 +
+				                    dup var i do
+				                        i 5 == if
+					                        break
+				                        end
+				                    end
+				                end
+				                drop
+				             end""");
+	}
+
+	@Test
 	public void testCast() throws IOException {
 		compileWriteExecute("""
 				             fn main(--)

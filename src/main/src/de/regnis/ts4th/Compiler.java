@@ -181,7 +181,7 @@ public class Compiler {
 		}
 
 		@Override
-		public void beforeInstruction(Instruction instruction, TypeList input) {
+		public void beforeInstruction(Instruction instruction, TypeList input, LocalVarStack localVarStackInput) {
 			if (!(instruction instanceof Instruction.Label)) {
 				out.print("\t");
 			}
@@ -197,7 +197,7 @@ public class Compiler {
 		}
 
 		@Override
-		public void afterInstruction(Instruction instruction, TypeList output) {
+		public void afterInstruction(Instruction instruction, TypeList output, LocalVarStack localVarStack) {
 			out.println(" -> (" + output + ")");
 		}
 

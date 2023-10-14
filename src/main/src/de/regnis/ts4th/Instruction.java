@@ -116,7 +116,7 @@ public sealed interface Instruction permits
 		}
 	}
 
-	record ReleaseVars(int count) implements Instruction {
+	record ReleaseVars(int count, Location location) implements Instruction {
 		@Override
 		public String toString() {
 			return "releaseVars " + count;

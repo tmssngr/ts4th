@@ -1,60 +1,75 @@
 package de.regnis.ts4th;
 
 import java.util.*;
-import java.util.function.*;
+
+import org.jetbrains.annotations.*;
 
 /**
  * @author Thomas Singer
  */
 public class InstructionTypeEvaluator {
 
-	public static void iterate(List<Instruction> instructions, TypeList input, BiFunction<Instruction, TypeList, TypeList> consumer) {
-		final Map<String, Pair<TypeList, Location>> labelToType = new HashMap<>();
+	public static void iterate(List<Instruction> instructions, TypeList input, Handler handler) {
+		final Map<String, State> labelToState = new HashMap<>();
+		LocalVarStack localVarStack = null;
 
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Label(String name, Location location)) {
-				final Pair<TypeList, Location> existing = labelToType.get(name);
+				final State existing = labelToState.get(name);
 				if (input == null) {
 					// after a jump or branch...
 					if (existing == null) {
 						throw new IllegalStateException("Expected types at " + location);
 					}
 
-					input = existing.first();
+					input = existing.types;
+					localVarStack = existing.localVarStack;
 				}
 				else if (existing != null) {
-					checkExisting(input, location, existing);
+					checkExisting(input, localVarStack, location, existing);
 				}
 			}
 
-			input = consumer.apply(instruction, input);
+			final Pair<TypeList, LocalVarStack> result = handler.handle(instruction, input, localVarStack);
+			input = result.first();
+			localVarStack = result.second();
 
 			if (instruction instanceof Instruction.Jump(String target, Location location)) {
-				setTargetTypes(input, target, location, labelToType);
+				setTargetTypes(input, localVarStack, target, location, labelToState);
 				input = null;
 			}
 			else if (instruction instanceof Instruction.Branch(String ifTarget, String elseTarget, Location location)) {
-				setTargetTypes(input, ifTarget, location, labelToType);
-				setTargetTypes(input, elseTarget, location, labelToType);
+				setTargetTypes(input, localVarStack, ifTarget, location, labelToState);
+				setTargetTypes(input, localVarStack, elseTarget, location, labelToState);
 				input = null;
 			}
 		}
 	}
 
-	private static void setTargetTypes(TypeList input, String target, Location location, Map<String, Pair<TypeList, Location>> labelToType) {
-		final Pair<TypeList, Location> existing = labelToType.get(target);
+	private static void setTargetTypes(TypeList input, @Nullable LocalVarStack localVarStack, String target, Location location, Map<String, State> labelToType) {
+		final State existing = labelToType.get(target);
 		if (existing != null) {
-			checkExisting(input, location, existing);
+			checkExisting(input, localVarStack, location, existing);
 		}
 		else {
-			labelToType.put(target, new Pair<>(input, location));
+			labelToType.put(target, new State(input, localVarStack, location));
 		}
 	}
 
-	private static void checkExisting(TypeList input, Location location, Pair<TypeList, Location> existing) {
-		final TypeList existingInput = existing.first();
-		if (!existingInput.equals(input)) {
-			throw new InvalidTypeException(location, STR."Invalid types: \{existingInput} (from: \{ existing.second()}) vs. \{ input }");
+	private static void checkExisting(TypeList input, LocalVarStack localVarStack, Location location, State existing) {
+		if (!Objects.equals(input, existing.types)) {
+			throw new InvalidTypeException(location, STR. "Invalid types: \{ existing.types } (from: \{ existing.location }) vs. \{ input }" );
 		}
+
+		if (!Objects.equals(localVarStack, existing.localVarStack)) {
+			throw new InvalidTypeException(location, STR. "Invalid local vars: \{ existing.localVarStack } (from: \{ existing.location }) vs. \{ localVarStack }" );
+		}
+	}
+
+	public interface Handler {
+		Pair<TypeList, LocalVarStack> handle(Instruction instruction, TypeList input, LocalVarStack localVarStackInput);
+	}
+
+	private record State(@NotNull TypeList types, @Nullable LocalVarStack localVarStack, @NotNull Location location) {
 	}
 }

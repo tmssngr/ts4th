@@ -386,7 +386,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		instructions.add(new Instruction.Jump(labelFor, endLocation));
 
 		instructions.add(new Instruction.Label(labelEnd, endLocation));
-		instructions.add(new Instruction.ReleaseVars(2));
+		instructions.add(new Instruction.ReleaseVars(2, endLocation));
 		return instructions;
 	}
 
@@ -410,7 +410,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 			stack.pop();
 		}
 
-		instructions.add(new Instruction.ReleaseVars(count));
+		instructions.add(new Instruction.ReleaseVars(count, createLocation(ctx.End())));
 		return instructions;
 	}
 
@@ -421,7 +421,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final List<Instruction> instructions = new ArrayList<>();
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
-			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
+			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count, location));
 			case LoopBody(_, String breakLabel) -> {
 				instructions.add(new Instruction.Jump(breakLabel, location));
 				return instructions;
@@ -440,7 +440,7 @@ public final class Parser extends TS4thBaseVisitor<Object> {
 		final List<Instruction> instructions = new ArrayList<>();
 		for (ControlFlowStructure cfs : getStackInReverseOrder()) {
 			switch (cfs) {
-			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count));
+			case LocalVarsBlock(int count) -> instructions.add(new Instruction.ReleaseVars(count, location));
 			case LoopBody(String continueLabel, _) -> {
 				instructions.add(new Instruction.Jump(continueLabel, location));
 				return instructions;

@@ -50,7 +50,7 @@ public class InstructionFactory {
 	}
 
 	public static Instruction releaseVars(int count) {
-		return new Instruction.ReleaseVars(count);
+		return new Instruction.ReleaseVars(count, Location.DUMMY);
 	}
 
 	@NotNull
