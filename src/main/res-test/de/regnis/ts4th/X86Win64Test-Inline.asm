@@ -44,7 +44,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #5 --
         mov cx, 5
-        ; -- push 0 (i16) --
+        ; -- push 0 (u16) --
         sub r15, 2
         mov [r15], cx
         ; -- jump .i3 --
@@ -57,11 +57,11 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #6 --
         mov cx, 6
-        ; -- push 0 (i16) --
+        ; -- push 0 (u16) --
         sub r15, 2
         mov [r15], cx
 .i3:
-        ; -- pop 0 (i16) --
+        ; -- pop 0 (u16) --
         mov cx, [r15]
         add r15, 2
         ; -- pop 1 (ptr) --
@@ -93,7 +93,7 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #5 --
         mov cx, 5
-        ; -- push 0 (i16) --
+        ; -- push 0 (u16) --
         sub r15, 2
         mov [r15], cx
         ; -- jump .i6 --
@@ -106,11 +106,11 @@ tsf_main:
         mov [r15], rcx
         ; -- literal r0, #6 --
         mov cx, 6
-        ; -- push 0 (i16) --
+        ; -- push 0 (u16) --
         sub r15, 2
         mov [r15], cx
 .i6:
-        ; -- pop 0 (i16) --
+        ; -- pop 0 (u16) --
         mov cx, [r15]
         add r15, 2
         ; -- pop 1 (ptr) --

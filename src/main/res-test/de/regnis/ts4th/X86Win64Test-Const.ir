@@ -6,7 +6,7 @@ main:
 	r0 = 32 (u8)
 	emit
 	r1 = constant 0
-	r0 = 4 (i16)
+	r0 = 4 (u16)
 	printString r1 (0)
 	r0 = 32 (u8)
 	r1 = 20 (u8)

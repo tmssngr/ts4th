@@ -150,7 +150,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	mem 1 + 0x30u8 !8
 				             	mem 2 + 0x32u8 !8
 				             	mem 3 + 0x34u8 !8
-				             	mem 4 printString
+				             	mem 4u16 printString
 
 				             	mem
 				             	'h' appendChar
@@ -159,7 +159,7 @@ public class X86Win64Test extends AbstractFileTest {
 				             	'l' appendChar
 				             	'o' appendChar
 				             	drop
-				             	mem 5 printString
+				             	mem 5u16 printString
 
 				             	"\\nhello \\"world\\"\\n" printString
 				             end
@@ -200,9 +200,9 @@ public class X86Win64Test extends AbstractFileTest {
 				             	'l' appendChar
 				             	'o' appendChar
 				             	drop
-				             	b 5 printString
+				             	b 5u16 printString
 
-				             	a 5 printString
+				             	a 5u16 printString
 				             end
 
 				             fn appendChar(ptr u8 -- ptr)

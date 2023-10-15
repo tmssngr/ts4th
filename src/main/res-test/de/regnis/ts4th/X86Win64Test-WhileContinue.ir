@@ -17,7 +17,7 @@ main:
 	boolTest r0, r0 (i16)
 	jump z, .i5
 	r1 = constant 0
-	r0 = 15 (i16)
+	r0 = 15 (u16)
 	printString r1 (0)
 	pop r0 (i16)
 	r1 = 2 (i16)

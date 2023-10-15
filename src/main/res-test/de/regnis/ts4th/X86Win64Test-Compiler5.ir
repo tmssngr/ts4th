@@ -28,7 +28,7 @@ main:
 	store @r1, r0(u8)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 4 (i16)
+	r0 = 4 (u16)
 	printString r1 (0)
 	r0 = mem
 	push r0 (ptr)
@@ -50,10 +50,10 @@ main:
 	pop r0 (ptr)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	r1 = constant 0
-	r0 = 15 (i16)
+	r0 = 15 (u16)
 	printString r1 (0)
 	ret
 appendChar:

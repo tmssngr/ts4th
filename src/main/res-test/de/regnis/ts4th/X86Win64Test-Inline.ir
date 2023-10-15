@@ -9,16 +9,16 @@ main:
 	jump z, .i2
 	r0 = constant 0
 	push r0 (ptr)
-	r0 = 5 (i16)
-	push r0 (i16)
+	r0 = 5 (u16)
+	push r0 (u16)
 	jump .i3
 .i2:
 	r0 = constant 1
 	push r0 (ptr)
-	r0 = 6 (i16)
-	push r0 (i16)
+	r0 = 6 (u16)
+	push r0 (u16)
 .i3:
-	pop r0 (i16)
+	pop r0 (u16)
 	pop r1 (ptr)
 	printString r1 (0)
 	r0 = 1 (i16)
@@ -28,16 +28,16 @@ main:
 	jump z, .i5
 	r0 = constant 0
 	push r0 (ptr)
-	r0 = 5 (i16)
-	push r0 (i16)
+	r0 = 5 (u16)
+	push r0 (u16)
 	jump .i6
 .i5:
 	r0 = constant 1
 	push r0 (ptr)
-	r0 = 6 (i16)
-	push r0 (i16)
+	r0 = 6 (u16)
+	push r0 (u16)
 .i6:
-	pop r0 (i16)
+	pop r0 (u16)
 	pop r1 (ptr)
 	printString r1 (0)
 	ret

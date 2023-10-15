@@ -48,7 +48,7 @@ printBoard:
 	jump z, .i3
 	r0 = constant 0
 	push r0 (ptr)
-	r0 = 2 (i16)
+	r0 = 2 (u16)
 	r0 = var 0:board
 	read r1, var[0(i16)]
 	cast r1 (i16 -> ptr)

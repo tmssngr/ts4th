@@ -393,7 +393,7 @@ public class Intrinsics {
 		nameToCommand.put("printString", new Command() {
 			@Override
 			public TypeList process(String name, Location location, TypeList input) {
-				final TypeList expected = TypeList.PTR.append(Type.I16);
+				final TypeList expected = TypeList.PTR.append(Type.U16);
 				final TypeList output = input.transform(expected, TypeList.EMPTY);
 				if (output == null) {
 					throw new InvalidTypeException(location, "Invalid types for command " + name + "! Expected " + expected + " but got " + input);
@@ -404,7 +404,7 @@ public class Intrinsics {
 
 			@Override
 			public void toIR(String name, TypeList types, Consumer<AsmIR> output) {
-				output.accept(AsmIRFactory.pop(REG_0, Type.I16));
+				output.accept(AsmIRFactory.pop(REG_0, Type.U16));
 				output.accept(AsmIRFactory.pop(REG_1, Type.Ptr));
 				output.accept(AsmIRFactory.printString(REG_1, REG_0));
 			}

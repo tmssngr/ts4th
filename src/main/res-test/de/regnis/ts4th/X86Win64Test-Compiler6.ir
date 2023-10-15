@@ -63,11 +63,11 @@ main:
 	cast r1 (i16 -> ptr)
 	add r0, r1 (ptr)
 	move r1, r0 (ptr)
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	r0 = mem
 	move r1, r0 (ptr)
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	ret
 appendChar:

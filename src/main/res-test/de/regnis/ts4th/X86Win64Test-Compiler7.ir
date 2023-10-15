@@ -34,7 +34,7 @@ strlen:
 main:
 	r0 = constant 0
 	push r0 (ptr)
-	r0 = 12 (i16)
+	r0 = 12 (u16)
 	call strlen
 	pop r0 (i16)
 	printInt r0(i16)

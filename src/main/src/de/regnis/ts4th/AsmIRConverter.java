@@ -87,11 +87,11 @@ public class AsmIRConverter implements InstructionTypeEvaluator.Handler {
 				final AsmIRStringLiterals.Entry entry = stringLiterals.addEntry(text);
 				emit(AsmIRFactory.stringLiteral(REG_0, entry.index()));
 				emit(AsmIRFactory.push(REG_0, Type.Ptr));
-				emit(AsmIRFactory.literal(REG_0, entry.length(), Type.I16));
-				emit(AsmIRFactory.push(REG_0, Type.I16));
+				emit(AsmIRFactory.literal(REG_0, entry.length(), Type.U16));
+				emit(AsmIRFactory.push(REG_0, Type.U16));
 				yield input
 						.append(Type.Ptr)
-						.append(Type.I16);
+						.append(Type.U16);
 			}
 			case Instruction.Jump(String target, _) -> {
 				emit(AsmIRFactory.jump(target));

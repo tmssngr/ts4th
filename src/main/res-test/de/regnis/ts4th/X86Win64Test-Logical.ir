@@ -4,7 +4,7 @@ const %2: 78 6f 72 3a 20
 
 main:
 	r1 = constant 0
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	r0 = false
 	r1 = false
@@ -31,7 +31,7 @@ main:
 	r0 = 10 (u8)
 	emit
 	r1 = constant 1
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	r0 = false
 	r1 = false
@@ -58,7 +58,7 @@ main:
 	r0 = 10 (u8)
 	emit
 	r1 = constant 2
-	r0 = 5 (i16)
+	r0 = 5 (u16)
 	printString r1 (0)
 	r0 = false
 	r1 = false
