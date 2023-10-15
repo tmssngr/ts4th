@@ -90,11 +90,13 @@ public class Compiler {
 
 	@NotNull
 	public static AsmIRProgram compile(Program program, AsmIRConverter.Logging logging) {
-		final List<Function> inlinedFunctions = Inliner.process(program.functions());
-		final NameToFunction nameToFunction = new NameToFunction(inlinedFunctions);
+		checkTypes(program.functions(), logging);
 
-		final Function main = nameToFunction.get("main");
-		if (main == null) {
+		final List<Function> usedFunctions = removeUnusedFunctions(program.functions());
+		final List<Function> inlinedFunctions = Inliner.process(usedFunctions);
+
+		final NameToFunction nameToFunction = new NameToFunction(inlinedFunctions);
+		if (nameToFunction.get("main") == null) {
 			throw new CompilerException("no `main`-function found");
 		}
 
@@ -129,6 +131,55 @@ public class Compiler {
 			process.destroy();
 		}
 		return process.exitValue();
+	}
+
+	private static List<Function> removeUnusedFunctions(List<Function> functions) {
+		final NameToFunction nameToFunction = new NameToFunction(functions);
+
+		final Set<String> used = new HashSet<>();
+
+		final Deque<String> pending = new ArrayDeque<>();
+		pending.add("main");
+		used.add("main");
+		while (!pending.isEmpty()) {
+			final String name = pending.removeFirst();
+			final Function function = nameToFunction.get(name);
+			if (function == null) {
+				// maybe <name> is the name of a var or an intrinsinc
+				continue;
+			}
+
+			for (Instruction instruction : function.instructions()) {
+				if (instruction instanceof Instruction.Command(String command, _)
+				    && used.add(command)) {
+					pending.add(command);
+				}
+			}
+		}
+
+		final List<Function> usedFunctions = new ArrayList<>();
+		for (Function function : functions) {
+			final String name = function.name();
+			if (used.contains(name)) {
+				usedFunctions.add(function);
+			}
+		}
+
+		return usedFunctions;
+	}
+
+	private static void checkTypes(List<Function> inlinedFunctions, AsmIRConverter.Logging logging) {
+		final NameToFunction nameToFunction = new NameToFunction(inlinedFunctions);
+
+		final Function main = nameToFunction.get("main");
+		if (main == null) {
+			throw new CompilerException("no `main`-function found");
+		}
+
+		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
+		for (Function function : inlinedFunctions) {
+			AsmIRConverter.convertToIR(function, nameToFunction, stringLiterals, logging);
+		}
 	}
 
 	private static void error(String message) {

@@ -495,6 +495,20 @@ public class X86Win64Test extends AbstractFileTest {
 	}
 
 	@Test
+	public void testRemoveUnused() throws IOException {
+		compileWriteExecute("""
+				                    fn inline add(int int -- int)
+				                       +
+				                    end
+				                    fn inline sub(int int -- int)
+				                       -
+				                    end
+				                    fn main()
+				                       6 2 add print
+				                    end""");
+	}
+
+	@Test
 	public void testFiles() throws IOException {
 		compileFileWriteExecute("rule110-localvars");
 		compileFileWriteExecute("print-ascii-listing");

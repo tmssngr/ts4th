@@ -1,0 +1,5 @@
+main:
+	r0 = 6 (i16)
+	add r0, 2 (i16)
+	printInt r0(i16)
+	ret

@@ -92,36 +92,6 @@ tsf_printHex2:
         ; -- ret --
         ret
 
-        ; -- proc printHex4 --
-tsf_printHex4:
-        ; -- pop 0 (u16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- push 0 (u16) --
-        sub r15, 2
-        mov [r15], cx
-        ; -- mov 1, 0 (u16) --
-        mov ax, cx
-        ; -- shr r1, 8 (u16) --
-        shr ax, 8
-        ; -- mov 0, 1 (u16) --
-        mov cx, ax
-        ; -- push 0 (u8) --
-        sub r15, 1
-        mov [r15], cl
-        ; -- call printHex2 --
-        call tsf_printHex2
-        ; -- pop 0 (u16) --
-        mov cx, [r15]
-        add r15, 2
-        ; -- push 0 (u8) --
-        sub r15, 1
-        mov [r15], cl
-        ; -- call printHex2 --
-        call tsf_printHex2
-        ; -- ret --
-        ret
-
         ; -- proc main --
 tsf_main:
         ; -- literal r0, #32 --
