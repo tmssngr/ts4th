@@ -1,22 +1,49 @@
 # TS4th
-This experimental project is about a stack-based programming language like Forth witten in Java.
+This experimental project is about a compiler for a stack-based programming language like Forth witten in Java.
 Currently, it can be compiled to Windows 64-bit executables using the [flat assembler](https://flatassembler.net/), but I want to keep the ability to compile it to Z8 assembly for supporting an 8-bit computer from my youth.
 
-The main difference to classic Forth is to have some rudimentary type system.
-With classic Forth there is a plain (data) stack of exactly one type and it is the task of the developer to remember which stack entry represents what, e.g. a normal number of a pointer.
-Usually, with Forth the developer wrote comments declaring how a *word* (procedure) manipulates the stack:
+The main difference to classic Forth is to have some type checking.
+With classic Forth there is a plain (data) stack of exactly one type and it is the task of the developer to remember which stack entry represents what, e.g. a normal number or a pointer.
+Usually, with Forth the developer uses comments (written in braces) declaring how a *word* (procedure) manipulates the stack:
 ```
 : foo (a b -- c) ... ;
 ```
-With TS4th this comment becomes a requirement like a method definition in other (more or less) modern programming languages:
+`b` denotes the top of stack, `a` the seconds stack entry before the invocation of `foo`, while `c` means the element after the invocation.
+In other words, `foo` needs two stack entries and produces one.
+
+With TS4th this developer hint becomes a requirement like a function definition in other programming languages:
 ```
 fn foo (int ptr -- ptr)
   ...
 end
 ```
+This declaration of the function `foo` needs a value of type `ptr` (pointer) at the top of the stack and `int` (16 bit signed integer) as the second stack entry.
+After invocation it leaves/produces a `ptr` on the stack.
+The compiler enforces this - if the wrong number of arguments or wrong type of arguments are passed, it will produce a compile-time error:
+
+```
+1 2 foo
+```
+Here `1` and `2` will produce two `int` values on the stack, but `foo` requires `int` and `ptr`.
+
+This quite simple approach does not only allow multiple parameters passed on the stack, but also allows to return multiple values on the stack.
+
+###### Info
 If the function has no return values, the `--` can be omitted.
 
+## Whitespace and Comments
 Use spaces/tabs or line breaks to align the literals and commands according to your needs.
+
+As line comment you can use a double-slash:
+```
+10 // number of rows
+```
+A block comment starts with `/*` and ends with `*/`:
+```
+/*
+1 2 add print
+*/
+```
 
 ## Types
 TS4th supports the types `i8`, `i16` (or `int`), `i32`, `i64` (`i` stands for s**i**gned), `u8`, `u16`, `u32`, `u64` (`u` stands for **u**nsigned), `bool` and `ptr`.
