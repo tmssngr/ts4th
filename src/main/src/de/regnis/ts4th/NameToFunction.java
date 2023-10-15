@@ -11,8 +11,8 @@ public final class NameToFunction {
 
 	private final Map<String, Function> nameToFunction = new HashMap<>();
 
-	public NameToFunction(@NotNull Program program) {
-		for (Function function : program.functions()) {
+	public NameToFunction(@NotNull List<Function> functions) {
+		for (Function function : functions) {
 			final Function prevFunction = nameToFunction.put(function.name(), function);
 			if (prevFunction != null) {
 				throw new CompilerException(function.location(), STR. "Duplicate declaration of function \{ function.name() }. It was already defined at \{ prevFunction.location() }" );

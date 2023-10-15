@@ -90,14 +90,13 @@ public class Compiler {
 
 	@NotNull
 	public static AsmIRProgram compile(Program program, AsmIRConverter.Logging logging) {
-		final NameToFunction nameToFunction = new NameToFunction(program);
+		final List<Function> inlinedFunctions = Inliner.process(program.functions());
+		final NameToFunction nameToFunction = new NameToFunction(inlinedFunctions);
 
 		final Function main = nameToFunction.get("main");
 		if (main == null) {
 			throw new CompilerException("no `main`-function found");
 		}
-
-		final List<Function> inlinedFunctions = Inliner.process(program.functions());
 
 		final AsmIRStringLiteralsImpl stringLiterals = new AsmIRStringLiteralsImpl();
 		final List<AsmIRFunction> processedFunctions = new ArrayList<>();
