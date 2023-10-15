@@ -1,0 +1,182 @@
+include "prng.ts4"
+include "hex.ts4"
+
+const width 40 end
+const height 20 end
+const bombRatio 50 end
+
+const maskBomb 1u8 end
+const maskOpen 2u8 end
+
+var field width height * end
+
+fn rowColumnToCell(int int -- ptr)
+	swap width * + field +
+end
+
+fn getCell(int int -- u8)
+	rowColumnToCell @8
+end
+
+fn bomb?(u8 -- bool)
+	maskBomb and 0u8 !=
+end
+
+fn open?(u8 -- bool)
+	maskOpen and 0u8 !=
+end
+
+fn checkCellBounds(int int -- int int bool)
+	var r c do
+		r c
+		r 0 >=
+		r height <
+		and
+		c 0 >=
+		c width <
+		and
+		and
+	end
+end
+
+fn setCell(int int u8)
+	var row col val do
+		row col rowColumnToCell val !8
+	end
+end
+
+fn getBombCountAround(int int -- int)
+	0 0 0 var r c dr dc count do
+		-1 2 for dr do
+			-1 2 for dc do
+				r dr +
+				c dc +
+				checkCellBounds
+				if
+					getCell
+					bomb? if
+						count 1+ count!
+					end
+				else
+					drop drop
+				end
+			end
+		end
+		count
+	end
+end
+
+fn getSpacer(int int int int -- u8)
+	var r c r_cursor c_cursor do
+		r_cursor r == if
+			c_cursor c == if
+				'['
+			else c_cursor c 1 - == if
+					']'
+				else
+					' '
+				end
+			end
+		else
+			' '
+		end
+	end
+end
+
+fn printCell(u8 int int)
+//	drop drop printHex8
+	var cell r c do
+		cell open? if
+			cell bomb? if
+				'*'
+			else
+				r c getBombCountAround
+				dup 0 > if
+					as_u8 '0' +
+				else
+					drop ' '
+				end
+			end
+		else
+			'.'
+		end
+		emit
+	end
+end
+
+fn printField(int int)
+	var r_cursor c_cursor do
+		0u8 0u8 setCursor
+
+		0 height for r do
+			'|' emit
+			0 width for c do
+				r c r_cursor c_cursor getSpacer emit
+
+				r c getCell
+				r c printCell
+			end
+			r width r_cursor c_cursor getSpacer emit
+			'|' emit
+			'\n' emit
+		end
+	end
+end
+
+fn initField()
+	0
+	height width * bombRatio * 1000 /
+	for _ do
+		random height as_u32 % as_i16
+		random width as_u32 % as_i16
+		maskBomb setCell
+	end
+end
+
+fn main()
+	7439742u32 initRandom
+	initField
+	0 0 var curr_r curr_c do
+		while true do
+			curr_r curr_c printField
+			getChar
+			dup printHex4 ' ' emit
+			dup 0x1bu16 == if
+				drop
+				break
+			end
+			// cursor up
+			dup 0xE048u16 == if
+				curr_r height + 1 - height % curr_r!
+			end
+			// cursor down
+			dup 0xE050u16 == if
+				curr_r 1 + height % curr_r!
+			end
+			// cursor left
+			dup 0xE04Bu16 == if
+				curr_c width + 1 - width % curr_c!
+			end
+			// cursor right
+			dup 0xE04Du16 == if
+				curr_c 1 + width % curr_c!
+			end
+			dup 0x0du16 == if
+				curr_r curr_c getCell
+				var cell do
+					cell open? not if
+						cell maskOpen or cell!
+						curr_r curr_c cell setCell
+					end
+					cell bomb? if
+						curr_r curr_c printField
+						"boom! you've lost" printString
+						drop
+						break
+					end
+				end
+			end
+			drop
+		end
+	end
+end
