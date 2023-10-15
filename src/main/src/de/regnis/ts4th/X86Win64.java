@@ -403,6 +403,9 @@ public class X86Win64 {
 		case AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) -> {
 			writeBinCommand(operation, reg1, reg2, type);
 		}
+		case AsmIR.BinLiteralCommand(AsmIR.BinOperation operation, int reg, long value, Type type) -> {
+			writeBinLiteralCommand(operation, reg, value, type);
+		}
 		case AsmIR.Not(int reg, Type type) -> {
 			writeComment(STR. "not r\{ reg } (\{ type })" );
 			writeIndented(STR. "not \{ getRegName(reg, type) }" );
@@ -630,6 +633,74 @@ public class X86Win64 {
 		}
 	}
 
+	private void writeBinLiteralCommand(AsmIR.BinOperation operation, int reg, long value, Type type) throws IOException {
+		writeComment(STR. "\{ operation } r\{ reg }, \{ value } (\{ type })" );
+
+		switch (operation) {
+		case add -> writeIndented(STR. "add \{ getRegName(reg, type) }, \{ value }" );
+		case sub -> writeIndented(STR. "sub \{ getRegName(reg, type) }, \{ value }" );
+		case imul -> // https://www.felixcloutier.com/x86/imul
+				writeIndented(STR. "imul \{ getRegName(reg, type) }, \{ value }" );
+		case idiv -> {
+			// https://www.felixcloutier.com/x86/idiv
+			// (edx eax) / %reg -> eax
+			// (edx eax) % %reg -> edx
+			final int size = type.getByteCount(PTR_SIZE);
+			final String regName = getRegName(reg, size);
+			final String regA = getRegName("a", size);
+			final String regC = getRegName("c", size);
+			final String regD = getRegName("d", size);
+			writeIndented(STR. """
+					              mov \{ regD }, \{ value }
+					              xor eax, eax
+					              mov \{ regA }, \{ regName }
+					              xor ecx, ecx
+					              mov \{ regC }, \{ regD }
+					              xor edx, edx
+					              idiv ecx
+					              mov ecx, eax""" );
+		}
+		case imod -> {
+			// https://www.felixcloutier.com/x86/idiv
+			// (edx eax) / %reg -> eax
+			// (edx eax) % %reg -> edx
+			final int size = type.getByteCount(PTR_SIZE);
+			final String regName1 = getRegName(reg, size);
+			final String regA = getRegName("a", size);
+			final String regC = getRegName("c", size);
+			final String regD = getRegName("d", size);
+			writeIndented(STR. """
+					              mov \{ regD }, \{ value }
+					              xor eax, eax
+					              mov \{ regA }, \{ regName1 }
+					              xor ecx, ecx
+					              mov \{ regC }, \{ regD }
+					              xor edx, edx
+					              idiv ecx
+					              mov ecx, edx""" );
+		}
+		case and -> writeIndented(STR. "and \{ getRegName(reg, type) }, \{ value }" );
+		case or -> writeIndented(STR. "or \{ getRegName(reg, type) }, \{ value }" );
+		case xor -> writeIndented(STR. "xor \{ getRegName(reg, type) }, \{ value }" );
+		case shl -> {
+			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
+			writeIndented(STR. "shl \{ getRegName(reg, type) }, \{ value }" );
+		}
+		case shr -> {
+			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
+			writeIndented(STR. "shr \{ getRegName(reg, type) }, \{ value }" );
+		}
+		case boolTest -> writeIndented(STR."test \{getRegName(reg, 1)}, \{value}");
+		case lt -> writeRelationLiteralCommand("l", "b", reg, value, type);
+		case le -> writeRelationLiteralCommand("le", "be", reg, value, type);
+		case eq -> writeRelationLiteralCommand("e", "e", reg, value, type);
+		case neq -> writeRelationLiteralCommand("ne", "ne", reg, value, type);
+		case ge -> writeRelationLiteralCommand("ge", "ae", reg, value, type);
+		case gt -> writeRelationLiteralCommand("g", "a", reg, value, type);
+		default -> throw new IllegalStateException("not implemented " + operation);
+		}
+	}
+
 	private void writeRelationCommand(String cmovSuffixSigned, String cmovSuffixUnsigned, int reg1, int reg2, Type type) throws IOException {
 		final String cmovSuffix = type == Type.U8 || type == Type.U16 || type == Type.U32 || type == Type.U64
 				? cmovSuffixUnsigned
@@ -639,6 +710,20 @@ public class X86Win64 {
 		final String regName2 = getRegName(reg2, 2);
 		writeIndented(STR. """
 				              cmp   \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }
+				              mov   \{ regName1 }, 0
+				              mov   \{ regName2 }, 1
+				              cmov\{ cmovSuffix } \{ regName1 }, \{ regName2 }""" );
+	}
+
+	private void writeRelationLiteralCommand(String cmovSuffixSigned, String cmovSuffixUnsigned, int reg, long value, Type type) throws IOException {
+		final String cmovSuffix = type == Type.U8 || type == Type.U16 || type == Type.U32 || type == Type.U64
+				? cmovSuffixUnsigned
+				: cmovSuffixSigned;
+		// there are no cmovXX commands for 8-bit registers
+		final String regName1 = getRegName(reg, 2);
+		final String regName2 = getRegName((reg + 2) % 3, 2);
+		writeIndented(STR. """
+				              cmp   \{ getRegName(reg, type) }, \{ value }
 				              mov   \{ regName1 }, 0
 				              mov   \{ regName2 }, 1
 				              cmov\{ cmovSuffix } \{ regName1 }, \{ regName2 }""" );

@@ -67,7 +67,6 @@ appendChar:
 	store @r1, r0(u8)
 	pop r0 (u8)
 	pop r0 (ptr)
-	r1 = 1 (ptr)
-	add r0, r1 (ptr)
+	add r0, 1 (ptr)
 	push r0 (ptr)
 	ret

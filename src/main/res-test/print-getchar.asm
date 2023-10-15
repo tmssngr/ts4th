@@ -27,38 +27,28 @@ tsf_printNibble:
         ; -- pop 0 (u8) --
         mov cl, [r15]
         add r15, 1
-        ; -- literal r1, #15 --
-        mov al, 15
-        ; -- and r0, r1 (u8) --
-        and cl, al
-        ; -- literal r1, #48 --
-        mov al, 48
-        ; -- add r0, r1 (u8) --
-        add cl, al
+        ; -- and r0, 15 (u8) --
+        and cl, 15
+        ; -- add r0, 48 (u8) --
+        add cl, 48
         ; -- push 0 (u8) --
         sub r15, 1
         mov [r15], cl
-        ; -- literal r1, #57 --
-        mov al, 57
-        ; -- gt r0, r1 (u8) --
-        cmp   cl, al
+        ; -- gt r0, 57 (u8) --
+        cmp   cl, 57
         mov   cx, 0
-        mov   ax, 1
-        cmova cx, ax
+        mov   bx, 1
+        cmova cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i2 --
         jz .i2
         ; -- literal r0, #65 --
         mov cl, 65
-        ; -- literal r1, #57 --
-        mov al, 57
-        ; -- sub r0, r1 (u8) --
-        sub cl, al
-        ; -- literal r1, #1 --
-        mov al, 1
-        ; -- sub r0, r1 (u8) --
-        sub cl, al
+        ; -- sub r0, 57 (u8) --
+        sub cl, 57
+        ; -- sub r0, 1 (u8) --
+        sub cl, 1
         ; -- mov 1, 0 (u8) --
         mov al, cl
         ; -- pop 0 (u8) --
@@ -90,10 +80,8 @@ tsf_printHex2:
         mov [r15], cl
         ; -- mov 1, 0 (u8) --
         mov al, cl
-        ; -- literal r0, #4 --
-        mov cl, 4
-        ; -- shr r1, r0 (u8) --
-        shr al, cl
+        ; -- shr r1, 4 (u8) --
+        shr al, 4
         ; -- push 1 (u8) --
         sub r15, 1
         mov [r15], al
@@ -114,10 +102,8 @@ tsf_printHex4:
         mov [r15], cx
         ; -- mov 1, 0 (u16) --
         mov ax, cx
-        ; -- literal r0, #8 --
-        mov cx, 8
-        ; -- shr r1, r0 (u16) --
-        shr ax, cl
+        ; -- shr r1, 8 (u16) --
+        shr ax, 8
         ; -- mov 0, 1 (u16) --
         mov cx, ax
         ; -- push 0 (u8) --

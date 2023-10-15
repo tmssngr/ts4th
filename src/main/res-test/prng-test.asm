@@ -47,10 +47,8 @@ tsf_random:
         ; -- push 0 (u32) --
         sub r15, 4
         mov [r15], ecx
-        ; -- literal r1, #524287 --
-        mov eax, 524287
-        ; -- and r0, r1 (u32) --
-        and ecx, eax
+        ; -- and r0, 524287 (u32) --
+        and ecx, 524287
         ; -- read var r1, [<empty> (u32)] --
         mov rax, [rsp+0]
         ; -- imul r0, r1 (u32) --
@@ -65,10 +63,8 @@ tsf_random:
         mov [r15], eax
         ; -- mov 1, 0 (u32) --
         mov eax, ecx
-        ; -- literal r0, #15 --
-        mov ecx, 15
-        ; -- shr r1, r0 (u32) --
-        shr eax, cl
+        ; -- shr r1, 15 (u32) --
+        shr eax, 15
         ; -- mov 0, 1 (u32) --
         mov ecx, eax
         ; -- read var r1, [<empty> (u32)] --
@@ -78,16 +74,12 @@ tsf_random:
         ; -- push 0 (u32) --
         sub r15, 4
         mov [r15], ecx
-        ; -- literal r1, #65535 --
-        mov eax, 65535
-        ; -- and r0, r1 (u32) --
-        and ecx, eax
+        ; -- and r0, 65535 (u32) --
+        and ecx, 65535
         ; -- mov 1, 0 (u32) --
         mov eax, ecx
-        ; -- literal r0, #15 --
-        mov ecx, 15
-        ; -- shl r1, r0 (u32) --
-        shl eax, cl
+        ; -- shl r1, 15 (u32) --
+        shl eax, 15
         ; -- pop 0 (u32) --
         mov ecx, [r15]
         add r15, 4
@@ -96,10 +88,8 @@ tsf_random:
         mov [r15], eax
         ; -- mov 1, 0 (u32) --
         mov eax, ecx
-        ; -- literal r0, #16 --
-        mov ecx, 16
-        ; -- shr r1, r0 (u32) --
-        shr eax, cl
+        ; -- shr r1, 16 (u32) --
+        shr eax, 16
         ; -- pop 0 (u32) --
         mov ecx, [r15]
         add r15, 4
@@ -115,10 +105,8 @@ tsf_random:
         ; -- push 0 (u32) --
         sub r15, 4
         mov [r15], ecx
-        ; -- literal r1, #2147483647 --
-        mov eax, 2147483647
-        ; -- and r0, r1 (u32) --
-        and ecx, eax
+        ; -- and r0, 2147483647 (u32) --
+        and ecx, 2147483647
         ; -- mov 1, 0 (u32) --
         mov eax, ecx
         ; -- pop 0 (u32) --
@@ -129,10 +117,8 @@ tsf_random:
         mov [r15], eax
         ; -- mov 1, 0 (u32) --
         mov eax, ecx
-        ; -- literal r0, #31 --
-        mov ecx, 31
-        ; -- shr r1, r0 (u32) --
-        shr eax, cl
+        ; -- shr r1, 31 (u32) --
+        shr eax, 31
         ; -- pop 0 (u32) --
         mov ecx, [r15]
         add r15, 4
@@ -190,13 +176,11 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal r1, #50 --
-        mov ax, 50
-        ; -- lt r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- lt r0, 50 (i16) --
+        cmp   cx, 50
         mov   cx, 0
-        mov   ax, 1
-        cmovl cx, ax
+        mov   bx, 1
+        cmovl cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i3 --
@@ -220,10 +204,8 @@ tsf_main:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
-        ; -- literal r1, #1 --
-        mov ax, 1
-        ; -- add r0, r1 (i16) --
-        add cx, ax
+        ; -- add r0, 1 (i16) --
+        add cx, 1
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx

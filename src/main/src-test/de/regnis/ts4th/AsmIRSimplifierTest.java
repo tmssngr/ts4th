@@ -226,6 +226,20 @@ public class AsmIRSimplifierTest {
 		             ));
 	}
 
+	@Test
+	public void testLitBin_binLit() {
+		testSimplify(List.of(
+				             binLitCommand(AsmIR.BinOperation.add, 0, 10, Type.U8),
+				             binLitCommand(AsmIR.BinOperation.sub, 0, 10, Type.I16)
+		             ),
+		             List.of(
+				             literal(1, 10, Type.U8),
+				             binCommand(AsmIR.BinOperation.add, 0, 1, Type.U8),
+				             literal(1, 10, Type.I16),
+				             binCommand(AsmIR.BinOperation.sub, 0, 1, Type.I16)
+		             ));
+	}
+
 	private static void testSimplify(List<AsmIR> expected, List<AsmIR> input) {
 		assertEquals(expected,
 		             AsmIRSimplifier.simplify(input));

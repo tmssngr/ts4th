@@ -11,15 +11,13 @@ strlen:
 	move r1, r0 (ptr)
 	load r0(u8), @r1
 	cast r0 (u8 -> i16)
-	r1 = 0 (i16)
-	neq r0, r1 (i16)
+	neq r0, 0 (i16)
 	boolTest r0, r0 (i16)
 	jump z, .i3
 	pop r1 (ptr)
 	pop r0 (i16)
 	push r1 (ptr)
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	move r1, r0 (i16)
 	pop r0 (ptr)
 	push r1 (i16)

@@ -10,7 +10,7 @@ public sealed interface AsmIR permits
 		AsmIR.PushVar, AsmIR.LocalVarRead, AsmIR.LocalVarWrite, AsmIR.DropVars,
 		AsmIR.Load, AsmIR.Store,
 		AsmIR.Jump, AsmIR.Call,
-		AsmIR.BinCommand, AsmIR.Not,
+		AsmIR.BinCommand, AsmIR.BinLiteralCommand, AsmIR.Not,
 		AsmIR.Print, AsmIR.PrintString, AsmIR.Emit, AsmIR.SetCursor, AsmIR.GetChar,
 		AsmIR.Mem, AsmIR.Ret {
 
@@ -157,6 +157,13 @@ public sealed interface AsmIR permits
 		@Override
 		public String toString() {
 			return operation + " r" + reg1 + ", r" + reg2 + " (" + type + ")";
+		}
+	}
+
+	record BinLiteralCommand(BinOperation operation, int reg, long value, Type type) implements AsmIR {
+		@Override
+		public String toString() {
+			return operation + " r" + reg + ", " + value + " (" + type + ")";
 		}
 	}
 

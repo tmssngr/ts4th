@@ -41,13 +41,11 @@ tsf_main:
 .i1:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- literal r1, #100 --
-        mov ax, 100
-        ; -- lt r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- lt r0, 100 (i16) --
+        cmp   cx, 100
         mov   cx, 0
-        mov   ax, 1
-        cmovl cx, ax
+        mov   bx, 1
+        cmovl cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i3 --

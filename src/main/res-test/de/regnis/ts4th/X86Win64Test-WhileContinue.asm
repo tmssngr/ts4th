@@ -36,13 +36,11 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal r1, #10 --
-        mov ax, 10
-        ; -- lt r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- lt r0, 10 (i16) --
+        cmp   cx, 10
         mov   cx, 0
-        mov   ax, 1
-        cmovl cx, ax
+        mov   bx, 1
+        cmovl cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i3 --
@@ -53,13 +51,11 @@ tsf_main:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal r1, #3 --
-        mov ax, 3
-        ; -- eq r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- eq r0, 3 (i16) --
+        cmp   cx, 3
         mov   cx, 0
-        mov   ax, 1
-        cmove cx, ax
+        mov   bx, 1
+        cmove cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i5 --
@@ -77,10 +73,8 @@ tsf_main:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
-        ; -- literal r1, #2 --
-        mov ax, 2
-        ; -- add r0, r1 (i16) --
-        add cx, ax
+        ; -- add r0, 2 (i16) --
+        add cx, 2
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
@@ -115,10 +109,8 @@ tsf_main:
         ; -- pop 0 (i16) --
         mov cx, [r15]
         add r15, 2
-        ; -- literal r1, #1 --
-        mov ax, 1
-        ; -- add r0, r1 (i16) --
-        add cx, ax
+        ; -- add r0, 1 (i16) --
+        add cx, 1
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx

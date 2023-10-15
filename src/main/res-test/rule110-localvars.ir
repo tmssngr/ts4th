@@ -9,8 +9,7 @@ fill:
 	pushVar r0 (ptr)
 .i1:
 	read r0, var[1(i16)]
-	r1 = 0 (i16)
-	gt r0, r1 (i16)
+	gt r0, 0 (i16)
 	boolTest r0, r0 (i16)
 	jump z, .i3
 	read r1, var[0(ptr)]
@@ -22,8 +21,7 @@ fill:
 	add r0, r1 (ptr)
 	write [0(ptr)], r0
 	read r0, var[1(i16)]
-	r1 = 1 (i16)
-	sub r0, r1 (i16)
+	sub r0, 1 (i16)
 	write [1(i16)], r0
 	jump .i1
 .i3:
@@ -35,8 +33,7 @@ printBoard:
 	r0 = 0 (i16)
 	push r0 (i16)
 	r0 = 30 (i16)
-	r1 = 2 (i16)
-	sub r0, r1 (i16)
+	sub r0, 2 (i16)
 	pushVar r0 (i16)
 	pop r0 (i16)
 	pushVar r0 (i16)
@@ -64,8 +61,7 @@ printBoard:
 	load r0(u8), @r1
 	emit
 	read r0, var[0(i16)]
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	write [0(i16)], r0
 	jump .i1
 .i3:
@@ -86,8 +82,7 @@ main:
 	r0 = var 0:board
 	push r0 (ptr)
 	r0 = 30 (i16)
-	r1 = 2 (i16)
-	sub r0, r1 (i16)
+	sub r0, 2 (i16)
 	move r1, r0 (i16)
 	pop r0 (ptr)
 	cast r1 (i16 -> ptr)
@@ -98,8 +93,7 @@ main:
 	r0 = 0 (i16)
 	push r0 (i16)
 	r0 = 30 (i16)
-	r1 = 2 (i16)
-	sub r0, r1 (i16)
+	sub r0, 2 (i16)
 	pushVar r0 (i16)
 	pop r0 (i16)
 	pushVar r0 (i16)
@@ -128,8 +122,7 @@ main:
 	r0 = 0 (i16)
 	push r0 (i16)
 	r0 = 30 (i16)
-	r1 = 1 (i16)
-	sub r0, r1 (i16)
+	sub r0, 1 (i16)
 	pushVar r0 (i16)
 	pop r0 (i16)
 	pushVar r0 (i16)
@@ -140,17 +133,14 @@ main:
 	boolTest r0, r0 (i16)
 	jump z, .i6
 	read r1, var[2(i16)]
-	r0 = 1 (i16)
-	shl r1, r0 (i16)
+	shl r1, 1 (i16)
 	move r0, r1 (i16)
-	r1 = 7 (i16)
-	and r0, r1 (i16)
+	and r0, 7 (i16)
 	push r0 (i16)
 	r0 = var 0:board
 	push r0 (ptr)
 	read r0, var[0(i16)]
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	move r1, r0 (i16)
 	pop r0 (ptr)
 	cast r1 (i16 -> ptr)
@@ -166,8 +156,7 @@ main:
 	read r0, var[2(i16)]
 	shr r1, r0 (i16)
 	move r0, r1 (i16)
-	r1 = 1 (i16)
-	and r0, r1 (i16)
+	and r0, 1 (i16)
 	push r0 (i16)
 	r0 = var 0:board
 	read r1, var[0(i16)]
@@ -180,15 +169,13 @@ main:
 	pop r1 (ptr)
 	store @r1, r0(u8)
 	read r0, var[0(i16)]
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	write [0(i16)], r0
 	jump .i4
 .i6:
 	dropVars i16, i16, i16
 	read r0, var[0(i16)]
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	write [0(i16)], r0
 	jump .i1
 .i3:

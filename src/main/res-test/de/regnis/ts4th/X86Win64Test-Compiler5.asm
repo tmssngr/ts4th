@@ -184,10 +184,8 @@ tsf_appendChar:
         ; -- pop 0 (ptr) --
         mov rcx, [r15]
         add r15, 8
-        ; -- literal r1, #1 --
-        mov rax, 1
-        ; -- add r0, r1 (ptr) --
-        add rcx, rax
+        ; -- add r0, 1 (ptr) --
+        add rcx, 1
         ; -- push 0 (ptr) --
         sub r15, 8
         mov [r15], rcx

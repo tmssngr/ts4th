@@ -12,8 +12,7 @@ main:
 	boolTest r0, r0 (i16)
 	jump z, .i3
 	read r0, var[0(i16)]
-	r1 = 5 (i16)
-	eq r0, r1 (i16)
+	eq r0, 5 (i16)
 	boolTest r0, r0 (i16)
 	jump z, .i5
 	jump .i6
@@ -24,8 +23,7 @@ main:
 	emit
 .i6:
 	read r0, var[0(i16)]
-	r1 = 1 (i16)
-	add r0, r1 (i16)
+	add r0, 1 (i16)
 	write [0(i16)], r0
 	jump .i1
 .i3:

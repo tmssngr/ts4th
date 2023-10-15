@@ -57,13 +57,11 @@ tsf_main:
         add rsp, 8
         ; -- literal r0, #32 --
         mov cl, 32
-        ; -- literal r1, #20 --
-        mov al, 20
-        ; -- eq r0, r1 (u8) --
-        cmp   cl, al
+        ; -- eq r0, 20 (u8) --
+        cmp   cl, 20
         mov   cx, 0
-        mov   ax, 1
-        cmove cx, ax
+        mov   bx, 1
+        cmove cx, bx
         ; -- printBool --
         or cl, cl
         lea rcx, [false_string]

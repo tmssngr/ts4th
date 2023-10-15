@@ -54,13 +54,11 @@ tsf_main:
         jz .i3
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- literal r1, #5 --
-        mov ax, 5
-        ; -- eq r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- eq r0, 5 (i16) --
+        cmp   cx, 5
         mov   cx, 0
-        mov   ax, 1
-        cmove cx, ax
+        mov   bx, 1
+        cmove cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i5 --
@@ -92,10 +90,8 @@ tsf_main:
 .i6:
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
-        ; -- literal r1, #1 --
-        mov ax, 1
-        ; -- add r0, r1 (i16) --
-        add cx, ax
+        ; -- add r0, 1 (i16) --
+        add cx, 1
         ; -- write var [<empty> (i16)], 0 --
         mov [rsp+0], cx
         ; -- jump .i1 --

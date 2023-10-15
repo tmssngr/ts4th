@@ -1,7 +1,6 @@
 main:
 	r0 = 1024 (i16)
-	r1 = 2048 (i16)
-	sub r0, r1 (i16)
+	sub r0, 2048 (i16)
 	printInt r0(i16)
 	r0 = 10 (u8)
 	emit

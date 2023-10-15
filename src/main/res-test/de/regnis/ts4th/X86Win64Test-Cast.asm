@@ -56,10 +56,8 @@ tsf_main:
         mov [r15], cx
         ; -- mov 1, 0 (i16) --
         mov ax, cx
-        ; -- literal r0, #8 --
-        mov cx, 8
-        ; -- shr r1, r0 (i16) --
-        shr ax, cl
+        ; -- shr r1, 8 (i16) --
+        shr ax, 8
         ; -- mov 0, 1 (i16) --
         mov cx, ax
         ; -- printInt r0(i16) --

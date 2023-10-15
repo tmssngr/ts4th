@@ -26,13 +26,11 @@ start:
 tsf_main:
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- literal r1, #2 --
-        mov ax, 2
-        ; -- lt r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- lt r0, 2 (i16) --
+        cmp   cx, 2
         mov   cx, 0
-        mov   ax, 1
-        cmovl cx, ax
+        mov   bx, 1
+        cmovl cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i2 --
@@ -75,13 +73,11 @@ tsf_main:
         add rsp, 8
         ; -- literal r0, #1 --
         mov cx, 1
-        ; -- literal r1, #2 --
-        mov ax, 2
-        ; -- gt r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- gt r0, 2 (i16) --
+        cmp   cx, 2
         mov   cx, 0
-        mov   ax, 1
-        cmovg cx, ax
+        mov   bx, 1
+        cmovg cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i5 --

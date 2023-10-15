@@ -26,10 +26,8 @@ start:
 tsf_main:
         ; -- literal r1, #1 --
         mov ax, 1
-        ; -- literal r0, #2 --
-        mov cx, 2
-        ; -- shl r1, r0 (i16) --
-        shl ax, cl
+        ; -- shl r1, 2 (i16) --
+        shl ax, 2
         ; -- mov 0, 1 (i16) --
         mov cx, ax
         ; -- printInt r0(i16) --
@@ -53,10 +51,8 @@ tsf_main:
         add rsp, 8
         ; -- literal r1, #1024 --
         mov ax, 1024
-        ; -- literal r0, #1 --
-        mov cx, 1
-        ; -- shr r1, r0 (i16) --
-        shr ax, cl
+        ; -- shr r1, 1 (i16) --
+        shr ax, 1
         ; -- mov 0, 1 (i16) --
         mov cx, ax
         ; -- printInt r0(i16) --

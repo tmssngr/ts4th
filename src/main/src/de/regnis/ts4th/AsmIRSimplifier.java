@@ -15,6 +15,7 @@ public class AsmIRSimplifier {
 			newInstructions = removeLiteralOrVarRead_move(newInstructions);
 			newInstructions = swapLiteralOrVarRead_Pop(newInstructions);
 			newInstructions = squashDropVars(newInstructions);
+			newInstructions = replaceLitBin_BinLit(newInstructions);
 			removeUnusedLabels(newInstructions);
 			if (newInstructions.equals(instructions)) {
 				return instructions;
@@ -223,6 +224,25 @@ public class AsmIRSimplifier {
 				}
 			}
 		}.process("squash drop-vars");
+
+		return newInstructions;
+	}
+
+	private static List<AsmIR> replaceLitBin_BinLit(List<AsmIR> instructions) {
+		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
+
+		new DualPeepHoleSimplifier<>(newInstructions) {
+			@Override
+			protected void handle(AsmIR i1, AsmIR i2) {
+				if (i1 instanceof AsmIR.IntLiteral(int targetReg, long value, Type litType)
+				    && i2 instanceof AsmIR.BinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type binType)
+				    && targetReg == reg2) {
+					Utils.assertTrue(Objects.equals(litType, binType));
+					remove();
+					replace(new AsmIR.BinLiteralCommand(operation, reg1, value, binType));
+				}
+			}
+		}.process("replace literal-binary with binary-literal");
 
 		return newInstructions;
 	}

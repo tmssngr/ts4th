@@ -48,13 +48,11 @@ tsf_strlen:
         mov cl, byte [rax]
         ; -- cast 0, (u8 -> i16) --
         movsx cx, cl
-        ; -- literal r1, #0 --
-        mov ax, 0
-        ; -- neq r0, r1 (i16) --
-        cmp   cx, ax
+        ; -- neq r0, 0 (i16) --
+        cmp   cx, 0
         mov   cx, 0
-        mov   ax, 1
-        cmovne cx, ax
+        mov   bx, 1
+        cmovne cx, bx
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
         ; -- jump z .i3 --
@@ -68,10 +66,8 @@ tsf_strlen:
         ; -- push 1 (ptr) --
         sub r15, 8
         mov [r15], rax
-        ; -- literal r1, #1 --
-        mov ax, 1
-        ; -- add r0, r1 (i16) --
-        add cx, ax
+        ; -- add r0, 1 (i16) --
+        add cx, 1
         ; -- mov 1, 0 (i16) --
         mov ax, cx
         ; -- pop 0 (ptr) --

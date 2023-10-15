@@ -26,10 +26,8 @@ start:
 tsf_main:
         ; -- literal r0, #1024 --
         mov cx, 1024
-        ; -- literal r1, #2048 --
-        mov ax, 2048
-        ; -- sub r0, r1 (i16) --
-        sub cx, ax
+        ; -- sub r0, 2048 (i16) --
+        sub cx, 2048
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx

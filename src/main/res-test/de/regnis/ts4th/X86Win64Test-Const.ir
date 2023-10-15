@@ -9,7 +9,6 @@ main:
 	r0 = 4 (u16)
 	printString r1 (0)
 	r0 = 32 (u8)
-	r1 = 20 (u8)
-	eq r0, r1 (u8)
+	eq r0, 20 (u8)
 	printInt r0(bool)
 	ret

@@ -80,6 +80,10 @@ public class AsmIRFactory {
 		return new AsmIR.BinCommand(operation, reg1, reg2, type);
 	}
 
+	public static AsmIR binLitCommand(AsmIR.BinOperation operation, int reg, long value, Type type) {
+		return new AsmIR.BinLiteralCommand(operation, reg, value, type);
+	}
+
 	public static AsmIR printString(int ptrReg, int sizeReg) {
 		return new AsmIR.PrintString(ptrReg, sizeReg);
 	}
