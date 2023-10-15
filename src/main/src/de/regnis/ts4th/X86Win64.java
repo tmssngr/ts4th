@@ -29,6 +29,12 @@ public class X86Win64 {
 
 	private int labelIndex;
 
+	private boolean usesEmit;
+	private boolean usesStringPrint;
+	private boolean usesUintPrint;
+	private boolean usesGetChar;
+	private boolean usesBooleanStringLiterals;
+
 	public X86Win64(Writer writer) {
 		this.writer = writer;
 	}
@@ -70,34 +76,44 @@ public class X86Win64 {
 
 		writeInit();
 		writeNL();
-		writeCharPrint();
-		writeNL();
-		writeStringPrint();
-		writeNL();
-		writeUintPrint();
-		writeNL();
-		writeGetChar();
-		writeNL();
 
-		write("""
-				      ; string constants
-				      section '.data' data readable
-				      true_string db 'true'
-				      false_string db 'false'
-
-				      """);
+		if (usesEmit) {
+			writeEmit();
+			writeNL();
+		}
+		if (usesStringPrint || usesEmit || usesUintPrint) {
+			writeStringPrint();
+			writeNL();
+		}
+		if (usesUintPrint) {
+			writeUintPrint();
+			writeNL();
+		}
+		if (usesGetChar) {
+			writeGetChar();
+			writeNL();
+		}
 
 		final List<Supplier<byte[]>> stringLiterals = program.stringLiterals();
-		if (stringLiterals.size() > 0) {
-			for (int i = 0; i < stringLiterals.size(); i++) {
-				final String encoded = encode(stringLiterals.get(i).get());
-				writeIndented(STRING_PREFIX + i + " db " + encoded);
+		if (usesBooleanStringLiterals || stringLiterals.size() > 0) {
+			write("; string constants");
+			write("section '.data' data readable");
+			if (usesBooleanStringLiterals) {
+				writeIndented("true_string  db 'true'");
+				writeIndented("false_string db 'false'");
+				writeNL();
 			}
-		}
-		writeNL();
 
-		write("""
-				      section '.data' data readable writeable""");
+			if (stringLiterals.size() > 0) {
+				for (int i = 0; i < stringLiterals.size(); i++) {
+					final String encoded = encode(stringLiterals.get(i).get());
+					writeIndented(STRING_PREFIX + i + " db " + encoded);
+				}
+			}
+			writeNL();
+		}
+
+		write("section '.data' data readable writeable");
 		writeIndented("""
 				              hStdIn  rb 8
 				              hStdOut rb 8
@@ -211,7 +227,7 @@ public class X86Win64 {
 		writeIndented("ret");
 	}
 
-	private void writeCharPrint() throws IOException {
+	private void writeEmit() throws IOException {
 		// rcx = char
 		writeLabel(EMIT);
 		// push char to stack
@@ -412,6 +428,8 @@ public class X86Win64 {
 		}
 		case AsmIR.Print(Type type) -> {
 			if (type == Type.Bool) {
+				usesBooleanStringLiterals = true;
+
 				writeComment("printBool");
 				final String printLabel = nextLocalLabel();
 				writeIndented(STR. """
@@ -433,7 +451,15 @@ public class X86Win64 {
 			}
 		}
 		case AsmIR.Emit() -> {
-			writeEmit();
+			usesEmit = true;
+
+			writeComment("emit");
+			// expects char in cl
+			writeIndented(STR. """
+					              sub rsp, 8
+					                call \{ EMIT }
+					              add rsp, 8
+					              """ );
 		}
 		case AsmIR.PrintString(int ptrReg, int sizeReg) -> {
 			writePrintString(ptrReg, sizeReg);
@@ -466,6 +492,8 @@ public class X86Win64 {
 					mov   rsp, rdi""");
 		}
 		case AsmIR.GetChar() -> {
+			usesGetChar = true;
+
 			writeComment("getChar");
 			writeIndented(STR. """
 			              sub  rsp, 8
@@ -740,6 +768,8 @@ public class X86Win64 {
 			else if (size == 4) {
 				writeIndented(STR. "movsxd rcx, \{ getRegName(0, size) }" );
 			}
+
+			usesEmit = true;
 			final String labelPos = nextLocalLabel();
 			writeIndented(STR. """
 					              test   rcx, rcx
@@ -759,6 +789,7 @@ public class X86Win64 {
 			// movezxd rcx, ecx is not necessary: https://stackoverflow.com/questions/11177137/why-do-x86-64-instructions-on-32-bit-registers-zero-the-upper-part-of-the-full-6
 		}
 
+		usesUintPrint = true;
 		writeIndented(STR. """
 				              sub  rsp, 8
 				                call \{ PRINT_UINT }
@@ -766,17 +797,9 @@ public class X86Win64 {
 				              """ );
 	}
 
-	private void writeEmit() throws IOException {
-		writeComment("emit");
-		// expects char in cl
-		writeIndented(STR. """
-				              sub rsp, 8
-				                call \{ EMIT }
-				              add rsp, 8
-				              """ );
-	}
-
 	private void writePrintString(int ptrReg, int sizeReg) throws IOException {
+		usesStringPrint = true;
+
 		writeComment(STR. "printString r\{ ptrReg } (\{ sizeReg })" );
 
 		final String ptrRegName = getRegName(ptrReg, PTR_SIZE);

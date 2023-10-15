@@ -64,14 +64,6 @@ init:
            add  rsp, 20h
         ret
 
-tsfbi_emit:
-        push rcx ; = sub rsp, 8
-          mov rcx, rsp
-          mov rdx, 1
-          call tsfbi_printString
-        pop rcx
-        ret
-
 tsfbi_printString:
         mov     rdi, rsp
         and     spl, 0xf0
@@ -142,31 +134,6 @@ tsfbi_printUint:
         ;add    rsp, 8
         leave ; Set SP to BP, then pop BP
         ret
-
-tsfbi_getChar:
-        mov rdi, rsp
-        and spl, 0xf0
-          sub rsp, 20h
-            call [_getch]
-            test al, al
-            js   .x1
-            jnz  .x2
-            dec  al
-.x1:
-            mov  rbx, rax
-            shl  rbx, 8
-            call [_getch]
-            or   rax, rbx
-.x2:
-            mov  rcx, rax
-          ; add rsp, 20h
-        mov rsp, rdi
-        ret
-
-; string constants
-section '.data' data readable
-true_string db 'true'
-false_string db 'false'
 
 section '.data' data readable writeable
         hStdIn  rb 8

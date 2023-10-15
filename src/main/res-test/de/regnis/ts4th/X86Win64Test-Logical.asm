@@ -380,84 +380,11 @@ tsfbi_printString:
         mov     rsp, rdi
         ret
 
-tsfbi_printUint:
-        push   rbp
-        mov    rbp,rsp
-        sub    rsp, 50h
-        mov    qword [rsp+24h], rcx
-
-        ; int pos = sizeof(buf);
-        mov    ax, 20h
-        mov    word [rsp+20h], ax
-
-        ; do {
-.print:
-        ; pos--;
-        mov    ax, word [rsp+20h]
-        dec    ax
-        mov    word [rsp+20h], ax
-
-        ; int remainder = x mod 10;
-        ; x = x / 10;
-        mov    rax, qword [rsp+24h]
-        mov    ecx, 10
-        xor    edx, edx
-        div    ecx
-        mov    qword [rsp+24h], rax
-
-        ; int digit = remainder + '0';
-        add    dl, '0'
-
-        ; buf[pos] = digit;
-        mov    ax, word [rsp+20h]
-        movzx  rax, ax
-        lea    rcx, qword [rsp]
-        add    rcx, rax
-        mov    byte [rcx], dl
-
-        ; } while (x > 0);
-        mov    rax, qword [rsp+24h]
-        cmp    rax, 0
-        ja     .print
-
-        ; rcx = &buf[pos]
-
-        ; rdx = sizeof(buf) - pos
-        mov    ax, word [rsp+20h]
-        movzx  rax, ax
-        mov    rdx, 20h
-        sub    rdx, rax
-
-        ;sub    rsp, 8  not necessary because initial push rbp
-          call   tsfbi_printString
-        ;add    rsp, 8
-        leave ; Set SP to BP, then pop BP
-        ret
-
-tsfbi_getChar:
-        mov rdi, rsp
-        and spl, 0xf0
-          sub rsp, 20h
-            call [_getch]
-            test al, al
-            js   .x13
-            jnz  .x14
-            dec  al
-.x13:
-            mov  rbx, rax
-            shl  rbx, 8
-            call [_getch]
-            or   rax, rbx
-.x14:
-            mov  rcx, rax
-          ; add rsp, 20h
-        mov rsp, rdi
-        ret
-
 ; string constants
 section '.data' data readable
-true_string db 'true'
-false_string db 'false'
+        true_string  db 'true'
+        false_string db 'false'
+
         string_0 db 'and: '
         string_1 db 'or:  '
         string_2 db 'xor: '

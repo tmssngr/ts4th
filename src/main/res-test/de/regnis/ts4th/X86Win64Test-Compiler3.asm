@@ -297,31 +297,6 @@ tsfbi_printUint:
         leave ; Set SP to BP, then pop BP
         ret
 
-tsfbi_getChar:
-        mov rdi, rsp
-        and spl, 0xf0
-          sub rsp, 20h
-            call [_getch]
-            test al, al
-            js   .x7
-            jnz  .x8
-            dec  al
-.x7:
-            mov  rbx, rax
-            shl  rbx, 8
-            call [_getch]
-            or   rax, rbx
-.x8:
-            mov  rcx, rax
-          ; add rsp, 20h
-        mov rsp, rdi
-        ret
-
-; string constants
-section '.data' data readable
-true_string db 'true'
-false_string db 'false'
-
 section '.data' data readable writeable
         hStdIn  rb 8
         hStdOut rb 8
