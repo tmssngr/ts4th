@@ -230,13 +230,32 @@ public class AsmIRSimplifierTest {
 	public void testLitBin_binLit() {
 		testSimplify(List.of(
 				             binLitCommand(AsmIR.BinOperation.add, 0, 10, Type.U8),
-				             binLitCommand(AsmIR.BinOperation.sub, 0, 10, Type.I16)
+				             binLitCommand(AsmIR.BinOperation.sub, 1, 10, Type.I16)
 		             ),
 		             List.of(
 				             literal(1, 10, Type.U8),
 				             binCommand(AsmIR.BinOperation.add, 0, 1, Type.U8),
-				             literal(1, 10, Type.I16),
-				             binCommand(AsmIR.BinOperation.sub, 0, 1, Type.I16)
+				             literal(2, 10, Type.I16),
+				             binCommand(AsmIR.BinOperation.sub, 1, 2, Type.I16)
+		             ));
+	}
+
+	@Test
+	public void testCombine2BinLit() {
+		testSimplify(List.of(
+				             binLitCommand(AsmIR.BinOperation.add, 0, 9, Type.U16)
+		             ),
+		             List.of(
+				             binLitCommand(AsmIR.BinOperation.add, 0, 10, Type.U16),
+				             binLitCommand(AsmIR.BinOperation.sub, 0, 1, Type.U16)
+		             ));
+
+		testSimplify(List.of(
+				             binLitCommand(AsmIR.BinOperation.imul, 0, 20, Type.U16)
+		             ),
+		             List.of(
+				             binLitCommand(AsmIR.BinOperation.imul, 0, 10, Type.U16),
+				             binLitCommand(AsmIR.BinOperation.imul, 0, 2, Type.U16)
 		             ));
 	}
 
