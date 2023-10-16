@@ -27,12 +27,12 @@ public class Interpreter {
 	protected boolean process(String name) {
 		switch (name) {
 		case Intrinsics.ADD -> {
-			final Pair<Long, Type> a = popInt();
 			final Pair<Long, Type> b = popInt();
-			final Type aType = a.second();
+			final Pair<Long, Type> a = popInt();
 			final Type bType = b.second();
-			if (!Objects.equals(aType, bType)) {
-				throw new InterpretingFailedException("Need same type, but got " + aType + "," + bType);
+			final Type aType = a.second();
+			if (!Objects.equals(bType, aType)) {
+				throw new InterpretingFailedException("Need same type, but got " + bType + "," + aType);
 			}
 
 			long result = a.first() + b.first();
@@ -41,15 +41,29 @@ public class Interpreter {
 			return true;
 		}
 		case Intrinsics.MUL -> {
-			final Pair<Long, Type> a = popInt();
 			final Pair<Long, Type> b = popInt();
-			final Type aType = a.second();
+			final Pair<Long, Type> a = popInt();
 			final Type bType = b.second();
-			if (!Objects.equals(aType, bType)) {
-				throw new InterpretingFailedException("Need same type, but got " + aType + "," + bType);
+			final Type aType = a.second();
+			if (!Objects.equals(bType, aType)) {
+				throw new InterpretingFailedException("Need same type, but got " + bType + "," + aType);
 			}
 
 			long result = a.first() * b.first();
+			result = toType(result, aType);
+			push(result, aType);
+			return true;
+		}
+		case Intrinsics.DIV -> {
+			final Pair<Long, Type> b = popInt();
+			final Pair<Long, Type> a = popInt();
+			final Type bType = b.second();
+			final Type aType = a.second();
+			if (!Objects.equals(bType, aType)) {
+				throw new InterpretingFailedException("Need same type, but got " + bType + "," + aType);
+			}
+
+			long result = a.first() / b.first();
 			result = toType(result, aType);
 			push(result, aType);
 			return true;
