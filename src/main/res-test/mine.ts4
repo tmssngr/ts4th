@@ -7,6 +7,7 @@ const bombRatio 50 end
 
 const maskBomb 1u8 end
 const maskOpen 2u8 end
+const maskFlag 4u8 end
 
 var field width height * end
 
@@ -24,6 +25,10 @@ end
 
 fn open?(u8 -- bool)
 	maskOpen and 0u8 !=
+end
+
+fn flag?(u8 -- bool)
+	maskFlag and 0u8 !=
 end
 
 fn checkCellBounds(int int -- int int bool)
@@ -98,7 +103,11 @@ fn printCell(u8 int int)
 				end
 			end
 		else
-			'.'
+			cell flag? if
+				'#'
+			else
+				'.'
+			end
 		end
 		emit
 	end
@@ -121,6 +130,21 @@ fn printField(int int)
 			'\n' emit
 		end
 	end
+end
+
+fn printLeft(-- bool)
+	0
+	0 height for r do
+		0 width for c do
+			r c getCell
+			maskFlag maskOpen or and 0u8 == if
+				1 +
+			end
+		end
+	end
+
+	"Left: " printString dup print
+	0 ==
 end
 
 fn abs(int -- int)
@@ -147,17 +171,57 @@ fn initField(int int)
 	end
 end
 
+fn maybeRevealAround(int int)
+	var r c do
+		//"reveal " printString r print ' ' emit c print '\r' emit getChar drop
+		r c getBombCountAround 0 == if
+			-1 2 for dr do
+				-1 2 for dc do
+					dr 0 ==
+					dc 0 == and if
+						continue
+					end
+					r dr +
+					c dc +
+					checkCellBounds if
+						var rd cd do
+							rd cd getCell
+							dup open? if
+								drop
+								continue
+							end
+
+							maskOpen or
+							rd swap cd swap setCell
+							rd cd maybeRevealAround
+						end
+					else
+						drop drop
+					end
+				end
+			end
+		end
+	end
+end
+
 fn main()
 	7439742u32 initRandom
 
 	true
 	width 2 /
 	height 2 /
-	var initialize curr_c curr_r do
+	var needsInitialize curr_c curr_r do
 		while true do
 			curr_r curr_c printField
+			needsInitialize not if
+				printLeft if
+					"You've cleaned the field!" printString
+					break
+				end
+			end
+
 			getChar
-			dup printHex4 ' ' emit
+			//dup printHex4 ' ' emit
 			dup 0x1bu16 == if
 				drop
 				break
@@ -178,9 +242,22 @@ fn main()
 			dup 0xE04Du16 == if
 				curr_c 1 + width % curr_c!
 			end
+			// flag
+			dup 0x20u16 == if
+				needsInitialize not if
+					curr_r curr_c getCell
+					dup open? not if
+						maskFlag xor
+						curr_r swap curr_c swap setCell
+					else
+						drop
+					end
+				end
+			end
+			// enter
 			dup 0x0du16 == if
-				initialize if
-					false initialize!
+				needsInitialize if
+					false needsInitialize!
 					curr_r curr_c initField
 				end
 				curr_r curr_c getCell
@@ -190,11 +267,11 @@ fn main()
 						curr_r curr_c cell setCell
 					end
 					cell bomb? if
-						curr_r curr_c printField
+						curr_r curr_c printField drop
 						"boom! you've lost" printString
-						drop
 						break
 					end
+					curr_r curr_c maybeRevealAround
 				end
 			end
 			drop
