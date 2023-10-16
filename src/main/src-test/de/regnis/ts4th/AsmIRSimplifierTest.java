@@ -107,7 +107,8 @@ public class AsmIRSimplifierTest {
 		));
 
 		try {
-			AsmIRSimplifier.simplify(List.of(
+			final AsmIRSimplifier simplifier = new AsmIRSimplifier(null);
+			simplifier.simplify(List.of(
 					literal(0, 1, Type.I16),
 					push(1, Type.I16),
 					pop(1, Type.Bool),
@@ -260,8 +261,9 @@ public class AsmIRSimplifierTest {
 	}
 
 	private static void testSimplify(List<AsmIR> expected, List<AsmIR> input) {
+		final AsmIRSimplifier simplifier = new AsmIRSimplifier(null);
 		assertEquals(expected,
-		             AsmIRSimplifier.simplify(input));
+		             simplifier.simplify(input));
 	}
 
 	private static void testSimplifyExpectNoChange(List<AsmIR> input) {

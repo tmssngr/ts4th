@@ -1,12 +1,23 @@
 package de.regnis.ts4th;
 
+import java.io.*;
 import java.util.*;
+
+import org.jetbrains.annotations.*;
 
 /**
  * @author Thomas Singer
  */
 public class InstructionSimplifier {
-	public static List<Instruction> simplify(List<Instruction> instructions) {
+
+	private final PrintStream debugOut;
+
+	public InstructionSimplifier(@Nullable PrintStream debugOut) {
+		this.debugOut = debugOut;
+	}
+
+	@NotNull
+	public List<Instruction> simplify(List<Instruction> instructions) {
 		while (true) {
 			List<Instruction> newInstructions = removeJumpToNext(instructions);
 			newInstructions = removeIndirectLabel(newInstructions);
@@ -20,10 +31,10 @@ public class InstructionSimplifier {
 		}
 	}
 
-	private static List<Instruction> removeJumpToNext(List<Instruction> instructions) {
+	private List<Instruction> removeJumpToNext(List<Instruction> instructions) {
 		final List<Instruction> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
 				if (i1 instanceof Instruction.Jump(String target, _)
@@ -37,10 +48,10 @@ public class InstructionSimplifier {
 		return newInstructions;
 	}
 
-	private static List<Instruction> removeIndirectLabel(List<Instruction> instructions) {
+	private List<Instruction> removeIndirectLabel(List<Instruction> instructions) {
 		final Map<String, String> fromTo = new HashMap<>();
 
-		new DualPeepHoleSimplifier<>(instructions) {
+		new DualPeepHoleSimplifier<>(instructions, debugOut) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
 				if (i1 instanceof Instruction.Label(String label, _)
@@ -73,7 +84,7 @@ public class InstructionSimplifier {
 		return newInstructions;
 	}
 
-	private static String getNewTarget(String target, Map<String, String> fromTo) {
+	private String getNewTarget(String target, Map<String, String> fromTo) {
 		while (true) {
 			final String newTarget = fromTo.get(target);
 			if (newTarget == null) {
@@ -83,10 +94,10 @@ public class InstructionSimplifier {
 		}
 	}
 
-	private static List<Instruction> removeCommandsAfterJump(List<Instruction> instructions) {
+	private List<Instruction> removeCommandsAfterJump(List<Instruction> instructions) {
 		final List<Instruction> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
 				if ((i1 instanceof Instruction.Jump || i1 instanceof Instruction.Branch)
@@ -100,10 +111,10 @@ public class InstructionSimplifier {
 		return newInstructions;
 	}
 
-	private static List<Instruction> removeBoolConstBranch(List<Instruction> instructions) {
+	private List<Instruction> removeBoolConstBranch(List<Instruction> instructions) {
 		final List<Instruction> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(Instruction i1, Instruction i2) {
 				if (i1 instanceof Instruction.BoolLiteral(boolean value)
@@ -117,14 +128,14 @@ public class InstructionSimplifier {
 		return newInstructions;
 	}
 
-	private static void removeUnusedLabels(List<Instruction> instructions) {
+	private void removeUnusedLabels(List<Instruction> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
 		instructions.removeIf(instruction ->
 				                      instruction instanceof Instruction.Label label
 				                      && !usedTargets.contains(label.name()));
 	}
 
-	private static Set<String> getUsedTargets(List<Instruction> instructions) {
+	private Set<String> getUsedTargets(List<Instruction> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (Instruction instruction : instructions) {
 			if (instruction instanceof Instruction.Jump(String target, _)) {

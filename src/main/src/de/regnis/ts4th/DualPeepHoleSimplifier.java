@@ -3,6 +3,8 @@ package de.regnis.ts4th;
 import java.io.*;
 import java.util.*;
 
+import org.jetbrains.annotations.*;
+
 /**
  * @author Thomas Singer
  */
@@ -11,11 +13,13 @@ abstract class DualPeepHoleSimplifier<I> {
 	protected abstract void handle(I i1, I i2);
 
 	private final List<I> items;
+	private final PrintStream debugOut;
 
 	private int i;
 
-	protected DualPeepHoleSimplifier(List<I> items) {
+	protected DualPeepHoleSimplifier(List<I> items, @Nullable PrintStream debugOut) {
 		this.items = items;
+		this.debugOut = debugOut;
 	}
 
 	public void process(String name) {
@@ -51,33 +55,37 @@ abstract class DualPeepHoleSimplifier<I> {
 	}
 
 	protected void debug(String name) {
-		//print(name);
+		print(name);
 	}
 
 	protected void printError() {
-		print("error", true, System.err);
+		print("error", true);
 	}
 
 	private void print(String name) {
-		print(name, false, System.out);
+		print(name, false);
 	}
 
-	private void print(String name, boolean printCurrentPosition, PrintStream stream) {
-		stream.println(name);
+	private void print(String name, boolean printCurrentPosition) {
+		if (debugOut == null) {
+			return;
+		}
+
+		debugOut.println(name);
 
 		int index = 0;
 		for (I item : items) {
 //			stream.print(index);
 //			stream.print(" ");
-			stream.print(item);
+			debugOut.print(item);
 			if (printCurrentPosition) {
 				if (index == i) {
-					stream.print("   // <-- current");
+					debugOut.print("   // <-- current");
 				}
 			}
-			stream.println();
+			debugOut.println();
 			index++;
 		}
-		stream.println();
+		debugOut.println();
 	}
 }

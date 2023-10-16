@@ -1,5 +1,6 @@
 package de.regnis.ts4th;
 
+import java.io.*;
 import java.util.*;
 
 import org.jetbrains.annotations.*;
@@ -11,7 +12,8 @@ import static de.regnis.ts4th.AsmIR.BinOperation.boolTest;
  */
 public class AsmIRConverter implements InstructionTypeEvaluator.Handler {
 
-	public static final Logging DEFAULT_LOGGING = new ConsoleLogging(false);
+	private static final boolean LOGGING = false;
+	public static final Logging DEFAULT_LOGGING = new ConsoleLogging(LOGGING);
 	public static final int REG_0 = 0;
 	public static final int REG_1 = 1;
 	public static final int REG_2 = 2;
@@ -20,7 +22,9 @@ public class AsmIRConverter implements InstructionTypeEvaluator.Handler {
 	public static AsmIRFunction convertToIR(@NotNull Function function, @NotNull NameToFunction nameToFunction, @NotNull AsmIRStringLiterals stringLiterals, @NotNull Logging logging) {
 		logging.beforeFunction(function);
 
-		final List<Instruction> instructions = InstructionSimplifier.simplify(function.instructions());
+		final PrintStream debugOut = LOGGING ? System.out : null;
+		final InstructionSimplifier instructionSimplifier = new InstructionSimplifier(debugOut);
+		final List<Instruction> instructions = instructionSimplifier.simplify(function.instructions());
 
 		final AsmIRConverter converter = new AsmIRConverter(nameToFunction, function, stringLiterals, logging);
 
@@ -28,7 +32,8 @@ public class AsmIRConverter implements InstructionTypeEvaluator.Handler {
 
 		logging.afterFunction(function);
 
-		final List<AsmIR> irInstructions = AsmIRSimplifier.simplify(converter.asmInstructions);
+		final AsmIRSimplifier irSimplifier = new AsmIRSimplifier(debugOut);
+		final List<AsmIR> irInstructions = irSimplifier.simplify(converter.asmInstructions);
 		return new AsmIRFunction(function.name(), stringLiterals, irInstructions);
 	}
 

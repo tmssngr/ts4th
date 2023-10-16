@@ -1,12 +1,22 @@
 package de.regnis.ts4th;
 
+import java.io.*;
 import java.util.*;
+
+import org.jetbrains.annotations.*;
 
 /**
  * @author Thomas Singer
  */
 public class AsmIRSimplifier {
-	public static List<AsmIR> simplify(List<AsmIR> instructions) {
+
+	private final PrintStream debugOut;
+
+	public AsmIRSimplifier(@Nullable PrintStream debugOut) {
+		this.debugOut = debugOut;
+	}
+
+	public List<AsmIR> simplify(List<AsmIR> instructions) {
 		while (true) {
 			List<AsmIR> newInstructions = removeJumpToNext(instructions);
 			newInstructions = removeIndirectLabel(newInstructions);
@@ -25,10 +35,10 @@ public class AsmIRSimplifier {
 		}
 	}
 
-	private static List<AsmIR> removeJumpToNext(List<AsmIR> instructions) {
+	private List<AsmIR> removeJumpToNext(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Jump(_, String target)
@@ -42,10 +52,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> removeIndirectLabel(List<AsmIR> instructions) {
+	private List<AsmIR> removeIndirectLabel(List<AsmIR> instructions) {
 		final Map<String, String> fromTo = new HashMap<>();
 
-		new DualPeepHoleSimplifier<>(instructions) {
+		new DualPeepHoleSimplifier<>(instructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Label(String name)
@@ -75,7 +85,7 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static String getNewTarget(String target, Map<String, String> fromTo) {
+	private String getNewTarget(String target, Map<String, String> fromTo) {
 		while (true) {
 			final String newTarget = fromTo.get(target);
 			if (newTarget == null) {
@@ -85,10 +95,10 @@ public class AsmIRSimplifier {
 		}
 	}
 
-	private static List<AsmIR> removeCommandsAfterJump(List<AsmIR> instructions) {
+	private List<AsmIR> removeCommandsAfterJump(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Jump j
@@ -103,10 +113,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> removePushPop(List<AsmIR> instructions) {
+	private List<AsmIR> removePushPop(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.Push(int sourceReg, Type pushType)
@@ -131,10 +141,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> removeLiteralOrVarRead_move(List<AsmIR> instructions) {
+	private List<AsmIR> removeLiteralOrVarRead_move(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i2 instanceof AsmIR.Move(int targetReg, int sourceReg, Type type)) {
@@ -175,10 +185,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> swapLiteralOrVarRead_Pop(List<AsmIR> instructions) {
+	private List<AsmIR> swapLiteralOrVarRead_Pop(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i2 instanceof AsmIR.Pop(int targetRegPop, _)) {
@@ -211,10 +221,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> squashDropVars(List<AsmIR> instructions) {
+	private List<AsmIR> squashDropVars(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.DropVars(TypeList types1)
@@ -229,10 +239,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> replaceLitBin_BinLit(List<AsmIR> instructions) {
+	private List<AsmIR> replaceLitBin_BinLit(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.IntLiteral(int targetReg, long value, Type litType)
@@ -248,10 +258,10 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static List<AsmIR> combine2BinLit(List<AsmIR> instructions) {
+	private List<AsmIR> combine2BinLit(List<AsmIR> instructions) {
 		final List<AsmIR> newInstructions = new ArrayList<>(instructions);
 
-		new DualPeepHoleSimplifier<>(newInstructions) {
+		new DualPeepHoleSimplifier<>(newInstructions, debugOut) {
 			@Override
 			protected void handle(AsmIR i1, AsmIR i2) {
 				if (i1 instanceof AsmIR.BinLiteralCommand(AsmIR.BinOperation operation, int reg, long value1, Type type)
@@ -273,12 +283,12 @@ public class AsmIRSimplifier {
 		return newInstructions;
 	}
 
-	private static void removeUnusedLabels(List<AsmIR> instructions) {
+	private void removeUnusedLabels(List<AsmIR> instructions) {
 		final Set<String> usedTargets = getUsedTargets(instructions);
 		instructions.removeIf(instruction -> instruction instanceof AsmIR.Label(String name) && !usedTargets.contains(name));
 	}
 
-	private static Set<String> getUsedTargets(List<AsmIR> instructions) {
+	private Set<String> getUsedTargets(List<AsmIR> instructions) {
 		final Set<String> usedTargets = new HashSet<>();
 		for (AsmIR instruction : instructions) {
 			if (instruction instanceof AsmIR.Jump(_, String target)) {

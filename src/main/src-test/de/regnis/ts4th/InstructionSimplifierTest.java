@@ -136,8 +136,9 @@ public class InstructionSimplifierTest {
 	}
 
 	private static void testSimplify(List<Instruction> expected, List<Instruction> input) {
+		final InstructionSimplifier simplifier = new InstructionSimplifier(null);
 		assertEquals(expected,
-		             InstructionSimplifier.simplify(input));
+		             simplifier.simplify(input));
 	}
 
 	private static void testSimplifyExpectNoChange(List<Instruction> input) {
