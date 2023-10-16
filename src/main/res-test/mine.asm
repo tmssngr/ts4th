@@ -1074,8 +1074,57 @@ tsf_printField:
         ; -- ret --
         ret
 
+        ; -- proc abs --
+tsf_abs:
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- lt r0, 0 (i16) --
+        cmp   cx, 0
+        mov   cx, 0
+        mov   bx, 1
+        cmovl cx, bx
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i2 --
+        jz .i2
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- literal r1, #0 --
+        mov ax, 0
+        ; -- push 1 (i16) --
+        sub r15, 2
+        mov [r15], ax
+        ; -- mov 1, 0 (i16) --
+        mov ax, cx
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- sub r0, r1 (i16) --
+        sub cx, ax
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+.i2:
+        ; -- ret --
+        ret
+
         ; -- proc initField --
 tsf_initField:
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push var r0 (i16) --
+        push cx
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push var r0 (i16) --
+        push cx
         ; -- literal r0, #0 --
         mov cx, 0
         ; -- push 0 (i16) --
@@ -1158,6 +1207,72 @@ tsf_initField:
         xor edx, edx
         idiv ecx
         mov ecx, edx
+        ; -- push var r0 (i16) --
+        push cx
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push var r0 (i16) --
+        push cx
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- read var r1, [i16, i16, i16, i16 (i16)] --
+        mov ax, [rsp+8]
+        ; -- sub r0, r1 (i16) --
+        sub cx, ax
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call abs --
+        call tsf_abs
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- gt r0, 1 (i16) --
+        cmp   cx, 1
+        mov   cx, 0
+        mov   bx, 1
+        cmovg cx, bx
+        ; -- push 0 (bool) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- read var r0, [i16 (i16)] --
+        mov cx, [rsp+2]
+        ; -- read var r1, [i16, i16, i16, i16, i16 (i16)] --
+        mov ax, [rsp+10]
+        ; -- sub r0, r1 (i16) --
+        sub cx, ax
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call abs --
+        call tsf_abs
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- gt r0, 1 (i16) --
+        cmp   cx, 1
+        mov   cx, 0
+        mov   bx, 1
+        cmovg cx, bx
+        ; -- mov 1, 0 (bool) --
+        mov al, cl
+        ; -- pop 0 (bool) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- or r0, r1 (bool) --
+        or cl, al
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i5 --
+        jz .i5
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- read var r0, [i16 (i16)] --
+        mov cx, [rsp+2]
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
@@ -1168,6 +1283,9 @@ tsf_initField:
         mov [r15], cl
         ; -- call setCell --
         call tsf_setCell
+.i5:
+        ; -- drop vars i16, i16 --
+        add rsp, 4
         ; -- read var r0, [<empty> (i16)] --
         mov cx, [rsp+0]
         ; -- add r0, 1 (i16) --
@@ -1177,8 +1295,8 @@ tsf_initField:
         ; -- jump .i1 --
         jmp .i1
 .i3:
-        ; -- drop vars i16, i16 --
-        add rsp, 4
+        ; -- drop vars i16, i16, i16, i16 --
+        add rsp, 8
         ; -- ret --
         ret
 
@@ -1191,15 +1309,36 @@ tsf_main:
         mov [r15], ecx
         ; -- call initRandom --
         call tsf_initRandom
-        ; -- call initField --
-        call tsf_initField
-        ; -- literal r0, #0 --
-        mov cx, 0
+        ; -- literal r0, #true --
+        mov cl, -1
+        ; -- push 0 (bool) --
+        sub r15, 1
+        mov [r15], cl
+        ; -- literal r0, #40 --
+        mov cx, 40
+        ; -- idiv r0, 2 (i16) --
+        mov dx, 2
+        xor eax, eax
+        mov ax, cx
+        xor ecx, ecx
+        mov cx, dx
+        xor edx, edx
+        idiv ecx
+        mov ecx, eax
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal r0, #0 --
-        mov cx, 0
+        ; -- literal r0, #20 --
+        mov cx, 20
+        ; -- idiv r0, 2 (i16) --
+        mov dx, 2
+        xor eax, eax
+        mov ax, cx
+        xor ecx, ecx
+        mov cx, dx
+        xor edx, edx
+        idiv ecx
+        mov ecx, eax
         ; -- push var r0 (i16) --
         push cx
         ; -- pop 0 (i16) --
@@ -1207,13 +1346,18 @@ tsf_main:
         add r15, 2
         ; -- push var r0 (i16) --
         push cx
+        ; -- pop 0 (bool) --
+        mov cl, [r15]
+        add r15, 1
+        ; -- push var r0 (bool) --
+        push cx
 .i1:
-        ; -- read var r0, [<empty> (i16)] --
-        mov cx, [rsp+0]
+        ; -- read var r0, [bool, i16 (i16)] --
+        mov cx, [rsp+4]
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
+        ; -- read var r0, [bool (i16)] --
         mov cx, [rsp+2]
         ; -- push 0 (i16) --
         sub r15, 2
@@ -1274,8 +1418,8 @@ tsf_main:
         test cl, cl
         ; -- jump z .i7 --
         jz .i7
-        ; -- read var r0, [<empty> (i16)] --
-        mov cx, [rsp+0]
+        ; -- read var r0, [bool, i16 (i16)] --
+        mov cx, [rsp+4]
         ; -- add r0, 19 (i16) --
         add cx, 19
         ; -- imod r0, 20 (i16) --
@@ -1287,8 +1431,8 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, edx
-        ; -- write var [<empty> (i16)], 0 --
-        mov [rsp+0], cx
+        ; -- write var [bool, i16 (i16)], 0 --
+        mov [rsp+4], cx
 .i7:
         ; -- pop 0 (u16) --
         mov cx, [r15]
@@ -1305,8 +1449,8 @@ tsf_main:
         test cl, cl
         ; -- jump z .i9 --
         jz .i9
-        ; -- read var r0, [<empty> (i16)] --
-        mov cx, [rsp+0]
+        ; -- read var r0, [bool, i16 (i16)] --
+        mov cx, [rsp+4]
         ; -- add r0, 1 (i16) --
         add cx, 1
         ; -- imod r0, 20 (i16) --
@@ -1318,8 +1462,8 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, edx
-        ; -- write var [<empty> (i16)], 0 --
-        mov [rsp+0], cx
+        ; -- write var [bool, i16 (i16)], 0 --
+        mov [rsp+4], cx
 .i9:
         ; -- pop 0 (u16) --
         mov cx, [r15]
@@ -1336,7 +1480,7 @@ tsf_main:
         test cl, cl
         ; -- jump z .i11 --
         jz .i11
-        ; -- read var r0, [i16 (i16)] --
+        ; -- read var r0, [bool (i16)] --
         mov cx, [rsp+2]
         ; -- add r0, 39 (i16) --
         add cx, 39
@@ -1349,7 +1493,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, edx
-        ; -- write var [i16 (i16)], 0 --
+        ; -- write var [bool (i16)], 0 --
         mov [rsp+2], cx
 .i11:
         ; -- pop 0 (u16) --
@@ -1367,7 +1511,7 @@ tsf_main:
         test cl, cl
         ; -- jump z .i13 --
         jz .i13
-        ; -- read var r0, [i16 (i16)] --
+        ; -- read var r0, [bool (i16)] --
         mov cx, [rsp+2]
         ; -- add r0, 1 (i16) --
         add cx, 1
@@ -1380,7 +1524,7 @@ tsf_main:
         xor edx, edx
         idiv ecx
         mov ecx, edx
-        ; -- write var [i16 (i16)], 0 --
+        ; -- write var [bool (i16)], 0 --
         mov [rsp+2], cx
 .i13:
         ; -- pop 0 (u16) --
@@ -1398,12 +1542,35 @@ tsf_main:
         test cl, cl
         ; -- jump z .i15 --
         jz .i15
-        ; -- read var r0, [<empty> (i16)] --
+        ; -- read var r0, [<empty> (bool)] --
         mov cx, [rsp+0]
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i17 --
+        jz .i17
+        ; -- literal r0, #false --
+        mov cl, 0
+        ; -- write var [<empty> (bool)], 0 --
+        mov [rsp+0], cx
+        ; -- read var r0, [bool, i16 (i16)] --
+        mov cx, [rsp+4]
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [i16 (i16)] --
+        ; -- read var r0, [bool (i16)] --
+        mov cx, [rsp+2]
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call initField --
+        call tsf_initField
+.i17:
+        ; -- read var r0, [bool, i16 (i16)] --
+        mov cx, [rsp+4]
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- read var r0, [bool (i16)] --
         mov cx, [rsp+2]
         ; -- push 0 (i16) --
         sub r15, 2
@@ -1429,20 +1596,20 @@ tsf_main:
         not cl
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z .i17 --
-        jz .i17
+        ; -- jump z .i19 --
+        jz .i19
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- or r0, 2 (u8) --
         or cl, 2
         ; -- write var [<empty> (u8)], 0 --
         mov [rsp+0], cx
-        ; -- read var r0, [u8 (i16)] --
-        mov cx, [rsp+2]
+        ; -- read var r0, [u8, bool, i16 (i16)] --
+        mov cx, [rsp+6]
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [u8, i16 (i16)] --
+        ; -- read var r0, [u8, bool (i16)] --
         mov cx, [rsp+4]
         ; -- push 0 (i16) --
         sub r15, 2
@@ -1454,7 +1621,7 @@ tsf_main:
         mov [r15], cl
         ; -- call setCell --
         call tsf_setCell
-.i17:
+.i19:
         ; -- read var r0, [<empty> (u8)] --
         mov cx, [rsp+0]
         ; -- push 0 (u8) --
@@ -1467,14 +1634,14 @@ tsf_main:
         add r15, 1
         ; -- boolTest r0, r0 (i16) --
         test cl, cl
-        ; -- jump z .i19 --
-        jz .i19
-        ; -- read var r0, [u8 (i16)] --
-        mov cx, [rsp+2]
+        ; -- jump z .i21 --
+        jz .i21
+        ; -- read var r0, [u8, bool, i16 (i16)] --
+        mov cx, [rsp+6]
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- read var r0, [u8, i16 (i16)] --
+        ; -- read var r0, [u8, bool (i16)] --
         mov cx, [rsp+4]
         ; -- push 0 (i16) --
         sub r15, 2
@@ -1498,7 +1665,7 @@ tsf_main:
         add rsp, 2
         ; -- jump .i3 --
         jmp .i3
-.i19:
+.i21:
         ; -- drop vars u8 --
         add rsp, 2
 .i15:
@@ -1508,8 +1675,8 @@ tsf_main:
         ; -- jump .i1 --
         jmp .i1
 .i3:
-        ; -- drop vars i16, i16 --
-        add rsp, 4
+        ; -- drop vars bool, i16, i16 --
+        add rsp, 6
         ; -- ret --
         ret
 

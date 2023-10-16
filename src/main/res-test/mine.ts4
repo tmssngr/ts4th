@@ -123,20 +123,37 @@ fn printField(int int)
 	end
 end
 
-fn initField()
-	0
-	height width * bombRatio * 1000 /
-	for _ do
-		random height as_u32 % as_i16
-		random width as_u32 % as_i16
-		maskBomb setCell
+fn abs(int -- int)
+	dup 0 < if
+		0 swap -
+	end
+end
+
+fn initField(int int)
+	var curr_r curr_c do
+		0
+		height width * bombRatio * 1000 /
+		for _ do
+			random height as_u32 % as_i16
+			random width as_u32 % as_i16
+			var r c do
+				r curr_r - abs 1 >
+				c curr_c - abs 1 >
+				or if
+					r c maskBomb setCell
+				end
+			end
+		end
 	end
 end
 
 fn main()
 	7439742u32 initRandom
-	initField
-	0 0 var curr_r curr_c do
+
+	true
+	width 2 /
+	height 2 /
+	var initialize curr_c curr_r do
 		while true do
 			curr_r curr_c printField
 			getChar
@@ -162,6 +179,10 @@ fn main()
 				curr_c 1 + width % curr_c!
 			end
 			dup 0x0du16 == if
+				initialize if
+					false initialize!
+					curr_r curr_c initField
+				end
 				curr_r curr_c getCell
 				var cell do
 					cell open? not if
