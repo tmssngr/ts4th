@@ -1015,6 +1015,127 @@ tsf_printField:
         ; -- ret --
         ret
 
+        ; -- proc printSpaces --
+tsf_printSpaces:
+.i1:
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- gt r0, 0 (i16) --
+        cmp   cx, 0
+        mov   cx, 0
+        mov   bx, 1
+        cmovg cx, bx
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i3 --
+        jz .i3
+        ; -- literal r0, #48 --
+        mov cl, 48
+        ; -- emit --
+        sub rsp, 8
+          call tsfbi_emit
+        add rsp, 8
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- sub r0, 1 (i16) --
+        sub cx, 1
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- jump .i1 --
+        jmp .i1
+.i3:
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- ret --
+        ret
+
+        ; -- proc getDigitCount --
+tsf_getDigitCount:
+        ; -- literal r0, #0 --
+        mov cx, 0
+        ; -- push var r0 (i16) --
+        push cx
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push var r0 (i16) --
+        push cx
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- lt r0, 0 (i16) --
+        cmp   cx, 0
+        mov   cx, 0
+        mov   bx, 1
+        cmovl cx, bx
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i2 --
+        jz .i2
+        ; -- literal r0, #1 --
+        mov cx, 1
+        ; -- write var [i16 (i16)], 0 --
+        mov [rsp+2], cx
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call abs --
+        call tsf_abs
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- write var [<empty> (i16)], 0 --
+        mov [rsp+0], cx
+.i2:
+.i3:
+        ; -- read var r0, [i16 (i16)] --
+        mov cx, [rsp+2]
+        ; -- add r0, 1 (i16) --
+        add cx, 1
+        ; -- write var [i16 (i16)], 0 --
+        mov [rsp+2], cx
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- idiv r0, 10 (i16) --
+        mov dx, 10
+        xor eax, eax
+        mov ax, cx
+        xor ecx, ecx
+        mov cx, dx
+        xor edx, edx
+        idiv ecx
+        mov ecx, eax
+        ; -- write var [<empty> (i16)], 0 --
+        mov [rsp+0], cx
+        ; -- read var r0, [<empty> (i16)] --
+        mov cx, [rsp+0]
+        ; -- eq r0, 0 (i16) --
+        cmp   cx, 0
+        mov   cx, 0
+        mov   bx, 1
+        cmove cx, bx
+        ; -- boolTest r0, r0 (i16) --
+        test cl, cl
+        ; -- jump z .i3 --
+        jz .i3
+        ; -- read var r0, [i16 (i16)] --
+        mov cx, [rsp+2]
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- drop vars i16, i16 --
+        add rsp, 4
+        ; -- ret --
+        ret
+
         ; -- proc printLeft --
 tsf_printLeft:
         ; -- literal r0, #0 --
@@ -1157,6 +1278,45 @@ tsf_printLeft:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call getDigitCount --
+        call tsf_getDigitCount
+        ; -- literal r0, #40 --
+        mov cx, 40
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call getDigitCount --
+        call tsf_getDigitCount
+        ; -- pop 1 (i16) --
+        mov ax, [r15]
+        add r15, 2
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 1 (i16) --
+        sub r15, 2
+        mov [r15], ax
+        ; -- mov 1, 0 (i16) --
+        mov ax, cx
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- sub r0, r1 (i16) --
+        sub cx, ax
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
+        ; -- call printSpaces --
+        call tsf_printSpaces
+        ; -- pop 0 (i16) --
+        mov cx, [r15]
+        add r15, 2
+        ; -- push 0 (i16) --
+        sub r15, 2
+        mov [r15], cx
         ; -- printInt r0(i16) --
         movsx rcx, cx
         test   rcx, rcx
@@ -1240,19 +1400,8 @@ tsf_initField:
         ; -- push 0 (i16) --
         sub r15, 2
         mov [r15], cx
-        ; -- literal r0, #20 --
-        mov cx, 20
-        ; -- imul r0, 2000 (i16) --
-        imul cx, 2000
-        ; -- idiv r0, 1000 (i16) --
-        mov dx, 1000
-        xor eax, eax
-        mov ax, cx
-        xor ecx, ecx
-        mov cx, dx
-        xor edx, edx
-        idiv ecx
-        mov ecx, eax
+        ; -- literal r0, #40 --
+        mov cx, 40
         ; -- push var r0 (i16) --
         push cx
         ; -- pop 0 (i16) --

@@ -4,6 +4,7 @@ include "hex.ts4"
 const width 40 end
 const height 20 end
 const bombRatio 50 end
+const bombCount height width * bombRatio * 1000 / end
 
 const maskBomb 1u8 end
 const maskOpen 2u8 end
@@ -132,6 +133,34 @@ fn printField(int int)
 	end
 end
 
+fn printSpaces(int)
+	while dup 0 > do
+		'0' emit
+		1 -
+	end
+	drop
+end
+
+fn getDigitCount(int -- int)
+	0 var value count do
+		value 0 < if
+			1 count!
+			value abs value!
+		end
+
+		// do-while loop for poor
+		while true do
+			count 1 + count!
+			value 10 / value!
+			value 0 == if
+				break
+			end
+		end
+
+		count
+	end
+end
+
 fn printLeft(-- bool)
 	0
 	0 height for r do
@@ -143,7 +172,9 @@ fn printLeft(-- bool)
 		end
 	end
 
-	"Left: " printString dup print
+	"Left: " printString
+	dup getDigitCount bombCount getDigitCount swap - printSpaces
+	dup print
 	0 ==
 end
 
@@ -155,9 +186,7 @@ end
 
 fn initField(int int)
 	var curr_r curr_c do
-		0
-		height width * bombRatio * 1000 /
-		for _ do
+		0 bombCount	for _ do
 			random height as_u32 % as_i16
 			random width as_u32 % as_i16
 			var r c do
@@ -215,7 +244,7 @@ fn main()
 			curr_r curr_c printField
 			needsInitialize not if
 				printLeft if
-					"You've cleaned the field!" printString
+					" You've cleaned the field!" printString
 					break
 				end
 			end
