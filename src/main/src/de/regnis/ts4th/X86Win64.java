@@ -55,16 +55,16 @@ public class X86Win64 {
 
 				      start:
 				      """);
-		writeIndented(STR. """
-				              mov \{ REG_DSP }, rsp
+		writeIndented(STR."""
+				              mov \{REG_DSP}, rsp
 				              sub rsp, STACK_SIZE
 				              sub rsp, 8
 				                call init
-				                call \{ LABEL_PREFIX }main
+				                call \{LABEL_PREFIX}main
 				              add rsp, 8
 				              mov rcx, 0
 				              sub rsp, 0x20
-				                call [ExitProcess]""" );
+				                call [ExitProcess]""");
 		writeNL();
 
 		for (AsmIRFunction function : program.functions()) {
@@ -120,10 +120,10 @@ public class X86Win64 {
 				              hStdErr rb 8""");
 
 		for (Var var : program.vars()) {
-			writeIndented(STR. """
-					      ; \{ var.name() }
-					      \{ VAR_PREFIX + var.index() } rb \{ var.size() }
-					      """ );
+			writeIndented(STR."""
+					      ; \{var.name()}
+					      \{VAR_PREFIX + var.index()} rb \{var.size()}
+					      """);
 		}
 		write("""
 
@@ -233,13 +233,13 @@ public class X86Win64 {
 		// push char to stack
 		// use that address as buffer to print
 		// use length 1
-		writeIndented(STR. """
+		writeIndented(STR."""
 				              push rcx ; = sub rsp, 8
 				                mov rcx, rsp
 				                mov rdx, 1
-				                call \{ PRINT_STRING }
+				                call \{PRINT_STRING}
 				              pop rcx
-				              ret""" );
+				              ret""");
 	}
 
 	private void writeStringPrint() throws IOException {
@@ -291,7 +291,7 @@ public class X86Win64 {
 				              ; do {
 				              """);
 		writeLabel(".print");
-		writeIndented(STR. """
+		writeIndented(STR."""
 				              ; pos--;
 				              mov    ax, word [rsp+20h]
 				              dec    ax
@@ -329,11 +329,11 @@ public class X86Win64 {
 				              sub    rdx, rax
 
 				              ;sub    rsp, 8  not necessary because initial push rbp
-				                call   \{ PRINT_STRING }
+				                call   \{PRINT_STRING}
 				              ;add    rsp, 8
 				              leave ; Set SP to BP, then pop BP
 				              ret
-				              """ );
+				              """);
 	}
 
 	private void write(AsmIRFunction function) throws IOException {
@@ -352,66 +352,66 @@ public class X86Win64 {
 			writeLabel(prefixLabel(name));
 		}
 		case AsmIR.IntLiteral(int targetReg, long value, Type type) -> {
-			writeComment(STR. "literal r\{ targetReg }, #\{ value }" );
-			writeIndented(STR. "mov \{ getRegName(targetReg, type) }, \{ value }" );
+			writeComment(STR."literal r\{targetReg}, #\{value}");
+			writeIndented(STR."mov \{getRegName(targetReg, type)}, \{value}");
 		}
 		case AsmIR.BoolLiteral(int targetReg, boolean value) -> {
-			writeComment(STR. "literal r\{ targetReg }, #\{ value }" );
-			writeIndented(STR. "mov \{ getRegName(targetReg, 1) }, \{ value ? -1 : 0 }" );
+			writeComment(STR."literal r\{targetReg}, #\{value}");
+			writeIndented(STR."mov \{getRegName(targetReg, 1)}, \{value ? -1 : 0}");
 		}
 		case AsmIR.PtrLiteral(int targetReg, int index, String name) -> {
-			writeComment(STR. "var r\{ targetReg }, @\{ name }" );
-			writeIndented(STR. "lea \{ getRegName(targetReg, PTR_SIZE) }, [\{ VAR_PREFIX + index }]" );
+			writeComment(STR."var r\{targetReg}, @\{name}");
+			writeIndented(STR."lea \{getRegName(targetReg, PTR_SIZE)}, [\{VAR_PREFIX + index}]");
 		}
 		case AsmIR.StringLiteral(int targetReg, int index) -> {
-			writeComment(STR. "literal r\{ targetReg }, \"\{ index }" );
-			writeIndented(STR. "lea \{ getRegName(targetReg, PTR_SIZE) }, [\{ STRING_PREFIX + index }]" );
+			writeComment(STR."literal r\{targetReg}, \"\{index}");
+			writeIndented(STR."lea \{getRegName(targetReg, PTR_SIZE)}, [\{STRING_PREFIX + index}]");
 		}
 		case AsmIR.Jump(AsmIR.Condition condition, String target) -> {
 			writeJump(condition, target);
 		}
 		case AsmIR.Push(int sourceReg, Type type) -> {
-			writeComment(STR. "push \{ sourceReg } (\{ type })" );
+			writeComment(STR."push \{sourceReg} (\{type})");
 
 			final int size = type.getByteCount(PTR_SIZE);
 			final String regName = getRegName(sourceReg, size);
-			writeIndented(STR. """
-					              sub \{ REG_DSP }, \{ size }
-					              mov [\{ REG_DSP }], \{ regName }
-					              """ );
+			writeIndented(STR."""
+					              sub \{REG_DSP}, \{size}
+					              mov [\{REG_DSP}], \{regName}
+					              """);
 		}
 		case AsmIR.Pop(int targetReg, Type type) -> {
-			writeComment(STR. "pop \{ targetReg } (\{ type })" );
+			writeComment(STR."pop \{targetReg} (\{type})");
 
 			final int size = type.getByteCount(PTR_SIZE);
 			final String regName = getRegName(targetReg, size);
-			writeIndented(STR. """
-					              mov \{ regName }, [\{ REG_DSP }]
-					              add \{ REG_DSP }, \{ size }
-					              """ );
+			writeIndented(STR."""
+					              mov \{regName}, [\{REG_DSP}]
+					              add \{REG_DSP}, \{size}
+					              """);
 		}
 		case AsmIR.Move(int targetReg, int sourceReg, Type type) -> {
-			writeComment(STR. "mov \{ targetReg }, \{ sourceReg } (\{ type })" );
+			writeComment(STR."mov \{targetReg}, \{sourceReg} (\{type})");
 
-			writeIndented(STR. "mov \{ getRegName(targetReg, type) }, \{ getRegName(sourceReg, type) }" );
+			writeIndented(STR."mov \{getRegName(targetReg, type)}, \{getRegName(sourceReg, type)}");
 		}
 		case AsmIR.Cast(int reg, Type sourceType, Type targetType) -> {
 			final int sourceSize = sourceType.getByteCount(PTR_SIZE);
 			final int targetSize = targetType.getByteCount(PTR_SIZE);
 			if (sourceSize < targetSize) {
-				writeComment(STR. "cast \{ reg }, (\{ sourceType } -> \{ targetType })" );
-				writeIndented(STR. "movsx \{ getRegName(reg, targetSize) }, \{ getRegName(reg, sourceSize) }" );
+				writeComment(STR."cast \{reg}, (\{sourceType} -> \{targetType})");
+				writeIndented(STR."movsx \{getRegName(reg, targetSize)}, \{getRegName(reg, sourceSize)}");
 			}
 		}
 		case AsmIR.Load(int valueReg, int pointerReg, Type type) -> {
-			writeComment(STR. "load \{ valueReg } (\{ type }), @\{ pointerReg }" );
+			writeComment(STR."load \{valueReg} (\{type}), @\{pointerReg}");
 			final int valueSize = type.getByteCount(PTR_SIZE);
-			writeIndented(STR. "mov \{ getRegName(valueReg, valueSize) }, \{ getSizeWord(valueSize) } [\{ getRegName(pointerReg, PTR_SIZE) }]" );
+			writeIndented(STR."mov \{getRegName(valueReg, valueSize)}, \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}]");
 		}
 		case AsmIR.Store(int pointerReg, int valueReg, Type type) -> {
-			writeComment(STR. "store @\{ pointerReg }, \{ valueReg } (\{ type })" );
+			writeComment(STR."store @\{pointerReg}, \{valueReg} (\{type})");
 			final int valueSize = type.getByteCount(PTR_SIZE);
-			writeIndented(STR. "mov \{ getSizeWord(valueSize) } [\{ getRegName(pointerReg, PTR_SIZE) }], \{ getRegName(valueReg, valueSize) }" );
+			writeIndented(STR."mov \{getSizeWord(valueSize)} [\{getRegName(pointerReg, PTR_SIZE)}], \{getRegName(valueReg, valueSize)}");
 		}
 		case AsmIR.Ret() -> {
 			writeRet();
@@ -423,8 +423,8 @@ public class X86Win64 {
 			writeBinLiteralCommand(operation, reg, value, type);
 		}
 		case AsmIR.Not(int reg, Type type) -> {
-			writeComment(STR. "not r\{ reg } (\{ type })" );
-			writeIndented(STR. "not \{ getRegName(reg, type) }" );
+			writeComment(STR."not r\{reg} (\{type})");
+			writeIndented(STR."not \{getRegName(reg, type)}");
 		}
 		case AsmIR.Print(Type type) -> {
 			if (type == Type.Bool) {
@@ -432,19 +432,19 @@ public class X86Win64 {
 
 				writeComment("printBool");
 				final String printLabel = nextLocalLabel();
-				writeIndented(STR. """
+				writeIndented(STR."""
 						              or cl, cl
 						              lea rcx, [false_string]
 						              mov rdx, 5
-						              jz \{ printLabel }
+						              jz \{printLabel}
 						              lea rcx, [true_string]
 						              mov rdx, 4
-						              """ );
+						              """);
 				writeLabel(printLabel);
-				writeIndented(STR. """
+				writeIndented(STR."""
 				              sub  rsp, 8
-				                call \{ PRINT_STRING }
-				              add rsp, 8""" );
+				                call \{PRINT_STRING}
+				              add rsp, 8""");
 			}
 			else {
 				writePrintInt(type);
@@ -455,11 +455,11 @@ public class X86Win64 {
 
 			writeComment("emit");
 			// expects char in cl
-			writeIndented(STR. """
+			writeIndented(STR."""
 					              sub rsp, 8
-					                call \{ EMIT }
+					                call \{EMIT}
 					              add rsp, 8
-					              """ );
+					              """);
 		}
 		case AsmIR.PrintString(int ptrReg, int sizeReg) -> {
 			writePrintString(ptrReg, sizeReg);
@@ -495,40 +495,40 @@ public class X86Win64 {
 			usesGetChar = true;
 
 			writeComment("getChar");
-			writeIndented(STR. """
+			writeIndented(STR."""
 			              sub  rsp, 8
-			                call \{ GET_CHAR }
-			              add rsp, 8""" );
+			                call \{GET_CHAR}
+			              add rsp, 8""");
 		}
 		case AsmIR.Mem() -> {
 			writeComment("mem");
-			writeIndented(STR. "lea \{ getRegName(AsmIRConverter.REG_0, PTR_SIZE) }, [mem]" );
+			writeIndented(STR."lea \{getRegName(AsmIRConverter.REG_0, PTR_SIZE)}, [mem]");
 		}
 		case AsmIR.Call(String name) -> {
 			writeComment("call " + name);
-			writeIndented(STR. "call \{ LABEL_PREFIX }\{ name }" );
+			writeIndented(STR."call \{LABEL_PREFIX}\{name}");
 		}
 		case AsmIR.PushVar(int sourceReg, Type type) -> {
-			writeComment(STR. "push var r\{ sourceReg } (\{ type })" );
+			writeComment(STR."push var r\{sourceReg} (\{type})");
 			final int size = getByteCountForPush(type);
-			writeIndented(STR. "push \{ getRegName(sourceReg, size) }" );
+			writeIndented(STR."push \{getRegName(sourceReg, size)}");
 		}
 		case AsmIR.LocalVarRead(int targetReg, Type type, TypeList offset) -> {
-			writeComment(STR. "read var r\{ targetReg }, [\{ offset } (\{ type })]" );
+			writeComment(STR."read var r\{targetReg}, [\{offset} (\{type})]");
 			final int offsetCount = getOffset(offset);
 			final int size = getByteCountForPush(type);
-			writeIndented(STR. "mov \{ getRegName(targetReg, size) }, [rsp+\{ offsetCount }]" );
+			writeIndented(STR."mov \{getRegName(targetReg, size)}, [rsp+\{offsetCount}]");
 		}
 		case AsmIR.LocalVarWrite(int sourceReg, Type type, TypeList offset) -> {
-			writeComment(STR. "write var [\{ offset } (\{ type })], \{ sourceReg }" );
+			writeComment(STR."write var [\{offset} (\{type})], \{sourceReg}");
 			final int offsetCount = getOffset(offset);
 			final int size = getByteCountForPush(type);
-			writeIndented(STR. "mov [rsp+\{ offsetCount }], \{ getRegName(sourceReg, size) }" );
+			writeIndented(STR."mov [rsp+\{offsetCount}], \{getRegName(sourceReg, size)}");
 		}
 		case AsmIR.DropVars(TypeList types) -> {
-			writeComment(STR. "drop vars \{ types }" );
+			writeComment(STR."drop vars \{types}");
 			final int offset = getOffset(types);
-			writeIndented(STR. "add rsp, \{ offset }" );
+			writeIndented(STR."add rsp, \{offset}");
 		}
 		}
 	}
@@ -558,21 +558,21 @@ public class X86Win64 {
 	}
 
 	private void writeComment(String comment) throws IOException {
-		writeIndented(STR. "; -- \{ comment } --" );
+		writeIndented(STR."; -- \{comment} --");
 	}
 
 	private void writeLabel(String name) throws IOException {
-		write(STR. "\{ name }:" );
+		write(STR."\{name}:");
 	}
 
 	private void writeJump(@Nullable AsmIR.Condition condition, String target) throws IOException {
 		if (condition == null) {
-			writeComment(STR. "jump \{ target }" );
-			writeIndented(STR. "jmp \{ prefixLabel(target) }" );
+			writeComment(STR."jump \{target}");
+			writeIndented(STR."jmp \{prefixLabel(target)}");
 			return;
 		}
 
-		writeComment(STR. "jump \{ condition } \{ target }" );
+		writeComment(STR."jump \{condition} \{target}");
 		writeIndented(switch (condition) {
 			case z -> "jz ";
 			case nz -> "jnz ";
@@ -589,13 +589,13 @@ public class X86Win64 {
 	}
 
 	private void writeBinCommand(AsmIR.BinOperation operation, int reg1, int reg2, Type type) throws IOException {
-		writeComment(STR. "\{ operation } r\{ reg1 }, r\{ reg2 } (\{ type })" );
+		writeComment(STR."\{operation} r\{reg1}, r\{reg2} (\{type})");
 
 		switch (operation) {
-		case add -> writeIndented(STR. "add \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
-		case sub -> writeIndented(STR. "sub \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
+		case add -> writeIndented(STR."add \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case sub -> writeIndented(STR."sub \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case imul -> // https://www.felixcloutier.com/x86/imul
-				writeIndented(STR. "imul \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
+				writeIndented(STR."imul \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case idiv -> {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
@@ -606,15 +606,15 @@ public class X86Win64 {
 			final String regA = getRegName("a", size);
 			final String regC = getRegName("c", size);
 			final String regD = getRegName("d", size);
-			writeIndented(STR. """
-					              mov \{ regD }, \{ regName2 }
+			writeIndented(STR."""
+					              mov \{regD}, \{regName2}
 					              xor eax, eax
-					              mov \{ regA }, \{ regName1 }
+					              mov \{regA}, \{regName1}
 					              xor ecx, ecx
-					              mov \{ regC }, \{ regD }
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
-					              mov ecx, eax""" );
+					              mov ecx, eax""");
 		}
 		case imod -> {
 			// https://www.felixcloutier.com/x86/idiv
@@ -626,28 +626,28 @@ public class X86Win64 {
 			final String regA = getRegName("a", size);
 			final String regC = getRegName("c", size);
 			final String regD = getRegName("d", size);
-			writeIndented(STR. """
-					              mov \{ regD }, \{ regName2 }
+			writeIndented(STR."""
+					              mov \{regD}, \{regName2}
 					              xor eax, eax
-					              mov \{ regA }, \{ regName1 }
+					              mov \{regA}, \{regName1}
 					              xor ecx, ecx
-					              mov \{ regC }, \{ regD }
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
-					              mov ecx, edx""" );
+					              mov ecx, edx""");
 		}
-		case and -> writeIndented(STR. "and \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
-		case or -> writeIndented(STR. "or \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
-		case xor -> writeIndented(STR. "xor \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }" );
+		case and -> writeIndented(STR."and \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case or -> writeIndented(STR."or \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
+		case xor -> writeIndented(STR."xor \{getRegName(reg1, type)}, \{getRegName(reg2, type)}");
 		case shl -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
 			Utils.assertTrue(reg2 == 0, "source must be cl");
-			writeIndented(STR. "shl \{ getRegName(reg1, type) }, \{ getRegName(reg2, 1) }" );
+			writeIndented(STR."shl \{getRegName(reg1, type)}, \{getRegName(reg2, 1)}");
 		}
 		case shr -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
 			Utils.assertTrue(reg2 == 0, "source must be cl");
-			writeIndented(STR. "shr \{ getRegName(reg1, type) }, \{ getRegName(reg2, 1) }" );
+			writeIndented(STR."shr \{getRegName(reg1, type)}, \{getRegName(reg2, 1)}");
 		}
 		case boolTest -> writeIndented("test %s, %s".formatted(getRegName(reg1, 1),
 		                                                       getRegName(reg2, 1)));
@@ -662,13 +662,13 @@ public class X86Win64 {
 	}
 
 	private void writeBinLiteralCommand(AsmIR.BinOperation operation, int reg, long value, Type type) throws IOException {
-		writeComment(STR. "\{ operation } r\{ reg }, \{ value } (\{ type })" );
+		writeComment(STR."\{operation} r\{reg}, \{value} (\{type})");
 
 		switch (operation) {
-		case add -> writeIndented(STR. "add \{ getRegName(reg, type) }, \{ value }" );
-		case sub -> writeIndented(STR. "sub \{ getRegName(reg, type) }, \{ value }" );
+		case add -> writeIndented(STR."add \{getRegName(reg, type)}, \{value}");
+		case sub -> writeIndented(STR."sub \{getRegName(reg, type)}, \{value}");
 		case imul -> // https://www.felixcloutier.com/x86/imul
-				writeIndented(STR. "imul \{ getRegName(reg, type) }, \{ value }" );
+				writeIndented(STR."imul \{getRegName(reg, type)}, \{value}");
 		case idiv -> {
 			// https://www.felixcloutier.com/x86/idiv
 			// (edx eax) / %reg -> eax
@@ -678,15 +678,15 @@ public class X86Win64 {
 			final String regA = getRegName("a", size);
 			final String regC = getRegName("c", size);
 			final String regD = getRegName("d", size);
-			writeIndented(STR. """
-					              mov \{ regD }, \{ value }
+			writeIndented(STR."""
+					              mov \{regD}, \{value}
 					              xor eax, eax
-					              mov \{ regA }, \{ regName }
+					              mov \{regA}, \{regName}
 					              xor ecx, ecx
-					              mov \{ regC }, \{ regD }
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
-					              mov ecx, eax""" );
+					              mov ecx, eax""");
 		}
 		case imod -> {
 			// https://www.felixcloutier.com/x86/idiv
@@ -697,26 +697,26 @@ public class X86Win64 {
 			final String regA = getRegName("a", size);
 			final String regC = getRegName("c", size);
 			final String regD = getRegName("d", size);
-			writeIndented(STR. """
-					              mov \{ regD }, \{ value }
+			writeIndented(STR."""
+					              mov \{regD}, \{value}
 					              xor eax, eax
-					              mov \{ regA }, \{ regName1 }
+					              mov \{regA}, \{regName1}
 					              xor ecx, ecx
-					              mov \{ regC }, \{ regD }
+					              mov \{regC}, \{regD}
 					              xor edx, edx
 					              idiv ecx
-					              mov ecx, edx""" );
+					              mov ecx, edx""");
 		}
-		case and -> writeIndented(STR. "and \{ getRegName(reg, type) }, \{ value }" );
-		case or -> writeIndented(STR. "or \{ getRegName(reg, type) }, \{ value }" );
-		case xor -> writeIndented(STR. "xor \{ getRegName(reg, type) }, \{ value }" );
+		case and -> writeIndented(STR."and \{getRegName(reg, type)}, \{value}");
+		case or -> writeIndented(STR."or \{getRegName(reg, type)}, \{value}");
+		case xor -> writeIndented(STR."xor \{getRegName(reg, type)}, \{value}");
 		case shl -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
-			writeIndented(STR. "shl \{ getRegName(reg, type) }, \{ value }" );
+			writeIndented(STR."shl \{getRegName(reg, type)}, \{value}");
 		}
 		case shr -> {
 			// https://www.felixcloutier.com/x86/sal:sar:shl:shr
-			writeIndented(STR. "shr \{ getRegName(reg, type) }, \{ value }" );
+			writeIndented(STR."shr \{getRegName(reg, type)}, \{value}");
 		}
 		case boolTest -> writeIndented(STR."test \{getRegName(reg, 1)}, \{value}");
 		case lt -> writeRelationLiteralCommand("l", "b", reg, value, type);
@@ -736,11 +736,11 @@ public class X86Win64 {
 		// there are no cmovXX commands for 8-bit registers
 		final String regName1 = getRegName(reg1, 2);
 		final String regName2 = getRegName(reg2, 2);
-		writeIndented(STR. """
-				              cmp   \{ getRegName(reg1, type) }, \{ getRegName(reg2, type) }
-				              mov   \{ regName1 }, 0
-				              mov   \{ regName2 }, 1
-				              cmov\{ cmovSuffix } \{ regName1 }, \{ regName2 }""" );
+		writeIndented(STR."""
+				              cmp   \{getRegName(reg1, type)}, \{getRegName(reg2, type)}
+				              mov   \{regName1}, 0
+				              mov   \{regName2}, 1
+				              cmov\{cmovSuffix} \{regName1}, \{regName2}""");
 	}
 
 	private void writeRelationLiteralCommand(String cmovSuffixSigned, String cmovSuffixUnsigned, int reg, long value, Type type) throws IOException {
@@ -750,11 +750,11 @@ public class X86Win64 {
 		// there are no cmovXX commands for 8-bit registers
 		final String regName1 = getRegName(reg, 2);
 		final String regName2 = getRegName((reg + 2) % 3, 2);
-		writeIndented(STR. """
-				              cmp   \{ getRegName(reg, type) }, \{ value }
-				              mov   \{ regName1 }, 0
-				              mov   \{ regName2 }, 1
-				              cmov\{ cmovSuffix } \{ regName1 }, \{ regName2 }""" );
+		writeIndented(STR."""
+				              cmp   \{getRegName(reg, type)}, \{value}
+				              mov   \{regName1}, 0
+				              mov   \{regName2}, 1
+				              cmov\{cmovSuffix} \{regName1}, \{regName2}""");
 	}
 
 	private void writePrintInt(Type type) throws IOException {
@@ -763,55 +763,55 @@ public class X86Win64 {
 		final int size = type.getByteCount(PTR_SIZE);
 		if (type == Type.I8 || type == Type.I16 || type == Type.I32 || type == Type.I64) {
 			if (size == 1 || size == 2) {
-				writeIndented(STR. "movsx rcx, \{ getRegName(0, size) }" );
+				writeIndented(STR."movsx rcx, \{getRegName(0, size)}");
 			}
 			else if (size == 4) {
-				writeIndented(STR. "movsxd rcx, \{ getRegName(0, size) }" );
+				writeIndented(STR."movsxd rcx, \{getRegName(0, size)}");
 			}
 
 			usesEmit = true;
 			final String labelPos = nextLocalLabel();
-			writeIndented(STR. """
+			writeIndented(STR."""
 					              test   rcx, rcx
-					              jns    \{ labelPos }
+					              jns    \{labelPos}
 					              neg    rcx
 					              push   rcx
 					                mov    cl, '-'
-					                call   \{ EMIT }
+					                call   \{EMIT}
 					              pop    rcx
-					              """ );
+					              """);
 			writeLabel(labelPos);
 		}
 		else {
 			if (size == 1 || size == 2) {
-				writeIndented(STR. "movzx rcx, \{ getRegName(0, size) }" );
+				writeIndented(STR."movzx rcx, \{getRegName(0, size)}");
 			}
 			// movezxd rcx, ecx is not necessary: https://stackoverflow.com/questions/11177137/why-do-x86-64-instructions-on-32-bit-registers-zero-the-upper-part-of-the-full-6
 		}
 
 		usesUintPrint = true;
-		writeIndented(STR. """
+		writeIndented(STR."""
 				              sub  rsp, 8
-				                call \{ PRINT_UINT }
+				                call \{PRINT_UINT}
 				              add  rsp, 8
-				              """ );
+				              """);
 	}
 
 	private void writePrintString(int ptrReg, int sizeReg) throws IOException {
 		usesStringPrint = true;
 
-		writeComment(STR. "printString r\{ ptrReg } (\{ sizeReg })" );
+		writeComment(STR."printString r\{ptrReg} (\{sizeReg})");
 
 		final String ptrRegName = getRegName(ptrReg, PTR_SIZE);
 		final String sizeRegName = getRegName(sizeReg, Type.I16);
 		// expects ptr in rcx, size in rdx
-		writeIndented(STR. """
-				              movsx rdx, \{ sizeRegName }
-				              mov rcx, \{ ptrRegName }
+		writeIndented(STR."""
+				              movsx rdx, \{sizeRegName}
+				              mov rcx, \{ptrRegName}
 				              sub rsp, 8
-				                call \{ PRINT_STRING }
+				                call \{PRINT_STRING}
 				              add rsp, 8
-				              """ );
+				              """);
 	}
 
 	private String nextLocalLabel() {
